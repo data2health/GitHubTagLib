@@ -151,12 +151,13 @@ public class JSONLoader {
     }
     
     static void searchScan() throws SQLException, IOException {
-	PreparedStatement stmt = conn.prepareStatement("select term from github.search_terms");
+	PreparedStatement stmt = conn.prepareStatement("select id,term from github.search_term");
 	ResultSet rs = stmt.executeQuery();
 	while (rs.next()) {
-	    String term = rs.getString(1);
-	    searchScanUsers(term);
-	    searchScanRepositories(term);
+	    int id = rs.getInt(1);
+	    String term = rs.getString(2);
+	    searchScanUsers(id, term);
+	    searchScanRepositories(id, term);
 	}
 	stmt.close();
     }
@@ -185,7 +186,7 @@ public class JSONLoader {
 	apiCount = 0;
     }
     
-    static void searchScanUsers(String term) throws IOException, SQLException {
+    static void searchScanUsers(int sid, String term) throws IOException, SQLException {
 	int hitCount = Integer.MAX_VALUE;
 	int retrievedCount = 0;
 	int pageCount = 1;
@@ -207,6 +208,7 @@ public class JSONLoader {
 		String login = user.getString("login");
 		int id = user.getInt("id");
 		retrievedCount++;
+		storeUserSearchHit(sid,id,retrievedCount);
 		if (newUser(login)) {
 		    logger.info("\tuser: " + id + " : " + login);
 		    scanUser(login);
@@ -218,7 +220,21 @@ public class JSONLoader {
 	}
     }
     
-    static void searchScanRepositories(String term) throws IOException, SQLException {
+    static void storeUserSearchHit(int sid, int uid, int rank) throws SQLException {
+	PreparedStatement stmt;
+	try {
+	    stmt = conn.prepareStatement("insert into github.search_user values(?,?,?)");
+	    stmt.setInt(1, sid);
+	    stmt.setInt(2, uid);
+	    stmt.setInt(3, sid);
+	    stmt.execute();
+	    stmt.close();
+	} catch (SQLException e) {
+	    conn.rollback();;
+	}
+    }
+    
+    static void searchScanRepositories(int sid, String term) throws IOException, SQLException {
 	int hitCount = Integer.MAX_VALUE;
 	int retrievedCount = 0;
 	int pageCount = 1;
@@ -239,7 +255,9 @@ public class JSONLoader {
 		JSONObject user = users.getJSONObject(i);
 		String full_name = user.getString("full_name");
 		String login = full_name.substring(0, full_name.indexOf('/'));
+		int id = user.getInt("id");
 		retrievedCount++;
+		storeRepositorySearchHit(sid,id,retrievedCount);
 		if (newUser(login)) {
 		    logger.info("\trepo: " + full_name + " : " + login);
 		    scanUser(login);
@@ -248,6 +266,20 @@ public class JSONLoader {
 	    }
 	    
 	    pageCount++;
+	}
+    }
+    
+    static void storeRepositorySearchHit(int sid, int rid, int rank) throws SQLException {
+	PreparedStatement stmt;
+	try {
+	    stmt = conn.prepareStatement("insert into github.search_repository values(?,?,?)");
+	    stmt.setInt(1, sid);
+	    stmt.setInt(2, rid);
+	    stmt.setInt(3, rank);
+	    stmt.execute();
+	    stmt.close();
+	} catch (SQLException e) {
+	    conn.rollback();;
 	}
     }
     

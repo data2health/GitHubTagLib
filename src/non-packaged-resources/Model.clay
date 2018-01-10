@@ -506,7 +506,7 @@
 </table>
 <table alias="" name="readme" remarks="" uid="2bc0fcc3:1607618be83:-7df2">
 <table-description/>
-<table-figure-bounds height="-1" width="-1" x="147" y="431"/>
+<table-figure-bounds height="-1" width="-1" x="741" y="541"/>
 <column-list>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="id" remarks="" uid="2bc0fcc3:1607618be83:-7dda">
 <column-description/>
@@ -539,7 +539,7 @@
 </table>
 <table alias="" name="org_repo" remarks="" uid="2bc0fcc3:1607618be83:-7d96">
 <table-description/>
-<table-figure-bounds height="-1" width="-1" x="771" y="468"/>
+<table-figure-bounds height="-1" width="-1" x="781" y="413"/>
 <column-list>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="organization_id" remarks="" uid="2bc0fcc3:1607618be83:-7d7b">
 <column-description/>
@@ -615,6 +615,125 @@
 <fk-fig-bendpoint-list/>
 </foreign-key-figure>
 <foreign-key-column column-name="repository_id" referenced-key-column-name="id"/>
+</foreign-key>
+</foreign-key-list>
+<index-list/>
+</table>
+<table alias="" name="search_term" remarks="" uid="74dfb849:160dc4924bf:-7ff0">
+<table-description/>
+<table-figure-bounds height="-1" width="-1" x="96" y="472"/>
+<column-list>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="id" remarks="" uid="74dfb849:160dc4924bf:-7fec">
+<column-description/>
+<data-type jdbc-type="4" name="SERIAL" selected-variant-pattern="SERIAL">
+<variant type-name-pattern="SERIAL"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="term" remarks="" uid="74dfb849:160dc4924bf:-7feb">
+<column-description/>
+<data-type jdbc-type="-1" literal-prefix="'" literal-suffix="'" name="TEXT" selected-variant-pattern="TEXT">
+<variant type-name-pattern="TEXT"/>
+</data-type>
+</column>
+</column-list>
+<primary-key alias="" name="PK_SEARCH_TERM" remarks="" uid="74dfb849:160dc4924bf:-7fef">
+<primary-key-description/>
+<primary-key-column name="id"/>
+</primary-key>
+<unique-key-list/>
+<foreign-key-list/>
+<index-list/>
+</table>
+<table alias="" name="search_user" remarks="" uid="74dfb849:160dc4924bf:-7fea">
+<table-description/>
+<table-figure-bounds height="-1" width="-1" x="128" y="356"/>
+<column-list>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="sid" remarks="" uid="74dfb849:160dc4924bf:-7fc2">
+<column-description/>
+<data-type jdbc-type="4" name="INTEGER" selected-variant-pattern="INTEGER">
+<variant type-name-pattern="INTEGER"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="uid" remarks="" uid="74dfb849:160dc4924bf:-7f65">
+<column-description/>
+<data-type jdbc-type="4" name="INT" selected-variant-pattern="INT">
+<variant type-name-pattern="INT"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="rank" remarks="" uid="74dfb849:160dc4924bf:-7f59">
+<column-description/>
+<data-type jdbc-type="4" name="INT" selected-variant-pattern="INT">
+<variant type-name-pattern="INT"/>
+</data-type>
+</column>
+</column-list>
+<primary-key alias="" name="PK_SEARCH_USER" remarks="" uid="74dfb849:160dc4924bf:-7fe9">
+<primary-key-description/>
+<primary-key-column name="sid"/>
+<primary-key-column name="uid"/>
+</primary-key>
+<unique-key-list/>
+<foreign-key-list>
+<foreign-key alias="" name="FK_search_user_1" on-delete="" on-update="" referenced-key="PK_SEARCH_TERM" referenced-table="search_term" referenced-table-schema="github" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="74dfb849:160dc4924bf:-7fc3">
+<foreign-key-description/>
+<foreign-key-figure>
+<fk-fig-bendpoint-list/>
+</foreign-key-figure>
+<foreign-key-column column-name="sid" referenced-key-column-name="id"/>
+</foreign-key>
+<foreign-key alias="" name="FK_search_user_2" on-delete="" on-update="" referenced-key="PK_USER" referenced-table="user" referenced-table-schema="github" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="74dfb849:160dc4924bf:-7f66">
+<foreign-key-description/>
+<foreign-key-figure>
+<fk-fig-bendpoint-list/>
+</foreign-key-figure>
+<foreign-key-column column-name="uid" referenced-key-column-name="id"/>
+</foreign-key>
+</foreign-key-list>
+<index-list/>
+</table>
+<table alias="" name="search_repository" remarks="" uid="74dfb849:160dc4924bf:-7f4e">
+<table-description/>
+<table-figure-bounds height="-1" width="-1" x="295" y="440"/>
+<column-list>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="sid" remarks="" uid="74dfb849:160dc4924bf:-7f37">
+<column-description/>
+<data-type jdbc-type="4" name="INTEGER" selected-variant-pattern="INTEGER">
+<variant type-name-pattern="INTEGER"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="rid" remarks="" uid="74dfb849:160dc4924bf:-7f0d">
+<column-description/>
+<data-type jdbc-type="4" name="INT" selected-variant-pattern="INT">
+<variant type-name-pattern="INT"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="rank" remarks="" uid="74dfb849:160dc4924bf:-7ec6">
+<column-description/>
+<data-type jdbc-type="4" name="INT" selected-variant-pattern="INT">
+<variant type-name-pattern="INT"/>
+</data-type>
+</column>
+</column-list>
+<primary-key alias="" name="PK_SEARCH_REPOSITORY" remarks="" uid="74dfb849:160dc4924bf:-7f4d">
+<primary-key-description/>
+<primary-key-column name="sid"/>
+<primary-key-column name="rid"/>
+</primary-key>
+<unique-key-list/>
+<foreign-key-list>
+<foreign-key alias="" name="FK_search_repository_1" on-delete="" on-update="" referenced-key="PK_SEARCH_TERM" referenced-table="search_term" referenced-table-schema="github" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="74dfb849:160dc4924bf:-7f38">
+<foreign-key-description/>
+<foreign-key-figure>
+<fk-fig-bendpoint-list/>
+</foreign-key-figure>
+<foreign-key-column column-name="sid" referenced-key-column-name="id"/>
+</foreign-key>
+<foreign-key alias="" name="FK_search_repository_2" on-delete="" on-update="" referenced-key="PK_REPOSITORY" referenced-table="repository" referenced-table-schema="github" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="74dfb849:160dc4924bf:-7f0e">
+<foreign-key-description/>
+<foreign-key-figure>
+<fk-fig-bendpoint-list/>
+</foreign-key-figure>
+<foreign-key-column column-name="rid" referenced-key-column-name="id"/>
 </foreign-key>
 </foreign-key-list>
 <index-list/>
