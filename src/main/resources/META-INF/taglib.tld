@@ -3,7 +3,2695 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
 	version="2.0">
+	<tlib-version>2.1</tlib-version>
+	<short-name>simp</short-name>
+	<uri>http://icts.uiowa.edu/GitHubTagLib</uri>
 
-<tlib-version>2.1</tlib-version>
-<short-name>name</short-name>
+	<tag>
+		<name>getSequenceNumber</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.Sequence</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>var</name>
+			<required>true</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>dbtest</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.DBTest</tag-class>
+		<body-content>empty</body-content>
+	</tag>
+
+	<tag>
+		<name>foreachUser</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.user.UserIterator</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>var</name>
+			<required>true</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>sortCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>limitCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>ID</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>user</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.user.User</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>ID</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>deleteUser</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.user.UserDeleter</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>ID</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>userID</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.user.UserID</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>ID</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>userLogin</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.user.UserLogin</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>login</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>userName</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.user.UserName</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>name</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>userCompany</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.user.UserCompany</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>company</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>userLocation</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.user.UserLocation</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>location</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>userEmail</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.user.UserEmail</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>email</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>userBio</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.user.UserBio</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>bio</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>userBlog</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.user.UserBlog</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>blog</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>userSiteAdmin</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.user.UserSiteAdmin</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>siteAdmin</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>userPublicRepos</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.user.UserPublicRepos</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>publicRepos</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>userPublicGists</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.user.UserPublicGists</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>publicGists</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>userFollowers</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.user.UserFollowers</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>followers</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>userFollowing</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.user.UserFollowing</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>following</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>userCreatedAt</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.user.UserCreatedAt</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>createdAt</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>type</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>dateStyle</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>timeStyle</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>pattern</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>userCreatedAtToNow</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.user.UserCreatedAtToNow</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>createdAt</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>userUpdatedAt</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.user.UserUpdatedAt</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>updatedAt</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>type</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>dateStyle</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>timeStyle</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>pattern</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>userUpdatedAtToNow</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.user.UserUpdatedAtToNow</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>updatedAt</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>foreachOrganization</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.organization.OrganizationIterator</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>var</name>
+			<required>true</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>sortCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>limitCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>ID</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>organization</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.organization.Organization</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>ID</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>deleteOrganization</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.organization.OrganizationDeleter</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>ID</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>organizationID</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.organization.OrganizationID</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>ID</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>organizationLogin</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.organization.OrganizationLogin</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>login</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>organizationName</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.organization.OrganizationName</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>name</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>organizationCompany</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.organization.OrganizationCompany</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>company</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>organizationLocation</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.organization.OrganizationLocation</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>location</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>organizationEmail</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.organization.OrganizationEmail</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>email</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>organizationDescription</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.organization.OrganizationDescription</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>description</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>organizationBlog</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.organization.OrganizationBlog</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>blog</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>organizationHasOrganizationProjects</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.organization.OrganizationHasOrganizationProjects</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>hasOrganizationProjects</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>organizationHasRepositoryProjects</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.organization.OrganizationHasRepositoryProjects</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>hasRepositoryProjects</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>organizationPublicRepos</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.organization.OrganizationPublicRepos</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>publicRepos</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>organizationPublicGists</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.organization.OrganizationPublicGists</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>publicGists</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>organizationFollowers</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.organization.OrganizationFollowers</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>followers</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>organizationFollowing</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.organization.OrganizationFollowing</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>following</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>organizationCreatedAt</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.organization.OrganizationCreatedAt</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>createdAt</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>type</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>dateStyle</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>timeStyle</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>pattern</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>organizationCreatedAtToNow</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.organization.OrganizationCreatedAtToNow</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>createdAt</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>organizationUpdatedAt</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.organization.OrganizationUpdatedAt</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>updatedAt</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>type</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>dateStyle</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>timeStyle</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>pattern</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>organizationUpdatedAtToNow</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.organization.OrganizationUpdatedAtToNow</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>updatedAt</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>foreachFollows</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.follows.FollowsIterator</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>var</name>
+			<required>true</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>sortCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>limitCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>follower</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>following</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>useUser</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>useUser</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+	</tag>
+
+	<tag>
+		<name>follows</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.follows.Follows</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>follower</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>following</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>deleteFollows</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.follows.FollowsDeleter</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>follower</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>following</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>followsFollower</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.follows.FollowsFollower</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>follower</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>followsFollowing</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.follows.FollowsFollowing</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>following</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>foreachMember</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.member.MemberIterator</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>var</name>
+			<required>true</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>sortCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>limitCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>userId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>organizationId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>useUser</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>useOrganization</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+	</tag>
+
+	<tag>
+		<name>member</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.member.Member</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>userId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>organizationId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>deleteMember</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.member.MemberDeleter</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>userId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>organizationId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>memberUserId</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.member.MemberUserId</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>userId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>memberOrganizationId</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.member.MemberOrganizationId</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>organizationId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>foreachRepository</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryIterator</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>var</name>
+			<required>true</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>sortCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>limitCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>ID</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>repository</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>ID</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>deleteRepository</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryDeleter</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>ID</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>repositoryID</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryID</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>ID</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>repositoryName</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryName</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>name</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>repositoryFullName</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryFullName</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>fullName</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>repositoryIsPrivate</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryIsPrivate</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>isPrivate</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>repositoryDescription</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryDescription</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>description</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>repositoryFork</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryFork</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>fork</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>repositoryCreatedAt</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryCreatedAt</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>createdAt</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>type</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>dateStyle</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>timeStyle</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>pattern</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>repositoryCreatedAtToNow</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryCreatedAtToNow</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>createdAt</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>repositoryUpdatedAt</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryUpdatedAt</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>updatedAt</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>type</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>dateStyle</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>timeStyle</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>pattern</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>repositoryUpdatedAtToNow</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryUpdatedAtToNow</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>updatedAt</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>repositoryPushedAt</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryPushedAt</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>pushedAt</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>type</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>dateStyle</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>timeStyle</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>pattern</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>repositoryPushedAtToNow</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryPushedAtToNow</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>pushedAt</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>repositoryHomepage</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryHomepage</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>homepage</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>repositorySize</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.repository.RepositorySize</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>size</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>repositoryStargazersCount</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryStargazersCount</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>stargazersCount</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>repositoryWatchersCount</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryWatchersCount</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>watchersCount</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>repositoryLanguage</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryLanguage</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>language</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>repositoryHasIssues</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryHasIssues</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>hasIssues</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>repositoryHasProjects</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryHasProjects</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>hasProjects</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>repositoryHasDownloads</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryHasDownloads</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>hasDownloads</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>repositoryHasWiki</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryHasWiki</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>hasWiki</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>repositoryHasPages</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryHasPages</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>hasPages</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>repositoryForksCount</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryForksCount</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>forksCount</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>repositoryArchived</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryArchived</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>archived</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>repositoryOpenIssuesCount</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryOpenIssuesCount</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>openIssuesCount</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>repositoryLicense</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryLicense</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>license</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>repositoryForks</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryForks</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>forks</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>repositoryOpenIssues</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryOpenIssues</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>openIssues</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>repositoryWatchers</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryWatchers</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>watchers</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>repositoryDefaultBranch</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryDefaultBranch</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>defaultBranch</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>foreachReadme</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.readme.ReadmeIterator</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>var</name>
+			<required>true</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>sortCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>limitCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>ID</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>readme</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.readme.Readme</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>ID</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>deleteReadme</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.readme.ReadmeDeleter</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>ID</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>readmeID</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.readme.ReadmeID</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>ID</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>readmeReadme</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.readme.ReadmeReadme</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>readme</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>foreachOrgRepo</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.orgRepo.OrgRepoIterator</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>var</name>
+			<required>true</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>sortCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>limitCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>organizationId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>repositoryId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>useOrganization</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>useRepository</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+	</tag>
+
+	<tag>
+		<name>orgRepo</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.orgRepo.OrgRepo</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>organizationId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>repositoryId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>deleteOrgRepo</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.orgRepo.OrgRepoDeleter</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>organizationId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>repositoryId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>orgRepoOrganizationId</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.orgRepo.OrgRepoOrganizationId</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>organizationId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>orgRepoRepositoryId</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.orgRepo.OrgRepoRepositoryId</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>repositoryId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>foreachUserRepo</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.userRepo.UserRepoIterator</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>var</name>
+			<required>true</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>sortCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>limitCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>userId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>repositoryId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>useUser</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>useRepository</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+	</tag>
+
+	<tag>
+		<name>userRepo</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.userRepo.UserRepo</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>userId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>repositoryId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>deleteUserRepo</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.userRepo.UserRepoDeleter</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>userId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>repositoryId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>userRepoUserId</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.userRepo.UserRepoUserId</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>userId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>userRepoRepositoryId</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.userRepo.UserRepoRepositoryId</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>repositoryId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>foreachSearchTerm</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.searchTerm.SearchTermIterator</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>var</name>
+			<required>true</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>sortCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>limitCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>ID</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>searchTerm</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.searchTerm.SearchTerm</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>ID</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>deleteSearchTerm</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.searchTerm.SearchTermDeleter</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>ID</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>searchTermID</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.searchTerm.SearchTermID</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>ID</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>searchTermTerm</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.searchTerm.SearchTermTerm</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>term</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>foreachSearchUser</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.searchUser.SearchUserIterator</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>var</name>
+			<required>true</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>sortCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>limitCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>sid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>uid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>useSearchTerm</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>useUser</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+	</tag>
+
+	<tag>
+		<name>searchUser</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.searchUser.SearchUser</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>sid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>uid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>deleteSearchUser</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.searchUser.SearchUserDeleter</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>sid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>uid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>searchUserSid</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.searchUser.SearchUserSid</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>sid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>searchUserUid</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.searchUser.SearchUserUid</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>uid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>searchUserRank</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.searchUser.SearchUserRank</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>rank</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>foreachSearchRepository</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.searchRepository.SearchRepositoryIterator</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>var</name>
+			<required>true</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>sortCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>limitCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>sid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>rid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>useSearchTerm</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>useRepository</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+	</tag>
+
+	<tag>
+		<name>searchRepository</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.searchRepository.SearchRepository</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>sid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>rid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>deleteSearchRepository</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.searchRepository.SearchRepositoryDeleter</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>sid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>rid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>searchRepositorySid</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.searchRepository.SearchRepositorySid</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>sid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>searchRepositoryRid</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.searchRepository.SearchRepositoryRid</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>rid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>searchRepositoryRank</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.searchRepository.SearchRepositoryRank</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>rank</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<function>
+		<name>userCount</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.user.UserIterator</function-class>
+		<function-signature>java.lang.String userCount()</function-signature>
+	</function>
+
+	<function>
+		<name>userExists</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.user.UserIterator</function-class>
+		<function-signature>java.lang.String userExists(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>userIDValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.user.User</function-class>
+		<function-signature>java.lang.Integer IDValue()</function-signature>
+	</function>
+
+	<function>
+		<name>userLoginValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.user.User</function-class>
+		<function-signature>java.lang.String loginValue()</function-signature>
+	</function>
+
+	<function>
+		<name>userNameValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.user.User</function-class>
+		<function-signature>java.lang.String nameValue()</function-signature>
+	</function>
+
+	<function>
+		<name>userCompanyValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.user.User</function-class>
+		<function-signature>java.lang.String companyValue()</function-signature>
+	</function>
+
+	<function>
+		<name>userLocationValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.user.User</function-class>
+		<function-signature>java.lang.String locationValue()</function-signature>
+	</function>
+
+	<function>
+		<name>userEmailValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.user.User</function-class>
+		<function-signature>java.lang.String emailValue()</function-signature>
+	</function>
+
+	<function>
+		<name>userBioValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.user.User</function-class>
+		<function-signature>java.lang.String bioValue()</function-signature>
+	</function>
+
+	<function>
+		<name>userBlogValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.user.User</function-class>
+		<function-signature>java.lang.String blogValue()</function-signature>
+	</function>
+
+	<function>
+		<name>userSiteAdminValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.user.User</function-class>
+		<function-signature>java.lang.Boolean siteAdminValue()</function-signature>
+	</function>
+
+	<function>
+		<name>userPublicReposValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.user.User</function-class>
+		<function-signature>java.lang.Integer publicReposValue()</function-signature>
+	</function>
+
+	<function>
+		<name>userPublicGistsValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.user.User</function-class>
+		<function-signature>java.lang.Integer publicGistsValue()</function-signature>
+	</function>
+
+	<function>
+		<name>userFollowersValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.user.User</function-class>
+		<function-signature>java.lang.Integer followersValue()</function-signature>
+	</function>
+
+	<function>
+		<name>userFollowingValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.user.User</function-class>
+		<function-signature>java.lang.Integer followingValue()</function-signature>
+	</function>
+
+	<function>
+		<name>userCreatedAtValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.user.User</function-class>
+		<function-signature>java.lang.Date createdAtValue()</function-signature>
+	</function>
+
+	<function>
+		<name>userUpdatedAtValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.user.User</function-class>
+		<function-signature>java.lang.Date updatedAtValue()</function-signature>
+	</function>
+
+	<function>
+		<name>organizationCount</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.organization.OrganizationIterator</function-class>
+		<function-signature>java.lang.String organizationCount()</function-signature>
+	</function>
+
+	<function>
+		<name>organizationExists</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.organization.OrganizationIterator</function-class>
+		<function-signature>java.lang.String organizationExists(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>organizationIDValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.organization.Organization</function-class>
+		<function-signature>java.lang.Integer IDValue()</function-signature>
+	</function>
+
+	<function>
+		<name>organizationLoginValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.organization.Organization</function-class>
+		<function-signature>java.lang.String loginValue()</function-signature>
+	</function>
+
+	<function>
+		<name>organizationNameValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.organization.Organization</function-class>
+		<function-signature>java.lang.String nameValue()</function-signature>
+	</function>
+
+	<function>
+		<name>organizationCompanyValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.organization.Organization</function-class>
+		<function-signature>java.lang.String companyValue()</function-signature>
+	</function>
+
+	<function>
+		<name>organizationLocationValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.organization.Organization</function-class>
+		<function-signature>java.lang.String locationValue()</function-signature>
+	</function>
+
+	<function>
+		<name>organizationEmailValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.organization.Organization</function-class>
+		<function-signature>java.lang.String emailValue()</function-signature>
+	</function>
+
+	<function>
+		<name>organizationDescriptionValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.organization.Organization</function-class>
+		<function-signature>java.lang.String descriptionValue()</function-signature>
+	</function>
+
+	<function>
+		<name>organizationBlogValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.organization.Organization</function-class>
+		<function-signature>java.lang.String blogValue()</function-signature>
+	</function>
+
+	<function>
+		<name>organizationHasOrganizationProjectsValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.organization.Organization</function-class>
+		<function-signature>java.lang.Boolean hasOrganizationProjectsValue()</function-signature>
+	</function>
+
+	<function>
+		<name>organizationHasRepositoryProjectsValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.organization.Organization</function-class>
+		<function-signature>java.lang.Boolean hasRepositoryProjectsValue()</function-signature>
+	</function>
+
+	<function>
+		<name>organizationPublicReposValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.organization.Organization</function-class>
+		<function-signature>java.lang.Integer publicReposValue()</function-signature>
+	</function>
+
+	<function>
+		<name>organizationPublicGistsValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.organization.Organization</function-class>
+		<function-signature>java.lang.Integer publicGistsValue()</function-signature>
+	</function>
+
+	<function>
+		<name>organizationFollowersValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.organization.Organization</function-class>
+		<function-signature>java.lang.Integer followersValue()</function-signature>
+	</function>
+
+	<function>
+		<name>organizationFollowingValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.organization.Organization</function-class>
+		<function-signature>java.lang.Integer followingValue()</function-signature>
+	</function>
+
+	<function>
+		<name>organizationCreatedAtValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.organization.Organization</function-class>
+		<function-signature>java.lang.Date createdAtValue()</function-signature>
+	</function>
+
+	<function>
+		<name>organizationUpdatedAtValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.organization.Organization</function-class>
+		<function-signature>java.lang.Date updatedAtValue()</function-signature>
+	</function>
+
+	<function>
+		<name>followsExists</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.follows.FollowsIterator</function-class>
+		<function-signature>java.lang.String followsExists(java.lang.String, java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>followsCountByUser</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.follows.FollowsIterator</function-class>
+		<function-signature>java.lang.String followsCountByUser(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>userHasFollows</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.follows.FollowsIterator</function-class>
+		<function-signature>java.lang.Boolean userHasFollows(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>userUserExists</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.follows.FollowsIterator</function-class>
+		<function-signature>java.lang.Boolean userUserExists(java.lang.String, java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>followsFollowerValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.follows.Follows</function-class>
+		<function-signature>java.lang.Integer followerValue()</function-signature>
+	</function>
+
+	<function>
+		<name>followsFollowingValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.follows.Follows</function-class>
+		<function-signature>java.lang.Integer followingValue()</function-signature>
+	</function>
+
+	<function>
+		<name>memberExists</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.member.MemberIterator</function-class>
+		<function-signature>java.lang.String memberExists(java.lang.String, java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>memberCountByUser</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.member.MemberIterator</function-class>
+		<function-signature>java.lang.String memberCountByUser(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>userHasMember</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.member.MemberIterator</function-class>
+		<function-signature>java.lang.Boolean userHasMember(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>memberCountByOrganization</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.member.MemberIterator</function-class>
+		<function-signature>java.lang.String memberCountByOrganization(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>organizationHasMember</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.member.MemberIterator</function-class>
+		<function-signature>java.lang.Boolean organizationHasMember(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>userOrganizationExists</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.member.MemberIterator</function-class>
+		<function-signature>java.lang.Boolean userOrganizationExists(java.lang.String, java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>memberUserIdValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.member.Member</function-class>
+		<function-signature>java.lang.Integer userIdValue()</function-signature>
+	</function>
+
+	<function>
+		<name>memberOrganizationIdValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.member.Member</function-class>
+		<function-signature>java.lang.Integer organizationIdValue()</function-signature>
+	</function>
+
+	<function>
+		<name>repositoryCount</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryIterator</function-class>
+		<function-signature>java.lang.String repositoryCount()</function-signature>
+	</function>
+
+	<function>
+		<name>repositoryExists</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryIterator</function-class>
+		<function-signature>java.lang.String repositoryExists(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>repositoryIDValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
+		<function-signature>java.lang.Integer IDValue()</function-signature>
+	</function>
+
+	<function>
+		<name>repositoryNameValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
+		<function-signature>java.lang.String nameValue()</function-signature>
+	</function>
+
+	<function>
+		<name>repositoryFullNameValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
+		<function-signature>java.lang.String fullNameValue()</function-signature>
+	</function>
+
+	<function>
+		<name>repositoryIsPrivateValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
+		<function-signature>java.lang.Boolean isPrivateValue()</function-signature>
+	</function>
+
+	<function>
+		<name>repositoryDescriptionValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
+		<function-signature>java.lang.String descriptionValue()</function-signature>
+	</function>
+
+	<function>
+		<name>repositoryForkValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
+		<function-signature>java.lang.Boolean forkValue()</function-signature>
+	</function>
+
+	<function>
+		<name>repositoryCreatedAtValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
+		<function-signature>java.lang.Date createdAtValue()</function-signature>
+	</function>
+
+	<function>
+		<name>repositoryUpdatedAtValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
+		<function-signature>java.lang.Date updatedAtValue()</function-signature>
+	</function>
+
+	<function>
+		<name>repositoryPushedAtValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
+		<function-signature>java.lang.Date pushedAtValue()</function-signature>
+	</function>
+
+	<function>
+		<name>repositoryHomepageValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
+		<function-signature>java.lang.String homepageValue()</function-signature>
+	</function>
+
+	<function>
+		<name>repositorySizeValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
+		<function-signature>java.lang.Integer sizeValue()</function-signature>
+	</function>
+
+	<function>
+		<name>repositoryStargazersCountValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
+		<function-signature>java.lang.Integer stargazersCountValue()</function-signature>
+	</function>
+
+	<function>
+		<name>repositoryWatchersCountValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
+		<function-signature>java.lang.Integer watchersCountValue()</function-signature>
+	</function>
+
+	<function>
+		<name>repositoryLanguageValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
+		<function-signature>java.lang.String languageValue()</function-signature>
+	</function>
+
+	<function>
+		<name>repositoryHasIssuesValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
+		<function-signature>java.lang.Boolean hasIssuesValue()</function-signature>
+	</function>
+
+	<function>
+		<name>repositoryHasProjectsValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
+		<function-signature>java.lang.Boolean hasProjectsValue()</function-signature>
+	</function>
+
+	<function>
+		<name>repositoryHasDownloadsValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
+		<function-signature>java.lang.Boolean hasDownloadsValue()</function-signature>
+	</function>
+
+	<function>
+		<name>repositoryHasWikiValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
+		<function-signature>java.lang.Boolean hasWikiValue()</function-signature>
+	</function>
+
+	<function>
+		<name>repositoryHasPagesValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
+		<function-signature>java.lang.Boolean hasPagesValue()</function-signature>
+	</function>
+
+	<function>
+		<name>repositoryForksCountValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
+		<function-signature>java.lang.Integer forksCountValue()</function-signature>
+	</function>
+
+	<function>
+		<name>repositoryArchivedValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
+		<function-signature>java.lang.Boolean archivedValue()</function-signature>
+	</function>
+
+	<function>
+		<name>repositoryOpenIssuesCountValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
+		<function-signature>java.lang.Integer openIssuesCountValue()</function-signature>
+	</function>
+
+	<function>
+		<name>repositoryLicenseValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
+		<function-signature>java.lang.String licenseValue()</function-signature>
+	</function>
+
+	<function>
+		<name>repositoryForksValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
+		<function-signature>java.lang.Integer forksValue()</function-signature>
+	</function>
+
+	<function>
+		<name>repositoryOpenIssuesValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
+		<function-signature>java.lang.Integer openIssuesValue()</function-signature>
+	</function>
+
+	<function>
+		<name>repositoryWatchersValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
+		<function-signature>java.lang.Integer watchersValue()</function-signature>
+	</function>
+
+	<function>
+		<name>repositoryDefaultBranchValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
+		<function-signature>java.lang.String defaultBranchValue()</function-signature>
+	</function>
+
+	<function>
+		<name>readmeExists</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.readme.ReadmeIterator</function-class>
+		<function-signature>java.lang.String readmeExists(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>readmeCountByRepository</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.readme.ReadmeIterator</function-class>
+		<function-signature>java.lang.String readmeCountByRepository(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>repositoryHasReadme</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.readme.ReadmeIterator</function-class>
+		<function-signature>java.lang.Boolean repositoryHasReadme(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>readmeIDValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.readme.Readme</function-class>
+		<function-signature>java.lang.Integer IDValue()</function-signature>
+	</function>
+
+	<function>
+		<name>readmeReadmeValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.readme.Readme</function-class>
+		<function-signature>java.lang.String readmeValue()</function-signature>
+	</function>
+
+	<function>
+		<name>orgRepoExists</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.orgRepo.OrgRepoIterator</function-class>
+		<function-signature>java.lang.String orgRepoExists(java.lang.String, java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>orgRepoCountByOrganization</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.orgRepo.OrgRepoIterator</function-class>
+		<function-signature>java.lang.String orgRepoCountByOrganization(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>organizationHasOrgRepo</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.orgRepo.OrgRepoIterator</function-class>
+		<function-signature>java.lang.Boolean organizationHasOrgRepo(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>orgRepoCountByRepository</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.orgRepo.OrgRepoIterator</function-class>
+		<function-signature>java.lang.String orgRepoCountByRepository(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>repositoryHasOrgRepo</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.orgRepo.OrgRepoIterator</function-class>
+		<function-signature>java.lang.Boolean repositoryHasOrgRepo(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>organizationRepositoryExists</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.orgRepo.OrgRepoIterator</function-class>
+		<function-signature>java.lang.Boolean organizationRepositoryExists(java.lang.String, java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>orgRepoOrganizationIdValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.orgRepo.OrgRepo</function-class>
+		<function-signature>java.lang.Integer organizationIdValue()</function-signature>
+	</function>
+
+	<function>
+		<name>orgRepoRepositoryIdValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.orgRepo.OrgRepo</function-class>
+		<function-signature>java.lang.Integer repositoryIdValue()</function-signature>
+	</function>
+
+	<function>
+		<name>userRepoExists</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.userRepo.UserRepoIterator</function-class>
+		<function-signature>java.lang.String userRepoExists(java.lang.String, java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>userRepoCountByUser</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.userRepo.UserRepoIterator</function-class>
+		<function-signature>java.lang.String userRepoCountByUser(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>userHasUserRepo</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.userRepo.UserRepoIterator</function-class>
+		<function-signature>java.lang.Boolean userHasUserRepo(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>userRepoCountByRepository</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.userRepo.UserRepoIterator</function-class>
+		<function-signature>java.lang.String userRepoCountByRepository(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>repositoryHasUserRepo</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.userRepo.UserRepoIterator</function-class>
+		<function-signature>java.lang.Boolean repositoryHasUserRepo(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>userRepositoryExists</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.userRepo.UserRepoIterator</function-class>
+		<function-signature>java.lang.Boolean userRepositoryExists(java.lang.String, java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>userRepoUserIdValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.userRepo.UserRepo</function-class>
+		<function-signature>java.lang.Integer userIdValue()</function-signature>
+	</function>
+
+	<function>
+		<name>userRepoRepositoryIdValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.userRepo.UserRepo</function-class>
+		<function-signature>java.lang.Integer repositoryIdValue()</function-signature>
+	</function>
+
+	<function>
+		<name>searchTermCount</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.searchTerm.SearchTermIterator</function-class>
+		<function-signature>java.lang.String searchTermCount()</function-signature>
+	</function>
+
+	<function>
+		<name>searchTermExists</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.searchTerm.SearchTermIterator</function-class>
+		<function-signature>java.lang.String searchTermExists(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>searchTermIDValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.searchTerm.SearchTerm</function-class>
+		<function-signature>java.lang.Integer IDValue()</function-signature>
+	</function>
+
+	<function>
+		<name>searchTermTermValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.searchTerm.SearchTerm</function-class>
+		<function-signature>java.lang.String termValue()</function-signature>
+	</function>
+
+	<function>
+		<name>searchUserExists</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.searchUser.SearchUserIterator</function-class>
+		<function-signature>java.lang.String searchUserExists(java.lang.String, java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>searchUserCountBySearchTerm</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.searchUser.SearchUserIterator</function-class>
+		<function-signature>java.lang.String searchUserCountBySearchTerm(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>searchTermHasSearchUser</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.searchUser.SearchUserIterator</function-class>
+		<function-signature>java.lang.Boolean searchTermHasSearchUser(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>searchUserCountByUser</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.searchUser.SearchUserIterator</function-class>
+		<function-signature>java.lang.String searchUserCountByUser(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>userHasSearchUser</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.searchUser.SearchUserIterator</function-class>
+		<function-signature>java.lang.Boolean userHasSearchUser(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>searchTermUserExists</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.searchUser.SearchUserIterator</function-class>
+		<function-signature>java.lang.Boolean searchTermUserExists(java.lang.String, java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>searchUserSidValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.searchUser.SearchUser</function-class>
+		<function-signature>java.lang.Integer sidValue()</function-signature>
+	</function>
+
+	<function>
+		<name>searchUserUidValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.searchUser.SearchUser</function-class>
+		<function-signature>java.lang.Integer uidValue()</function-signature>
+	</function>
+
+	<function>
+		<name>searchUserRankValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.searchUser.SearchUser</function-class>
+		<function-signature>java.lang.Integer rankValue()</function-signature>
+	</function>
+
+	<function>
+		<name>searchRepositoryExists</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.searchRepository.SearchRepositoryIterator</function-class>
+		<function-signature>java.lang.String searchRepositoryExists(java.lang.String, java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>searchRepositoryCountBySearchTerm</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.searchRepository.SearchRepositoryIterator</function-class>
+		<function-signature>java.lang.String searchRepositoryCountBySearchTerm(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>searchTermHasSearchRepository</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.searchRepository.SearchRepositoryIterator</function-class>
+		<function-signature>java.lang.Boolean searchTermHasSearchRepository(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>searchRepositoryCountByRepository</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.searchRepository.SearchRepositoryIterator</function-class>
+		<function-signature>java.lang.String searchRepositoryCountByRepository(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>repositoryHasSearchRepository</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.searchRepository.SearchRepositoryIterator</function-class>
+		<function-signature>java.lang.Boolean repositoryHasSearchRepository(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>searchTermRepositoryExists</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.searchRepository.SearchRepositoryIterator</function-class>
+		<function-signature>java.lang.Boolean searchTermRepositoryExists(java.lang.String, java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>searchRepositorySidValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.searchRepository.SearchRepository</function-class>
+		<function-signature>java.lang.Integer sidValue()</function-signature>
+	</function>
+
+	<function>
+		<name>searchRepositoryRidValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.searchRepository.SearchRepository</function-class>
+		<function-signature>java.lang.Integer ridValue()</function-signature>
+	</function>
+
+	<function>
+		<name>searchRepositoryRankValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.searchRepository.SearchRepository</function-class>
+		<function-signature>java.lang.Integer rankValue()</function-signature>
+	</function>
 </taglib>

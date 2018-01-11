@@ -339,7 +339,7 @@
 <variant type-name-pattern="TEXT"/>
 </data-type>
 </column>
-<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="private" remarks="" uid="2bc0fcc3:1607618be83:-7dae">
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="is_private" remarks="" uid="2bc0fcc3:1607618be83:-7dae">
 <column-description/>
 <data-type jdbc-type="16" name="BOOLEAN" selected-variant-pattern="BOOLEAN">
 <variant type-name-pattern="BOOLEAN"/>
@@ -625,8 +625,8 @@
 <column-list>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="id" remarks="" uid="74dfb849:160dc4924bf:-7fec">
 <column-description/>
-<data-type jdbc-type="4" name="SERIAL" selected-variant-pattern="SERIAL">
-<variant type-name-pattern="SERIAL"/>
+<data-type jdbc-type="4" name="INT" selected-variant-pattern="INT">
+<variant type-name-pattern="INT"/>
 </data-type>
 </column>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="term" remarks="" uid="74dfb849:160dc4924bf:-7feb">
@@ -650,8 +650,8 @@
 <column-list>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="sid" remarks="" uid="74dfb849:160dc4924bf:-7fc2">
 <column-description/>
-<data-type jdbc-type="4" name="INTEGER" selected-variant-pattern="INTEGER">
-<variant type-name-pattern="INTEGER"/>
+<data-type jdbc-type="4" name="INT" selected-variant-pattern="INT">
+<variant type-name-pattern="INT"/>
 </data-type>
 </column>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="uid" remarks="" uid="74dfb849:160dc4924bf:-7f65">
@@ -697,8 +697,8 @@
 <column-list>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="sid" remarks="" uid="74dfb849:160dc4924bf:-7f37">
 <column-description/>
-<data-type jdbc-type="4" name="INTEGER" selected-variant-pattern="INTEGER">
-<variant type-name-pattern="INTEGER"/>
+<data-type jdbc-type="4" name="INT" selected-variant-pattern="INT">
+<variant type-name-pattern="INT"/>
 </data-type>
 </column>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="rid" remarks="" uid="74dfb849:160dc4924bf:-7f0d">

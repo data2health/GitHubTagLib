@@ -209,11 +209,8 @@ public class JSONLoader {
 		int id = user.getInt("id");
 		retrievedCount++;
 		storeUserSearchHit(sid,id,retrievedCount);
-		if (newUser(login)) {
-		    logger.info("\tuser: " + id + " : " + login);
-		    scanUser(login);
-		    scanRepos(login);
-		}
+		scanUser(login);
+		scanRepos(login);
 	    }
 	    
 	    pageCount++;
@@ -226,11 +223,19 @@ public class JSONLoader {
 	    stmt = conn.prepareStatement("insert into github.search_user values(?,?,?)");
 	    stmt.setInt(1, sid);
 	    stmt.setInt(2, uid);
-	    stmt.setInt(3, sid);
+	    stmt.setInt(3, rank);
 	    stmt.execute();
 	    stmt.close();
 	} catch (SQLException e) {
-	    conn.rollback();;
+	    try {
+		stmt = conn.prepareStatement("update github.search_user set rank = ? where sid = ? and uid = ?");
+		stmt.setInt(1, rank);
+		stmt.setInt(2, sid);
+		stmt.setInt(3, uid);
+		stmt.execute();
+		stmt.close();
+	    } catch (SQLException e2) {
+	    }
 	}
     }
     
@@ -258,11 +263,8 @@ public class JSONLoader {
 		int id = user.getInt("id");
 		retrievedCount++;
 		storeRepositorySearchHit(sid,id,retrievedCount);
-		if (newUser(login)) {
-		    logger.info("\trepo: " + full_name + " : " + login);
-		    scanUser(login);
-		    scanRepos(login);
-		}
+		scanUser(login);
+		scanRepos(login);
 	    }
 	    
 	    pageCount++;
@@ -279,7 +281,15 @@ public class JSONLoader {
 	    stmt.execute();
 	    stmt.close();
 	} catch (SQLException e) {
-	    conn.rollback();;
+	    try {
+		stmt = conn.prepareStatement("update github.search_repository set rank = ? where sid = ? and uid = ?");
+		stmt.setInt(1, rank);
+		stmt.setInt(2, sid);
+		stmt.setInt(3, rid);
+		stmt.execute();
+		stmt.close();
+	    } catch (SQLException e2) {
+	    }
 	}
     }
     
@@ -341,6 +351,7 @@ public class JSONLoader {
 	boolean foundUser = true;
 	while (foundUser) {
 	    logger.info("since: " + since);
+	    rateLimitAPI();
 	    URL theURL = since == 0 ? new URL("https://api.github.com/users"
 							+ "?client_id=" + client_id + "&client_secret=" + client_secret)
 					: new URL("https://api.github.com/users?page=1&per_page=100&since=" + since
@@ -354,6 +365,8 @@ public class JSONLoader {
 		JSONObject user = users.getJSONObject(i);
 		String login = user.getString("login");
 		int id = user.getInt("id");
+		if (!newUser(login))
+		    continue;
 		logger.info("user: " + id + " : " + login);
 		foundUser = true;
 		PreparedStatement stmt = conn.prepareStatement("insert into github.users_json(id,login,json) values(?,?,?)");
@@ -379,6 +392,10 @@ public class JSONLoader {
     }
 
     static void scanUser(String login) throws IOException, SQLException {
+	if (!newUser(login))
+	    return;
+	
+	rateLimitAPI();
 	URL theURL = new URL("https://api.github.com/users/" + login
 		+ "?client_id=" + client_id + "&client_secret=" + client_secret);
 	BufferedReader reader = new BufferedReader(new InputStreamReader(theURL.openConnection().getInputStream()));
@@ -406,6 +423,7 @@ public class JSONLoader {
     }
 
     static void scanRepos(String login) throws IOException, SQLException {
+	rateLimitAPI();
 	URL theURL = new URL("https://api.github.com/users/" + login + "/repos"
 		+ "?client_id=" + client_id + "&client_secret=" + client_secret);
 	BufferedReader reader = new BufferedReader(new InputStreamReader(theURL.openConnection().getInputStream()));
@@ -514,6 +532,7 @@ public class JSONLoader {
     static void readmeScan(int id, String name) throws IOException, SQLException {
 	String readme = null;
 	JSONObject container;
+	rateLimitAPI();
 	try {
 	    URL theURL = new URL("https://api.github.com/repos/" + name + "/contents/README.md"
 	    	+ "?client_id=" + client_id + "&client_secret=" + client_secret);
@@ -534,6 +553,7 @@ public class JSONLoader {
     }
 
     static void scanCommits(String owner, String name) throws IOException, SQLException {
+	rateLimitAPI();
 	URL theURL = new URL("https://api.github.com/users");
 	BufferedReader reader = new BufferedReader(new InputStreamReader(theURL.openConnection().getInputStream()));
 
