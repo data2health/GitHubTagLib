@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Base64;
 import java.util.Base64.Decoder;
+import java.util.Hashtable;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
@@ -26,10 +27,11 @@ public class JSONLoader {
     static Logger logger = Logger.getLogger(JSONLoader.class);
     protected static LocalProperties prop_file = null;
     static Connection conn = null;
-    static enum modes {SEARCH, FULL, ORGS, REFRESH, README};
+    static enum modes {SEARCH, FULL, ORGS, REFRESH, README, NEW_SEARCH};
     static modes mode = modes.README;
     static int queryCount = 0;
     static int apiCount = 0;
+    static Hashtable<String,String> loginHash = new Hashtable<String,String>();
     
     static Decoder decoder = Base64.getMimeDecoder();
     
@@ -61,6 +63,9 @@ public class JSONLoader {
 	    case "readme":
 		mode = modes.README;
 		break;
+	    case "new_search":
+		mode = modes.NEW_SEARCH;
+		break;
 	    }
 
 	// truncate();
@@ -71,6 +76,7 @@ public class JSONLoader {
 	    try {
 		switch (mode) {
 		case SEARCH:
+		    loadLoginHash();
 		    searchScan();
 		    break;
 		case FULL:
@@ -84,6 +90,9 @@ public class JSONLoader {
 		    break;
 		case README:
 		    readmeScan();
+		    break;
+		case NEW_SEARCH:
+		    newSearchScan();
 		    break;
 		}
 	    } catch (Exception e) {
@@ -151,13 +160,39 @@ public class JSONLoader {
     }
     
     static void searchScan() throws SQLException, IOException {
-	PreparedStatement stmt = conn.prepareStatement("select id,term from github.search_term");
+	PreparedStatement stmt = conn.prepareStatement("select id,term from github.search_term where id > 10");
 	ResultSet rs = stmt.executeQuery();
 	while (rs.next()) {
 	    int id = rs.getInt(1);
 	    String term = rs.getString(2);
 	    searchScanUsers(id, term);
 	    searchScanRepositories(id, term);
+	}
+	stmt.close();
+    }
+    
+    static void newSearchScan() throws SQLException, IOException {
+	PreparedStatement stmt = conn.prepareStatement("select id,term from github.search_term"
+							+ " where not exists (select id from github.search_user where sid=id)"
+							+ " and not exists (select id from github.search_repository where rid=id)");
+	ResultSet rs = stmt.executeQuery();
+	while (rs.next()) {
+	    int id = rs.getInt(1);
+	    String term = rs.getString(2);
+	    searchScanUsers(id, term);
+	    searchScanRepositories(id, term);
+	}
+	stmt.close();
+    }
+    
+    static void loadLoginHash() throws SQLException {
+	PreparedStatement stmt = conn.prepareStatement("select login,count(*) from repos_json group by 1 having count(*) > 1000 order by 2 desc");
+	ResultSet rs = stmt.executeQuery();
+	while (rs.next()) {
+	    String login = rs.getString(1);
+	    int count = rs.getInt(2);
+	    logger.info("suppressing " + login + " (" + count + ")");
+	    loginHash.put(login, login);
 	}
 	stmt.close();
     }
@@ -208,9 +243,12 @@ public class JSONLoader {
 		String login = user.getString("login");
 		int id = user.getInt("id");
 		retrievedCount++;
+		if (!loginHash.containsKey(login)) {
+		    scanUser(login);
+		    scanRepos(login);
+		    loginHash.put(login, login);
+		}
 		storeUserSearchHit(sid,id,retrievedCount);
-		scanUser(login);
-		scanRepos(login);
 	    }
 	    
 	    pageCount++;
@@ -262,9 +300,12 @@ public class JSONLoader {
 		String login = full_name.substring(0, full_name.indexOf('/'));
 		int id = user.getInt("id");
 		retrievedCount++;
+		if (!loginHash.containsKey(login)) {
+		    scanUser(login);
+		    scanRepos(login);
+		    loginHash.put(login, login);
+		}
 		storeRepositorySearchHit(sid,id,retrievedCount);
-		scanUser(login);
-		scanRepos(login);
 	    }
 	    
 	    pageCount++;
@@ -329,7 +370,7 @@ public class JSONLoader {
 	    flag = false;
 	}
 	stmt.close();
-	
+	logger.debug("new repo: " + login + " - " + name + " : " + flag);
 	return flag;
     }
 
@@ -423,37 +464,48 @@ public class JSONLoader {
     }
 
     static void scanRepos(String login) throws IOException, SQLException {
-	rateLimitAPI();
-	URL theURL = new URL("https://api.github.com/users/" + login + "/repos"
-		+ "?client_id=" + client_id + "&client_secret=" + client_secret);
-	BufferedReader reader = new BufferedReader(new InputStreamReader(theURL.openConnection().getInputStream()));
+	int retrievedCount = 100;
+	int pageCount = 1;
+	while (retrievedCount == 100) {
+	    rateLimitAPI();
+	    URL theURL = new URL("https://api.github.com/users/" + login + "/repos"
+		    		+ "?client_id=" + client_id + "&client_secret=" + client_secret
+		    		+ "&page=" + pageCount + "&per_page=100");
+	    BufferedReader reader = new BufferedReader(new InputStreamReader(theURL.openConnection().getInputStream()));
 
-	JSONArray repos = new JSONArray(new JSONTokener(reader));
-//	logger.info("repos:" + repos);
-	for (int i = 0; i < repos.length(); i++) {
-	    JSONObject repo = repos.getJSONObject(i);
-	    String name = repo.getString("name");
-	    int id = repo.getInt("id");
-	    if (newRepo(login, name)) {
-		logger.info("\t\trepo: " + id + " : " + name);
+	    JSONArray repos = new JSONArray(new JSONTokener(reader));
+//	     logger.info("repos:" + repos);
+	    retrievedCount = 0;
+	    for (int i = 0; i < repos.length(); i++) {
+		JSONObject repo = repos.getJSONObject(i);
+		String name = repo.getString("name");
+		int id = repo.getInt("id");
+		retrievedCount++;
+		if (newRepo(login, name)) {
+		    logger.info("\t\trepo: " + id + " : " + name);
+		    PreparedStatement stmt = conn.prepareStatement("insert into github.repos_json(id,login,name,json) values(?,?,?,?)");
+		    stmt.setInt(1, id);
+		    stmt.setString(2, login);
+		    stmt.setString(3, name);
+		    stmt.setString(4, repo.toString());
+		    stmt.execute();
+		    stmt.close();
+		} else {
+		    logger.debug("\t\texists...");
+		}
+	    }
+
+	    if (repos.length() == 0 && newRepo(login, null)) {
 		PreparedStatement stmt = conn.prepareStatement("insert into github.repos_json(id,login,name,json) values(?,?,?,?)");
-		stmt.setInt(1, id);
+		stmt.setInt(1, 0);
 		stmt.setString(2, login);
-		stmt.setString(3, name);
-		stmt.setString(4, repo.toString());
+		stmt.setString(3, null);
+		stmt.setString(4, null);
 		stmt.execute();
 		stmt.close();
 	    }
-	}
-	
-	if (repos.length() == 0 && newRepo(login, null)) {
-	    PreparedStatement stmt = conn.prepareStatement("insert into github.repos_json(id,login,name,json) values(?,?,?,?)");
-	    stmt.setInt(1, 0);
-	    stmt.setString(2, login);
-	    stmt.setString(3, null);
-	    stmt.setString(4, null);
-	    stmt.execute();
-	    stmt.close();
+	    
+	    pageCount++;
 	}
     }
 
