@@ -22,7 +22,7 @@ CREATE TABLE github.repository (
        id INT NOT NULL
      , name TEXT
      , full_name TEXT
-     , private BOOLEAN
+     , is_private BOOLEAN
      , description TEXT
      , fork BOOLEAN
      , created_at TIMESTAMP
@@ -50,7 +50,7 @@ CREATE TABLE github.repository (
 );
 
 CREATE TABLE github.search_term (
-       id SERIAL NOT NULL
+       id INT NOT NULL
      , term TEXT
      , PRIMARY KEY (id)
 );
@@ -113,7 +113,7 @@ CREATE TABLE github.user_repo (
 );
 
 CREATE TABLE github.search_user (
-       sid INTEGER NOT NULL
+       sid INT NOT NULL
      , uid INT NOT NULL
      , rank INT
      , PRIMARY KEY (sid, uid)
@@ -124,13 +124,37 @@ CREATE TABLE github.search_user (
 );
 
 CREATE TABLE github.search_repository (
-       sid INTEGER NOT NULL
+       sid INT NOT NULL
      , rid INT NOT NULL
      , rank INT
      , PRIMARY KEY (sid, rid)
      , CONSTRAINT FK_search_repository_1 FOREIGN KEY (sid)
                   REFERENCES github.search_term (id)
      , CONSTRAINT FK_search_repository_2 FOREIGN KEY (rid)
+                  REFERENCES github.repository (id)
+);
+
+CREATE TABLE github.search_organization (
+       sid INT NOT NULL
+     , orgid INT NOT NULL
+     , rank INT
+     , PRIMARY KEY (sid, orgid)
+     , CONSTRAINT FK_search_organization_1 FOREIGN KEY (sid)
+                  REFERENCES github.search_term (id)
+     , CONSTRAINT FK_search_organization_2 FOREIGN KEY (orgid)
+                  REFERENCES github.organization (id)
+);
+
+CREATE TABLE github.commit (
+       id INT NOT NULL
+     , committed TIMESTAMP NOT NULL
+     , name TEXT
+     , email TEXT
+     , user_id INT
+     , login TEXT
+     , message TEXT
+     , PRIMARY KEY (id, committed)
+     , CONSTRAINT FK_repo_commit_1 FOREIGN KEY (id)
                   REFERENCES github.repository (id)
 );
 

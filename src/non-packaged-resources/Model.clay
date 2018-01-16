@@ -120,7 +120,7 @@
 </table>
 <table alias="" name="organization" remarks="" uid="2bc0fcc3:1607618be83:-7ff6">
 <table-description/>
-<table-figure-bounds height="-1" width="-1" x="812" y="42"/>
+<table-figure-bounds height="-1" width="-1" x="871" y="39"/>
 <column-list>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="id" remarks="" uid="2bc0fcc3:1607618be83:-7ff2">
 <column-description/>
@@ -319,7 +319,7 @@
 </table>
 <table alias="" name="repository" remarks="" uid="2bc0fcc3:1607618be83:-7ea0">
 <table-description/>
-<table-figure-bounds height="-1" width="-1" x="472" y="206"/>
+<table-figure-bounds height="-1" width="-1" x="437" y="418"/>
 <column-list>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="id" remarks="" uid="2bc0fcc3:1607618be83:-7df5">
 <column-description/>
@@ -506,7 +506,7 @@
 </table>
 <table alias="" name="readme" remarks="" uid="2bc0fcc3:1607618be83:-7df2">
 <table-description/>
-<table-figure-bounds height="-1" width="-1" x="741" y="541"/>
+<table-figure-bounds height="-1" width="-1" x="748" y="584"/>
 <column-list>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="id" remarks="" uid="2bc0fcc3:1607618be83:-7dda">
 <column-description/>
@@ -621,7 +621,7 @@
 </table>
 <table alias="" name="search_term" remarks="" uid="74dfb849:160dc4924bf:-7ff0">
 <table-description/>
-<table-figure-bounds height="-1" width="-1" x="96" y="472"/>
+<table-figure-bounds height="-1" width="-1" x="559" y="269"/>
 <column-list>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="id" remarks="" uid="74dfb849:160dc4924bf:-7fec">
 <column-description/>
@@ -646,7 +646,7 @@
 </table>
 <table alias="" name="search_user" remarks="" uid="74dfb849:160dc4924bf:-7fea">
 <table-description/>
-<table-figure-bounds height="-1" width="-1" x="128" y="356"/>
+<table-figure-bounds height="-1" width="-1" x="450" y="200"/>
 <column-list>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="sid" remarks="" uid="74dfb849:160dc4924bf:-7fc2">
 <column-description/>
@@ -693,7 +693,7 @@
 </table>
 <table alias="" name="search_repository" remarks="" uid="74dfb849:160dc4924bf:-7f4e">
 <table-description/>
-<table-figure-bounds height="-1" width="-1" x="295" y="440"/>
+<table-figure-bounds height="-1" width="-1" x="641" y="351"/>
 <column-list>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="sid" remarks="" uid="74dfb849:160dc4924bf:-7f37">
 <column-description/>
@@ -734,6 +734,121 @@
 <fk-fig-bendpoint-list/>
 </foreign-key-figure>
 <foreign-key-column column-name="rid" referenced-key-column-name="id"/>
+</foreign-key>
+</foreign-key-list>
+<index-list/>
+</table>
+<table alias="" name="search_organization" remarks="" uid="1f279269:160eb04394d:-7fea">
+<table-description/>
+<table-figure-bounds height="-1" width="-1" x="686" y="218"/>
+<column-list>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="sid" remarks="" uid="1f279269:160eb04394d:-7fa8">
+<column-description/>
+<data-type jdbc-type="4" name="INT" selected-variant-pattern="INT">
+<variant type-name-pattern="INT"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="orgid" remarks="" uid="1f279269:160eb04394d:-7f1b">
+<column-description/>
+<data-type jdbc-type="4" name="INT" selected-variant-pattern="INT">
+<variant type-name-pattern="INT"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="rank" remarks="" uid="1f279269:160eb04394d:-7f0d">
+<column-description/>
+<data-type jdbc-type="4" name="INT" selected-variant-pattern="INT">
+<variant type-name-pattern="INT"/>
+</data-type>
+</column>
+</column-list>
+<primary-key alias="" name="PK_SEARCH_ORGANIZATION" remarks="" uid="1f279269:160eb04394d:-7fe9">
+<primary-key-description/>
+<primary-key-column name="sid"/>
+<primary-key-column name="orgid"/>
+</primary-key>
+<unique-key-list/>
+<foreign-key-list>
+<foreign-key alias="" name="FK_search_organization_1" on-delete="" on-update="" referenced-key="PK_SEARCH_TERM" referenced-table="search_term" referenced-table-schema="github" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="1f279269:160eb04394d:-7fa9">
+<foreign-key-description/>
+<foreign-key-figure>
+<fk-fig-bendpoint-list/>
+</foreign-key-figure>
+<foreign-key-column column-name="sid" referenced-key-column-name="id"/>
+</foreign-key>
+<foreign-key alias="" name="FK_search_organization_2" on-delete="" on-update="" referenced-key="PK_ORGANIZATION" referenced-table="organization" referenced-table-schema="github" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="1f279269:160eb04394d:-7f1c">
+<foreign-key-description/>
+<foreign-key-figure>
+<fk-fig-bendpoint-list/>
+</foreign-key-figure>
+<foreign-key-column column-name="orgid" referenced-key-column-name="id"/>
+</foreign-key>
+</foreign-key-list>
+<index-list/>
+</table>
+<table alias="" name="commit" remarks="" uid="1f279269:160eb04394d:-7f00">
+<table-description/>
+<table-figure-bounds height="-1" width="-1" x="756" y="660"/>
+<column-list>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="id" remarks="" uid="1f279269:160eb04394d:-7eb7">
+<column-description/>
+<data-type jdbc-type="4" name="INT" selected-variant-pattern="INT">
+<variant type-name-pattern="INT"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="committed" remarks="" uid="1f279269:160eb04394d:-7eaa">
+<column-description/>
+<data-type jdbc-type="93" name="TIMESTAMP" selected-variant-pattern="TIMESTAMP">
+<variant type-name-pattern="TIMESTAMP"/>
+<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p)"/>
+<variant type-name-pattern="TIMESTAMP WITH TIME ZONE"/>
+<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p) WITH TIME ZONE"/>
+<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p) WITHOUT TIME ZONE"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="name" remarks="" uid="1f279269:160eb04394d:-7ea9">
+<column-description/>
+<data-type jdbc-type="-1" literal-prefix="'" literal-suffix="'" name="TEXT" selected-variant-pattern="TEXT">
+<variant type-name-pattern="TEXT"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="email" remarks="" uid="1f279269:160eb04394d:-7ea8">
+<column-description/>
+<data-type jdbc-type="-1" literal-prefix="'" literal-suffix="'" name="TEXT" selected-variant-pattern="TEXT">
+<variant type-name-pattern="TEXT"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="user_id" remarks="" uid="1f279269:160eb04394d:-7ea7">
+<column-description/>
+<data-type jdbc-type="4" name="INT" selected-variant-pattern="INT">
+<variant type-name-pattern="INT"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="login" remarks="" uid="1f279269:160eb04394d:-7ea6">
+<column-description/>
+<data-type jdbc-type="-1" literal-prefix="'" literal-suffix="'" name="TEXT" selected-variant-pattern="TEXT">
+<variant type-name-pattern="TEXT"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="message" remarks="" uid="1f279269:160eb04394d:-7ea3">
+<column-description/>
+<data-type jdbc-type="-1" literal-prefix="'" literal-suffix="'" name="TEXT" selected-variant-pattern="TEXT">
+<variant type-name-pattern="TEXT"/>
+</data-type>
+</column>
+</column-list>
+<primary-key alias="" name="PK_COMMIT" remarks="" uid="1f279269:160eb04394d:-7eff">
+<primary-key-description/>
+<primary-key-column name="id"/>
+<primary-key-column name="committed"/>
+</primary-key>
+<unique-key-list/>
+<foreign-key-list>
+<foreign-key alias="" name="FK_repo_commit_1" on-delete="" on-update="" referenced-key="PK_REPOSITORY" referenced-table="repository" referenced-table-schema="github" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="1f279269:160eb04394d:-7eb8">
+<foreign-key-description/>
+<foreign-key-figure>
+<fk-fig-bendpoint-list/>
+</foreign-key-figure>
+<foreign-key-column column-name="id" referenced-key-column-name="id"/>
 </foreign-key>
 </foreign-key-list>
 <index-list/>

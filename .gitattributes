@@ -86,6 +86,12 @@ src/main/java/edu/uiowa/slis/GitHubTagLib/repository/RepositoryUpdatedAt.java -t
 src/main/java/edu/uiowa/slis/GitHubTagLib/repository/RepositoryUpdatedAtToNow.java -text
 src/main/java/edu/uiowa/slis/GitHubTagLib/repository/RepositoryWatchers.java -text
 src/main/java/edu/uiowa/slis/GitHubTagLib/repository/RepositoryWatchersCount.java -text
+src/main/java/edu/uiowa/slis/GitHubTagLib/searchOrganization/SearchOrganization.java -text
+src/main/java/edu/uiowa/slis/GitHubTagLib/searchOrganization/SearchOrganizationDeleter.java -text
+src/main/java/edu/uiowa/slis/GitHubTagLib/searchOrganization/SearchOrganizationIterator.java -text
+src/main/java/edu/uiowa/slis/GitHubTagLib/searchOrganization/SearchOrganizationOrgid.java -text
+src/main/java/edu/uiowa/slis/GitHubTagLib/searchOrganization/SearchOrganizationRank.java -text
+src/main/java/edu/uiowa/slis/GitHubTagLib/searchOrganization/SearchOrganizationSid.java -text
 src/main/java/edu/uiowa/slis/GitHubTagLib/searchRepository/SearchRepository.java -text
 src/main/java/edu/uiowa/slis/GitHubTagLib/searchRepository/SearchRepositoryDeleter.java -text
 src/main/java/edu/uiowa/slis/GitHubTagLib/searchRepository/SearchRepositoryIterator.java -text

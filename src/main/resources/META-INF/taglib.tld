@@ -1969,6 +1969,127 @@
 		</attribute>
 	</tag>
 
+	<tag>
+		<name>foreachSearchOrganization</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.searchOrganization.SearchOrganizationIterator</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>var</name>
+			<required>true</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>sortCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>limitCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>sid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>orgid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>useSearchTerm</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>useOrganization</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+	</tag>
+
+	<tag>
+		<name>searchOrganization</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.searchOrganization.SearchOrganization</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>sid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>orgid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>deleteSearchOrganization</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.searchOrganization.SearchOrganizationDeleter</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>sid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>orgid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>searchOrganizationSid</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.searchOrganization.SearchOrganizationSid</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>sid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>searchOrganizationOrgid</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.searchOrganization.SearchOrganizationOrgid</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>orgid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>searchOrganizationRank</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.searchOrganization.SearchOrganizationRank</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>rank</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
 	<function>
 		<name>userCount</name>
 		<function-class>edu.uiowa.slis.GitHubTagLib.user.UserIterator</function-class>
@@ -2692,6 +2813,60 @@
 	<function>
 		<name>searchRepositoryRankValue</name>
 		<function-class>edu.uiowa.slis.GitHubTagLib.searchRepository.SearchRepository</function-class>
+		<function-signature>java.lang.Integer rankValue()</function-signature>
+	</function>
+
+	<function>
+		<name>searchOrganizationExists</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.searchOrganization.SearchOrganizationIterator</function-class>
+		<function-signature>java.lang.String searchOrganizationExists(java.lang.String, java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>searchOrganizationCountBySearchTerm</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.searchOrganization.SearchOrganizationIterator</function-class>
+		<function-signature>java.lang.String searchOrganizationCountBySearchTerm(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>searchTermHasSearchOrganization</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.searchOrganization.SearchOrganizationIterator</function-class>
+		<function-signature>java.lang.Boolean searchTermHasSearchOrganization(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>searchOrganizationCountByOrganization</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.searchOrganization.SearchOrganizationIterator</function-class>
+		<function-signature>java.lang.String searchOrganizationCountByOrganization(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>organizationHasSearchOrganization</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.searchOrganization.SearchOrganizationIterator</function-class>
+		<function-signature>java.lang.Boolean organizationHasSearchOrganization(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>searchTermOrganizationExists</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.searchOrganization.SearchOrganizationIterator</function-class>
+		<function-signature>java.lang.Boolean searchTermOrganizationExists(java.lang.String, java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>searchOrganizationSidValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.searchOrganization.SearchOrganization</function-class>
+		<function-signature>java.lang.Integer sidValue()</function-signature>
+	</function>
+
+	<function>
+		<name>searchOrganizationOrgidValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.searchOrganization.SearchOrganization</function-class>
+		<function-signature>java.lang.Integer orgidValue()</function-signature>
+	</function>
+
+	<function>
+		<name>searchOrganizationRankValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.searchOrganization.SearchOrganization</function-class>
 		<function-signature>java.lang.Integer rankValue()</function-signature>
 	</function>
 </taglib>

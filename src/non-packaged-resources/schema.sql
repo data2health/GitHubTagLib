@@ -1,4 +1,11 @@
-create materialized view user as
+create materialized view github.user_suppress as select login,count(*) from github.repos_json group by 1 having count(*) > 1000;
+
+create materialized view github.user_jsonb as
+SELECT id, login, json::jsonb AS json
+FROM github.user_json
+WHERE login not in (select login from github.user_suppress);
+
+create materialized view github.user as
 select
     id,
     login,
@@ -15,9 +22,9 @@ select
     (json->>'following'::text)::int as following,
     (json->>'created_at'::text)::timestamp as created_at,
     (json->>'updated_at'::text)::timestamp as updated_at
-from user_jsonb;
+from github.user_jsonb;
 
-create materialized view organization as
+create materialized view github.organization as
 select
     id,
     login,
@@ -35,14 +42,19 @@ select
     (json->>'following'::text)::int as following,
     (json->>'created_at'::text)::timestamp as created_at,
     (json->>'updated_at'::text)::timestamp as updated_at
-from org_jsonb;
+from github.org_jsonb;
 
-create materialized view repository as
+create materialized view github.repos_jsonb as
+SELECT id, login, name, json::jsonb AS json
+FROM github.repos_json
+WHERE login not in (select login from github.user_suppress);
+
+create materialized view github.repository as
 select
     id,
     name,
     json->>'full_name'::text as full_name,
-    (json->>'private'::text)::boolean as private,
+    (json->>'private'::text)::boolean as is_private,
     json->>'description'::text as description,
     (json->>'fork'::text)::boolean as fork,
     (json->>'created_at'::text)::timestamp as created_at,
@@ -66,14 +78,14 @@ select
     (json->>'open_issues'::text)::int as open_issues,
     (json->>'watchers'::text)::int as watchers,
     json->>'default_branch'::text as default_branch
-from repos_jsonb;
+from github.repos_jsonb;
 
-create materialized view user_repo as
+create materialized view github.user_repo as
 select github.user.id as user_id,repository_id
 from
     github.user
 natural join
-    (select id as repository_id,substring(full_name from '^[^/]*')as login from repository) as foo;
+    (select id as repository_id,substring(full_name from '^[^/]*')as login from github.repository) as foo;
 
 create materialized view org_repo as
 select organization.id as organization_id,repository_id

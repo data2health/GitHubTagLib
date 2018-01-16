@@ -1,4 +1,4 @@
-package edu.uiowa.slis.GitHubTagLib.member;
+package edu.uiowa.slis.GitHubTagLib.searchOrganization;
 
 
 import java.sql.PreparedStatement;
@@ -13,16 +13,17 @@ import javax.servlet.jsp.JspTagException;
 
 import edu.uiowa.slis.GitHubTagLib.GitHubTagLibTagSupport;
 import edu.uiowa.slis.GitHubTagLib.GitHubTagLibBodyTagSupport;
-import edu.uiowa.slis.GitHubTagLib.user.User;
+import edu.uiowa.slis.GitHubTagLib.searchTerm.SearchTerm;
 import edu.uiowa.slis.GitHubTagLib.organization.Organization;
 
 @SuppressWarnings("serial")
-public class MemberIterator extends GitHubTagLibBodyTagSupport {
-    int userId = 0;
-    int organizationId = 0;
+public class SearchOrganizationIterator extends GitHubTagLibBodyTagSupport {
+    int sid = 0;
+    int orgid = 0;
+    int rank = 0;
 	Vector<GitHubTagLibTagSupport> parentEntities = new Vector<GitHubTagLibTagSupport>();
 
-	private static final Log log = LogFactory.getLog(MemberIterator.class);
+	private static final Log log = LogFactory.getLog(SearchOrganizationIterator.class);
 
 
     PreparedStatement stat = null;
@@ -32,96 +33,14 @@ public class MemberIterator extends GitHubTagLibBodyTagSupport {
     String var = null;
     int rsCount = 0;
 
-   boolean useUser = false;
+   boolean useSearchTerm = false;
    boolean useOrganization = false;
 
-	public static String memberCountByUser(String ID) throws JspTagException {
+	public static String searchOrganizationCountBySearchTerm(String ID) throws JspTagException {
 		int count = 0;
-		MemberIterator theIterator = new MemberIterator();
+		SearchOrganizationIterator theIterator = new SearchOrganizationIterator();
 		try {
-			PreparedStatement stat = theIterator.getConnection().prepareStatement("SELECT count(*) from github.member where 1=1"
-						+ " and user_id = ?"
-						);
-
-			stat.setInt(1,Integer.parseInt(ID));
-			ResultSet crs = stat.executeQuery();
-
-			if (crs.next()) {
-				count = crs.getInt(1);
-			}
-			stat.close();
-		} catch (SQLException e) {
-			log.error("JDBC error generating Member iterator", e);
-			throw new JspTagException("Error: JDBC error generating Member iterator");
-		} finally {
-			theIterator.freeConnection();
-		}
-		return "" + count;
-	}
-
-	public static Boolean userHasMember(String ID) throws JspTagException {
-		return ! memberCountByUser(ID).equals("0");
-	}
-
-	public static String memberCountByOrganization(String ID) throws JspTagException {
-		int count = 0;
-		MemberIterator theIterator = new MemberIterator();
-		try {
-			PreparedStatement stat = theIterator.getConnection().prepareStatement("SELECT count(*) from github.member where 1=1"
-						+ " and organization_id = ?"
-						);
-
-			stat.setInt(1,Integer.parseInt(ID));
-			ResultSet crs = stat.executeQuery();
-
-			if (crs.next()) {
-				count = crs.getInt(1);
-			}
-			stat.close();
-		} catch (SQLException e) {
-			log.error("JDBC error generating Member iterator", e);
-			throw new JspTagException("Error: JDBC error generating Member iterator");
-		} finally {
-			theIterator.freeConnection();
-		}
-		return "" + count;
-	}
-
-	public static Boolean organizationHasMember(String ID) throws JspTagException {
-		return ! memberCountByOrganization(ID).equals("0");
-	}
-
-	public static Boolean memberExists (String userId, String organizationId) throws JspTagException {
-		int count = 0;
-		MemberIterator theIterator = new MemberIterator();
-		try {
-			PreparedStatement stat = theIterator.getConnection().prepareStatement("SELECT count(*) from github.member where 1=1"
-						+ " and user_id = ?"
-						+ " and organization_id = ?"
-						);
-
-			stat.setInt(1,Integer.parseInt(userId));
-			stat.setInt(2,Integer.parseInt(organizationId));
-			ResultSet crs = stat.executeQuery();
-
-			if (crs.next()) {
-				count = crs.getInt(1);
-			}
-			stat.close();
-		} catch (SQLException e) {
-			log.error("JDBC error generating Member iterator", e);
-			throw new JspTagException("Error: JDBC error generating Member iterator");
-		} finally {
-			theIterator.freeConnection();
-		}
-		return count > 0;
-	}
-
-	public static Boolean userOrganizationExists (String ID) throws JspTagException {
-		int count = 0;
-		MemberIterator theIterator = new MemberIterator();
-		try {
-			PreparedStatement stat = theIterator.getConnection().prepareStatement("SELECT count(*) from github.member where 1=1"
+			PreparedStatement stat = theIterator.getConnection().prepareStatement("SELECT count(*) from github.search_organization where 1=1"
 						+ " and id = ?"
 						);
 
@@ -133,8 +52,90 @@ public class MemberIterator extends GitHubTagLibBodyTagSupport {
 			}
 			stat.close();
 		} catch (SQLException e) {
-			log.error("JDBC error generating Member iterator", e);
-			throw new JspTagException("Error: JDBC error generating Member iterator");
+			log.error("JDBC error generating SearchOrganization iterator", e);
+			throw new JspTagException("Error: JDBC error generating SearchOrganization iterator");
+		} finally {
+			theIterator.freeConnection();
+		}
+		return "" + count;
+	}
+
+	public static Boolean searchTermHasSearchOrganization(String ID) throws JspTagException {
+		return ! searchOrganizationCountBySearchTerm(ID).equals("0");
+	}
+
+	public static String searchOrganizationCountByOrganization(String ID) throws JspTagException {
+		int count = 0;
+		SearchOrganizationIterator theIterator = new SearchOrganizationIterator();
+		try {
+			PreparedStatement stat = theIterator.getConnection().prepareStatement("SELECT count(*) from github.search_organization where 1=1"
+						+ " and id = ?"
+						);
+
+			stat.setInt(1,Integer.parseInt(ID));
+			ResultSet crs = stat.executeQuery();
+
+			if (crs.next()) {
+				count = crs.getInt(1);
+			}
+			stat.close();
+		} catch (SQLException e) {
+			log.error("JDBC error generating SearchOrganization iterator", e);
+			throw new JspTagException("Error: JDBC error generating SearchOrganization iterator");
+		} finally {
+			theIterator.freeConnection();
+		}
+		return "" + count;
+	}
+
+	public static Boolean organizationHasSearchOrganization(String ID) throws JspTagException {
+		return ! searchOrganizationCountByOrganization(ID).equals("0");
+	}
+
+	public static Boolean searchOrganizationExists (String sid, String orgid) throws JspTagException {
+		int count = 0;
+		SearchOrganizationIterator theIterator = new SearchOrganizationIterator();
+		try {
+			PreparedStatement stat = theIterator.getConnection().prepareStatement("SELECT count(*) from github.search_organization where 1=1"
+						+ " and sid = ?"
+						+ " and orgid = ?"
+						);
+
+			stat.setInt(1,Integer.parseInt(sid));
+			stat.setInt(2,Integer.parseInt(orgid));
+			ResultSet crs = stat.executeQuery();
+
+			if (crs.next()) {
+				count = crs.getInt(1);
+			}
+			stat.close();
+		} catch (SQLException e) {
+			log.error("JDBC error generating SearchOrganization iterator", e);
+			throw new JspTagException("Error: JDBC error generating SearchOrganization iterator");
+		} finally {
+			theIterator.freeConnection();
+		}
+		return count > 0;
+	}
+
+	public static Boolean searchTermOrganizationExists (String ID) throws JspTagException {
+		int count = 0;
+		SearchOrganizationIterator theIterator = new SearchOrganizationIterator();
+		try {
+			PreparedStatement stat = theIterator.getConnection().prepareStatement("SELECT count(*) from github.search_organization where 1=1"
+						+ " and id = ?"
+						);
+
+			stat.setInt(1,Integer.parseInt(ID));
+			ResultSet crs = stat.executeQuery();
+
+			if (crs.next()) {
+				count = crs.getInt(1);
+			}
+			stat.close();
+		} catch (SQLException e) {
+			log.error("JDBC error generating SearchOrganization iterator", e);
+			throw new JspTagException("Error: JDBC error generating SearchOrganization iterator");
 		} finally {
 			theIterator.freeConnection();
 		}
@@ -142,20 +143,20 @@ public class MemberIterator extends GitHubTagLibBodyTagSupport {
 	}
 
     public int doStartTag() throws JspException {
-		User theUser = (User)findAncestorWithClass(this, User.class);
-		if (theUser!= null)
-			parentEntities.addElement(theUser);
+		SearchTerm theSearchTerm = (SearchTerm)findAncestorWithClass(this, SearchTerm.class);
+		if (theSearchTerm!= null)
+			parentEntities.addElement(theSearchTerm);
 		Organization theOrganization = (Organization)findAncestorWithClass(this, Organization.class);
 		if (theOrganization!= null)
 			parentEntities.addElement(theOrganization);
 
-		if (theUser == null) {
+		if (theSearchTerm == null) {
 		} else {
-			userId = theUser.getID();
+			sid = theSearchTerm.getID();
 		}
 		if (theOrganization == null) {
 		} else {
-			organizationId = theOrganization.getID();
+			orgid = theOrganization.getID();
 		}
 
 
@@ -164,11 +165,11 @@ public class MemberIterator extends GitHubTagLibBodyTagSupport {
             int webapp_keySeq = 1;
             stat = getConnection().prepareStatement("SELECT count(*) from " + generateFromClause() + " where 1=1"
                                                         + generateJoinCriteria()
-                                                        + (userId == 0 ? "" : " and user_id = ?")
-                                                        + (organizationId == 0 ? "" : " and organization_id = ?")
+                                                        + (sid == 0 ? "" : " and sid = ?")
+                                                        + (orgid == 0 ? "" : " and orgid = ?")
                                                         +  generateLimitCriteria());
-            if (userId != 0) stat.setInt(webapp_keySeq++, userId);
-            if (organizationId != 0) stat.setInt(webapp_keySeq++, organizationId);
+            if (sid != 0) stat.setInt(webapp_keySeq++, sid);
+            if (orgid != 0) stat.setInt(webapp_keySeq++, orgid);
             rs = stat.executeQuery();
 
             if (rs.next()) {
@@ -178,35 +179,35 @@ public class MemberIterator extends GitHubTagLibBodyTagSupport {
 
             //run select id query  
             webapp_keySeq = 1;
-            stat = getConnection().prepareStatement("SELECT github.member.user_id, github.member.organization_id from " + generateFromClause() + " where 1=1"
+            stat = getConnection().prepareStatement("SELECT github.search_organization.sid, github.search_organization.orgid from " + generateFromClause() + " where 1=1"
                                                         + generateJoinCriteria()
-                                                        + (userId == 0 ? "" : " and user_id = ?")
-                                                        + (organizationId == 0 ? "" : " and organization_id = ?")
+                                                        + (sid == 0 ? "" : " and sid = ?")
+                                                        + (orgid == 0 ? "" : " and orgid = ?")
                                                         + " order by " + generateSortCriteria() + generateLimitCriteria());
-            if (userId != 0) stat.setInt(webapp_keySeq++, userId);
-            if (organizationId != 0) stat.setInt(webapp_keySeq++, organizationId);
+            if (sid != 0) stat.setInt(webapp_keySeq++, sid);
+            if (orgid != 0) stat.setInt(webapp_keySeq++, orgid);
             rs = stat.executeQuery();
 
             if (rs.next()) {
-                userId = rs.getInt(1);
-                organizationId = rs.getInt(2);
+                sid = rs.getInt(1);
+                orgid = rs.getInt(2);
                 pageContext.setAttribute(var, ++rsCount);
                 return EVAL_BODY_INCLUDE;
             }
         } catch (SQLException e) {
-            log.error("JDBC error generating Member iterator: " + stat.toString(), e);
+            log.error("JDBC error generating SearchOrganization iterator: " + stat.toString(), e);
             clearServiceState();
             freeConnection();
-            throw new JspTagException("Error: JDBC error generating Member iterator: " + stat.toString());
+            throw new JspTagException("Error: JDBC error generating SearchOrganization iterator: " + stat.toString());
         }
 
         return SKIP_BODY;
     }
 
     private String generateFromClause() {
-       StringBuffer theBuffer = new StringBuffer("github.member");
-       if (useUser)
-          theBuffer.append(", github.user");
+       StringBuffer theBuffer = new StringBuffer("github.search_organization");
+       if (useSearchTerm)
+          theBuffer.append(", github.search_term");
        if (useOrganization)
           theBuffer.append(", github.organization");
 
@@ -215,10 +216,10 @@ public class MemberIterator extends GitHubTagLibBodyTagSupport {
 
     private String generateJoinCriteria() {
        StringBuffer theBuffer = new StringBuffer();
-       if (useUser)
-          theBuffer.append(" and github.user.ID = member.user_id");
+       if (useSearchTerm)
+          theBuffer.append(" and search_term.ID = search_organization.sid");
        if (useOrganization)
-          theBuffer.append(" and organization.ID = member.organization_id");
+          theBuffer.append(" and organization.ID = search_organization.orgid");
 
       return theBuffer.toString();
     }
@@ -227,7 +228,7 @@ public class MemberIterator extends GitHubTagLibBodyTagSupport {
         if (sortCriteria != null) {
             return sortCriteria;
         } else {
-            return "user_id,organization_id";
+            return "sid,orgid";
         }
     }
 
@@ -242,16 +243,16 @@ public class MemberIterator extends GitHubTagLibBodyTagSupport {
     public int doAfterBody() throws JspTagException {
         try {
             if (rs.next()) {
-                userId = rs.getInt(1);
-                organizationId = rs.getInt(2);
+                sid = rs.getInt(1);
+                orgid = rs.getInt(2);
                 pageContext.setAttribute(var, ++rsCount);
                 return EVAL_BODY_AGAIN;
             }
         } catch (SQLException e) {
-            log.error("JDBC error iterating across Member", e);
+            log.error("JDBC error iterating across SearchOrganization", e);
             clearServiceState();
             freeConnection();
-            throw new JspTagException("Error: JDBC error iterating across Member");
+            throw new JspTagException("Error: JDBC error iterating across SearchOrganization");
         }
         return SKIP_BODY;
     }
@@ -261,8 +262,8 @@ public class MemberIterator extends GitHubTagLibBodyTagSupport {
             rs.close();
             stat.close();
         } catch (SQLException e) {
-            log.error("JDBC error ending Member iterator",e);
-            throw new JspTagException("Error: JDBC error ending Member iterator");
+            log.error("JDBC error ending SearchOrganization iterator",e);
+            throw new JspTagException("Error: JDBC error ending SearchOrganization iterator");
         } finally {
             clearServiceState();
             freeConnection();
@@ -271,8 +272,8 @@ public class MemberIterator extends GitHubTagLibBodyTagSupport {
     }
 
     private void clearServiceState() {
-        userId = 0;
-        organizationId = 0;
+        sid = 0;
+        orgid = 0;
         parentEntities = new Vector<GitHubTagLibTagSupport>();
 
         this.rs = null;
@@ -307,12 +308,12 @@ public class MemberIterator extends GitHubTagLibBodyTagSupport {
     }
 
 
-   public boolean getUseUser() {
-        return useUser;
+   public boolean getUseSearchTerm() {
+        return useSearchTerm;
     }
 
-    public void setUseUser(boolean useUser) {
-        this.useUser = useUser;
+    public void setUseSearchTerm(boolean useSearchTerm) {
+        this.useSearchTerm = useSearchTerm;
     }
 
    public boolean getUseOrganization() {
@@ -325,27 +326,27 @@ public class MemberIterator extends GitHubTagLibBodyTagSupport {
 
 
 
-	public int getUserId () {
-		return userId;
+	public int getSid () {
+		return sid;
 	}
 
-	public void setUserId (int userId) {
-		this.userId = userId;
+	public void setSid (int sid) {
+		this.sid = sid;
 	}
 
-	public int getActualUserId () {
-		return userId;
+	public int getActualSid () {
+		return sid;
 	}
 
-	public int getOrganizationId () {
-		return organizationId;
+	public int getOrgid () {
+		return orgid;
 	}
 
-	public void setOrganizationId (int organizationId) {
-		this.organizationId = organizationId;
+	public void setOrgid (int orgid) {
+		this.orgid = orgid;
 	}
 
-	public int getActualOrganizationId () {
-		return organizationId;
+	public int getActualOrgid () {
+		return orgid;
 	}
 }
