@@ -1,0 +1,197 @@
+package edu.uiowa.slis.GitHubTagLib.parent;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Vector;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspTagException;
+import edu.uiowa.slis.GitHubTagLib.repository.Repository;
+
+import edu.uiowa.slis.GitHubTagLib.GitHubTagLibTagSupport;
+import edu.uiowa.slis.GitHubTagLib.Sequence;
+
+@SuppressWarnings("serial")
+public class Parent extends GitHubTagLibTagSupport {
+
+	static Parent currentInstance = null;
+	boolean commitNeeded = false;
+	boolean newRecord = false;
+
+	private static final Log log = LogFactory.getLog(Parent.class);
+
+	Vector<GitHubTagLibTagSupport> parentEntities = new Vector<GitHubTagLibTagSupport>();
+
+	int ID = 0;
+	int parentId = 0;
+	String parentFullName = null;
+
+	public int doStartTag() throws JspException {
+		currentInstance = this;
+		try {
+			Repository theRepository = (Repository)findAncestorWithClass(this, Repository.class);
+			if (theRepository!= null)
+				parentEntities.addElement(theRepository);
+
+			if (theRepository == null) {
+			} else {
+				ID = theRepository.getID();
+			}
+
+			ParentIterator theParentIterator = (ParentIterator)findAncestorWithClass(this, ParentIterator.class);
+
+			if (theParentIterator != null) {
+				ID = theParentIterator.getID();
+			}
+
+			if (theParentIterator == null && theRepository == null && ID == 0) {
+				// no ID was provided - the default is to assume that it is a new Parent and to generate a new ID
+				ID = Sequence.generateID();
+				insertEntity();
+			} else {
+				// an iterator or ID was provided as an attribute - we need to load a Parent from the database
+				boolean found = false;
+				PreparedStatement stmt = getConnection().prepareStatement("select parent_id,parent_full_name from github.parent where id = ?");
+				stmt.setInt(1,ID);
+				ResultSet rs = stmt.executeQuery();
+				while (rs.next()) {
+					if (parentId == 0)
+						parentId = rs.getInt(1);
+					if (parentFullName == null)
+						parentFullName = rs.getString(2);
+					found = true;
+				}
+				stmt.close();
+
+				if (!found) {
+					insertEntity();
+				}
+			}
+		} catch (SQLException e) {
+			log.error("JDBC error retrieving ID " + ID, e);
+			throw new JspTagException("Error: JDBC error retrieving ID " + ID);
+		} finally {
+			freeConnection();
+		}
+		return EVAL_PAGE;
+	}
+
+	public int doEndTag() throws JspException {
+		currentInstance = null;
+		try {
+			if (commitNeeded) {
+				PreparedStatement stmt = getConnection().prepareStatement("update github.parent set parent_id = ?, parent_full_name = ? where id = ?");
+				stmt.setInt(1,parentId);
+				stmt.setString(2,parentFullName);
+				stmt.setInt(3,ID);
+				stmt.executeUpdate();
+				stmt.close();
+			}
+		} catch (SQLException e) {
+			log.error("Error: IOException while writing to the user", e);
+			throw new JspTagException("Error: IOException while writing to the user");
+		} finally {
+			clearServiceState();
+			freeConnection();
+		}
+		return super.doEndTag();
+	}
+
+	public void insertEntity() throws JspException {
+		try {
+			if (parentFullName == null)
+				parentFullName = "";
+			PreparedStatement stmt = getConnection().prepareStatement("insert into github.parent(id,parent_id,parent_full_name) values (?,?,?)");
+			stmt.setInt(1,ID);
+			stmt.setInt(2,parentId);
+			stmt.setString(3,parentFullName);
+			stmt.executeUpdate();
+			stmt.close();
+		} catch (SQLException e) {
+			log.error("Error: IOException while writing to the user", e);
+			throw new JspTagException("Error: IOException while writing to the user");
+		} finally {
+			freeConnection();
+		}
+	}
+
+	public int getID () {
+		return ID;
+	}
+
+	public void setID (int ID) {
+		this.ID = ID;
+	}
+
+	public int getActualID () {
+		return ID;
+	}
+
+	public int getParentId () {
+		return parentId;
+	}
+
+	public void setParentId (int parentId) {
+		this.parentId = parentId;
+		commitNeeded = true;
+	}
+
+	public int getActualParentId () {
+		return parentId;
+	}
+
+	public String getParentFullName () {
+		if (commitNeeded)
+			return "";
+		else
+			return parentFullName;
+	}
+
+	public void setParentFullName (String parentFullName) {
+		this.parentFullName = parentFullName;
+		commitNeeded = true;
+	}
+
+	public String getActualParentFullName () {
+		return parentFullName;
+	}
+
+	public static Integer IDValue() throws JspException {
+		try {
+			return currentInstance.getID();
+		} catch (Exception e) {
+			 throw new JspTagException("Error in tag function IDValue()");
+		}
+	}
+
+	public static Integer parentIdValue() throws JspException {
+		try {
+			return currentInstance.getParentId();
+		} catch (Exception e) {
+			 throw new JspTagException("Error in tag function parentIdValue()");
+		}
+	}
+
+	public static String parentFullNameValue() throws JspException {
+		try {
+			return currentInstance.getParentFullName();
+		} catch (Exception e) {
+			 throw new JspTagException("Error in tag function parentFullNameValue()");
+		}
+	}
+
+	private void clearServiceState () {
+		ID = 0;
+		parentId = 0;
+		parentFullName = null;
+		newRecord = false;
+		commitNeeded = false;
+		parentEntities = new Vector<GitHubTagLibTagSupport>();
+
+	}
+
+}

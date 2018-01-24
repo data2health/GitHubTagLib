@@ -2090,6 +2090,288 @@
 		</attribute>
 	</tag>
 
+	<tag>
+		<name>foreachCommit</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.commit.CommitIterator</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>var</name>
+			<required>true</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>sortCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>limitCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>ID</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>committed</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>commit</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.commit.Commit</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>ID</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>committed</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>deleteCommit</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.commit.CommitDeleter</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>ID</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>committed</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>commitID</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.commit.CommitID</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>ID</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>commitCommitted</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.commit.CommitCommitted</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>committed</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>type</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>dateStyle</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>timeStyle</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>pattern</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>commitCommittedToNow</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.commit.CommitCommittedToNow</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>committed</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>commitName</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.commit.CommitName</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>name</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>commitEmail</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.commit.CommitEmail</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>email</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>commitUserId</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.commit.CommitUserId</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>userId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>commitLogin</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.commit.CommitLogin</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>login</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>commitMessage</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.commit.CommitMessage</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>message</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>foreachParent</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.parent.ParentIterator</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>var</name>
+			<required>true</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>sortCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>limitCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>ID</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>parent</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.parent.Parent</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>ID</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>deleteParent</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.parent.ParentDeleter</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>ID</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>parentID</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.parent.ParentID</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>ID</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>parentParentId</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.parent.ParentParentId</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>parentId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>parentParentFullName</name>
+		<tag-class>edu.uiowa.slis.GitHubTagLib.parent.ParentParentFullName</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>parentFullName</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
 	<function>
 		<name>userCount</name>
 		<function-class>edu.uiowa.slis.GitHubTagLib.user.UserIterator</function-class>
@@ -2868,5 +3150,101 @@
 		<name>searchOrganizationRankValue</name>
 		<function-class>edu.uiowa.slis.GitHubTagLib.searchOrganization.SearchOrganization</function-class>
 		<function-signature>java.lang.Integer rankValue()</function-signature>
+	</function>
+
+	<function>
+		<name>commitExists</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.commit.CommitIterator</function-class>
+		<function-signature>java.lang.String commitExists(java.lang.String, java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>commitCountByRepository</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.commit.CommitIterator</function-class>
+		<function-signature>java.lang.String commitCountByRepository(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>repositoryHasCommit</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.commit.CommitIterator</function-class>
+		<function-signature>java.lang.Boolean repositoryHasCommit(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>commitIDValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.commit.Commit</function-class>
+		<function-signature>java.lang.Integer IDValue()</function-signature>
+	</function>
+
+	<function>
+		<name>commitCommittedValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.commit.Commit</function-class>
+		<function-signature>java.lang.Date committedValue()</function-signature>
+	</function>
+
+	<function>
+		<name>commitNameValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.commit.Commit</function-class>
+		<function-signature>java.lang.String nameValue()</function-signature>
+	</function>
+
+	<function>
+		<name>commitEmailValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.commit.Commit</function-class>
+		<function-signature>java.lang.String emailValue()</function-signature>
+	</function>
+
+	<function>
+		<name>commitUserIdValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.commit.Commit</function-class>
+		<function-signature>java.lang.Integer userIdValue()</function-signature>
+	</function>
+
+	<function>
+		<name>commitLoginValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.commit.Commit</function-class>
+		<function-signature>java.lang.String loginValue()</function-signature>
+	</function>
+
+	<function>
+		<name>commitMessageValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.commit.Commit</function-class>
+		<function-signature>java.lang.String messageValue()</function-signature>
+	</function>
+
+	<function>
+		<name>parentExists</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.parent.ParentIterator</function-class>
+		<function-signature>java.lang.String parentExists(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>parentCountByRepository</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.parent.ParentIterator</function-class>
+		<function-signature>java.lang.String parentCountByRepository(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>repositoryHasParent</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.parent.ParentIterator</function-class>
+		<function-signature>java.lang.Boolean repositoryHasParent(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>parentIDValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.parent.Parent</function-class>
+		<function-signature>java.lang.Integer IDValue()</function-signature>
+	</function>
+
+	<function>
+		<name>parentParentIdValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.parent.Parent</function-class>
+		<function-signature>java.lang.Integer parentIdValue()</function-signature>
+	</function>
+
+	<function>
+		<name>parentParentFullNameValue</name>
+		<function-class>edu.uiowa.slis.GitHubTagLib.parent.Parent</function-class>
+		<function-signature>java.lang.String parentFullNameValue()</function-signature>
 	</function>
 </taglib>

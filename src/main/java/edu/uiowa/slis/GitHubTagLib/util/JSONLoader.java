@@ -1,9 +1,12 @@
 package edu.uiowa.slis.GitHubTagLib.util;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -21,6 +24,7 @@ import org.apache.log4j.PropertyConfigurator;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import org.objectweb.asm.Type;
 
 import edu.uiowa.extraction.LocalProperties;
 import edu.uiowa.extraction.PropertyLoader;
@@ -29,7 +33,7 @@ public class JSONLoader {
     static Logger logger = Logger.getLogger(JSONLoader.class);
     protected static LocalProperties prop_file = null;
     static Connection conn = null;
-    static enum modes {SEARCH, FULL, MEMBERS, REFRESH, README, NEW_SEARCH, COMMITS};
+    static enum modes {SEARCH, FULL, MEMBERS, REFRESH, README, NEW_SEARCH, COMMITS, PARENT};
     static modes mode = modes.README;
     static int queryCount = 0;
     static int apiCount = 0;
@@ -47,6 +51,7 @@ public class JSONLoader {
 	client_id = prop_file.getProperty("client_id");
 	client_secret = prop_file.getProperty("client_secret");
 	getConnection();
+	loadLoginHash();
 	
 	if (args.length > 1)
 	    switch(args[1]) {
@@ -71,6 +76,9 @@ public class JSONLoader {
 	    case "commits":
 		mode = modes.COMMITS;
 		break;
+	    case "parent":
+		mode = modes.PARENT;
+		break;
 	    }
 
 	// truncate();
@@ -81,7 +89,6 @@ public class JSONLoader {
 	    try {
 		switch (mode) {
 		case SEARCH:
-		    loadLoginHash();
 		    searchScan();
 		    break;
 		case FULL:
@@ -103,6 +110,9 @@ public class JSONLoader {
 		    break;
 		case COMMITS:
 		    commitScan();
+		    break;
+		case PARENT:
+		    parentScan();
 		    break;
 		}
 	    } catch (Exception e) {
@@ -170,7 +180,7 @@ public class JSONLoader {
     }
     
     static void searchScan() throws SQLException, IOException {
-	PreparedStatement stmt = conn.prepareStatement("select id,term from github.search_term where id >= 0 order by id");
+	PreparedStatement stmt = conn.prepareStatement("select id,term from github.search_term where id >= 23 order by id");
 	ResultSet rs = stmt.executeQuery();
 	while (rs.next()) {
 	    int id = rs.getInt(1);
@@ -557,7 +567,7 @@ public class JSONLoader {
     }
 
     static void scanUserOrgs() throws IOException, SQLException {
-	PreparedStatement stmt = conn.prepareStatement("select id,login from github.user_jsonb where login not in (select login from github.orgs_json) order by id desc");
+	PreparedStatement stmt = conn.prepareStatement("select id,login from github.user_jsonb where id in (select uid from github.search_user) and login not in (select login from github.orgs_json) order by id desc");
 	ResultSet rs = stmt.executeQuery();
 	while (rs.next()) {
 	    int id = rs.getInt(1);
@@ -600,7 +610,7 @@ public class JSONLoader {
     }
 
     static void scanOrgMembers() throws IOException, SQLException {
-	PreparedStatement stmt = conn.prepareStatement("select id,login from github.org_jsonb where login not in (select login from github.members_json) order by id desc");
+	PreparedStatement stmt = conn.prepareStatement("select id,login from github.org_jsonb where id in (select orgid from github.search_organization) and login not in (select login from github.members_json) order by id desc");
 	ResultSet rs = stmt.executeQuery();
 	while (rs.next()) {
 	    int id = rs.getInt(1);
@@ -620,10 +630,15 @@ public class JSONLoader {
 	int pageCount = 1;
 	while (retrievedCount == 100) {
 	    rateLimitAPI();
-	    URL theURL = new URL("https://api.github.com/orgs/" + org_login + "/members"
+	    BufferedReader reader = null;
+	    try {
+		URL theURL = new URL("https://api.github.com/orgs/" + org_login + "/members"
 		    + "?client_id=" + client_id + "&client_secret=" + client_secret
 		    + "&page=" + pageCount + "&per_page=100");
-	    BufferedReader reader = new BufferedReader(new InputStreamReader(theURL.openConnection().getInputStream()));
+		reader = new BufferedReader(new InputStreamReader(theURL.openConnection().getInputStream()));
+	    } catch (Exception e) {
+		return;
+	    }
 
 	    JSONArray orgs = new JSONArray(new JSONTokener(reader));
 	    retrievedCount = 0;
@@ -689,7 +704,6 @@ public class JSONLoader {
 	while (rs.next()) {
 	    int id = rs.getInt(1);
 	    String repo = rs.getString(2);
-	    rateLimitAPI();
 	    logger.info("querying for: " + repo);
 	    readmeScan(id, repo);
 	}
@@ -798,6 +812,80 @@ public class JSONLoader {
 	}
     }
     
+    static void parentScan() throws SQLException, IOException {
+	PreparedStatement stmt = conn.prepareStatement("select id,full_name from github.repository where fork and id not in (select id from github.parent) order by id desc");
+	ResultSet rs = stmt.executeQuery();
+	while (rs.next()) {
+	    int id = rs.getInt(1);
+	    String repo = rs.getString(2);
+	    logger.info("querying for: " + repo);
+	    parentScan(id, repo);
+	}
+	stmt.close();
+    }
+
+    static void parentScan(int id, String name) throws IOException, SQLException {
+	rateLimitAPI();
+	HttpURLConnection connection = null;
+	BufferedReader reader = null;
+	try {
+	    URL theURL = new URL("https://api.github.com/repos/" + name + "?client_id=" + client_id + "&client_secret=" + client_secret);
+	    connection = (HttpURLConnection) theURL.openConnection();
+	    reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+	} catch (FileNotFoundException e1) {
+	    PreparedStatement stmt = conn.prepareStatement("insert into github.parent(id,parent_id,parent_full_name) values(?,?,?)");
+	    stmt.setInt(1, id);
+	    stmt.setNull(2, Type.INT);
+	    stmt.setString(3, null);
+	    stmt.execute();
+	    stmt.close();
+	    return;
+	} catch (IOException ioe) {
+	    reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+	    JSONObject error = new JSONObject(new JSONTokener(reader));
+	    logger.error("error message: " + error);
+	    if (!error.has("block"))
+		throw(ioe);
+	    PreparedStatement stmt = conn.prepareStatement("insert into github.parent(id,parent_id,parent_full_name) values(?,?,?)");
+	    stmt.setInt(1, id);
+	    stmt.setNull(2, Type.INT);
+	    stmt.setString(3, null);
+	    stmt.execute();
+	    stmt.close();
+	    return;
+	}
+
+	JSONObject parent = new JSONObject(new JSONTokener(reader)).optJSONObject("parent");
+	
+	if (parent == null)
+	    return;
+	
+	int parent_id = parent.getInt("id");
+	String owner = parent.getJSONObject("owner").getString("login");
+	String type = parent.getJSONObject("owner").getString("type");
+	String parent_full_name = parent.getString("full_name");
+	logger.debug("parent: " + parent_id + " : " + owner + " : " + type + " : " + parent_full_name);
+
+	try {
+	    PreparedStatement stmt = conn.prepareStatement("insert into github.parent(id,parent_id,parent_full_name) values(?,?,?)");
+	    stmt.setInt(1, id);
+	    stmt.setInt(2, parent_id);
+	    stmt.setString(3, parent_full_name);
+	    stmt.execute();
+	    stmt.close();
+	} catch (SQLException e) {
+	}
+
+	if (!loginHash.containsKey(owner)) {
+	    if (type.equals("User"))
+		scanUser(owner);
+	    else
+		scanOrg(owner);
+	    scanRepos(owner);
+	    loginHash.put(owner, owner);
+	}
+    }
+
     static String decode(String base64string) {
 	return new String(decoder.decode(base64string));
     }

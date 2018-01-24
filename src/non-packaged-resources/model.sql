@@ -158,6 +158,15 @@ CREATE TABLE github.commit (
                   REFERENCES github.repository (id)
 );
 
+CREATE TABLE github.parent (
+       id INT NOT NULL
+     , parent_id INT
+     , parent_full_name TEXT
+     , PRIMARY KEY (id)
+     , CONSTRAINT FK_parent_1 FOREIGN KEY (id)
+                  REFERENCES github.repository (id)
+);
+
 CREATE TABLE github.follows (
        follower INT NOT NULL
      , following INT NOT NULL
