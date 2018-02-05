@@ -187,21 +187,27 @@ public class JSONLoader {
 	    String term = URLEncoder.encode(rs.getString(2), "UTF-8");
 	    searchScanUsers(id, term);
 	    searchScanRepositories(id, term);
+	    PreparedStatement updateStmt = conn.prepareStatement("update github.search_term set last_run = now() where id = ?");
+	    updateStmt.setInt(1, id);
+	    updateStmt.execute();
+	    updateStmt.close();
 	}
 	stmt.close();
     }
     
     static void newSearchScan() throws SQLException, IOException {
 	PreparedStatement stmt = conn.prepareStatement("select id,term from github.search_term"
-							+ " where not exists (select id from github.search_user where sid=id)"
-							+ "   and not exists (select id from github.search_organization where sid=id)"
-							+ "   and not exists (select id from github.search_repository where rid=id)");
+							+ " where last_run is null");
 	ResultSet rs = stmt.executeQuery();
 	while (rs.next()) {
 	    int id = rs.getInt(1);
 	    String term = URLEncoder.encode(rs.getString(2), "UTF-8");
 	    searchScanUsers(id, term);
 	    searchScanRepositories(id, term);
+	    PreparedStatement updateStmt = conn.prepareStatement("update github.search_term set last_run = now() where id = ?");
+	    updateStmt.setInt(1, id);
+	    updateStmt.execute();
+	    updateStmt.close();
 	}
 	stmt.close();
     }
