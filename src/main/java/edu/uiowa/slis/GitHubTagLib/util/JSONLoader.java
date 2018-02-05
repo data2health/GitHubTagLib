@@ -544,7 +544,7 @@ public class JSONLoader {
 		    stmt.setInt(1, id);
 		    stmt.setString(2, login);
 		    stmt.setString(3, name);
-		    stmt.setString(4, repo.toString());
+		    stmt.setString(4, repo.toString().replace('\u0000', ' '));
 		    stmt.execute();
 		    stmt.close();
 		} else {
