@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -24,7 +23,6 @@ import org.apache.log4j.PropertyConfigurator;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import org.objectweb.asm.Type;
 
 import edu.uiowa.extraction.LocalProperties;
 import edu.uiowa.extraction.PropertyLoader;
@@ -841,7 +839,7 @@ public class JSONLoader {
 	} catch (FileNotFoundException e1) {
 	    PreparedStatement stmt = conn.prepareStatement("insert into github.parent(id,parent_id,parent_full_name) values(?,?,?)");
 	    stmt.setInt(1, id);
-	    stmt.setNull(2, Type.INT);
+	    stmt.setNull(2, Types.INTEGER);
 	    stmt.setString(3, null);
 	    stmt.execute();
 	    stmt.close();
@@ -854,7 +852,7 @@ public class JSONLoader {
 		throw(ioe);
 	    PreparedStatement stmt = conn.prepareStatement("insert into github.parent(id,parent_id,parent_full_name) values(?,?,?)");
 	    stmt.setInt(1, id);
-	    stmt.setNull(2, Type.INT);
+	    stmt.setNull(2, Types.INTEGER);
 	    stmt.setString(3, null);
 	    stmt.execute();
 	    stmt.close();
