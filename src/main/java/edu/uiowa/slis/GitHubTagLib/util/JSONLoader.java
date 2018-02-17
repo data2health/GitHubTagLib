@@ -703,7 +703,12 @@ public class JSONLoader {
     }
 
     static void readmeScan() throws SQLException, IOException {
-	PreparedStatement stmt = conn.prepareStatement("select id,full_name from github.repository where id > 0 and id not in (select id from github.readme) order by id desc");
+	readmeScan("select id,full_name from github.repository where id > 0 and not exists (select rid from github.search_repository where rid=id) and id not in (select id from github.readme) order by updated_at desc");
+	readmeScan("select id,full_name from github.repository where id > 0 and id not in (select id from github.readme) order by id desc");
+    }
+
+    static void readmeScan(String queryString) throws SQLException, IOException {
+	PreparedStatement stmt = conn.prepareStatement(queryString);
 	ResultSet rs = stmt.executeQuery();
 	while (rs.next()) {
 	    int id = rs.getInt(1);
