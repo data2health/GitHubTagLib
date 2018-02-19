@@ -90,7 +90,14 @@ public class JSONLoader {
 		    searchScan();
 		    break;
 		case FULL:
-		    fullScan();
+		    searchScan();
+		    refresh();
+		    readmeScan();
+		    parentScan();
+		    scanUserOrgs();
+		    conn.prepareStatement("refresh materialized view github.org_jsonb").execute();
+		    scanOrgMembers();
+		    refresh();
 		    break;
 		case MEMBERS:
 		    scanUserOrgs();
