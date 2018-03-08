@@ -93,10 +93,10 @@ public class JSONLoader {
 		    searchScan();
 		    refresh();
 		    readmeScan();
+		    scanOrgMembers();
 		    parentScan();
 		    scanUserOrgs();
 		    conn.prepareStatement("refresh materialized view github.org_jsonb").execute();
-		    scanOrgMembers();
 		    refresh();
 		    break;
 		case MEMBERS:
@@ -481,7 +481,7 @@ public class JSONLoader {
 		PreparedStatement stmt = conn.prepareStatement("insert into github.users_json(id,login,json) values(?,?,?)");
 		stmt.setInt(1, id);
 		stmt.setString(2, login);
-		stmt.setString(3, user.toString());
+		stmt.setString(3, user.toString().replace('\u0000', ' '));
 		stmt.execute();
 		stmt.close();
 		since = id;
@@ -515,7 +515,7 @@ public class JSONLoader {
 	PreparedStatement stmt = conn.prepareStatement("insert into github.user_json(id,login,json) values(?,?,?)");
 	stmt.setInt(1, id);
 	stmt.setString(2, login);
-	stmt.setString(3, user.toString());
+	stmt.setString(3, user.toString().replace('\u0000', ' '));
 	stmt.execute();
 	stmt.close();
     }
@@ -604,7 +604,7 @@ public class JSONLoader {
 	PreparedStatement stmt = conn.prepareStatement("insert into github.orgs_json(id,login,json) values(?,?,?)");
 	stmt.setInt(1, user_id);
 	stmt.setString(2, user_login);
-	stmt.setString(3, orgs.toString());
+	stmt.setString(3, orgs.toString().replace('\u0000', ' '));
 	stmt.execute();
 	stmt.close();
 
@@ -657,7 +657,7 @@ public class JSONLoader {
 	    PreparedStatement stmt = conn.prepareStatement("insert into github.members_json(id,login,json) values(?,?,?)");
 	    stmt.setInt(1, org_id);
 	    stmt.setString(2, org_login);
-	    stmt.setString(3, orgs.toString());
+	    stmt.setString(3, orgs.toString().replace('\u0000', ' '));
 	    stmt.execute();
 	    stmt.close();
 
@@ -704,7 +704,7 @@ public class JSONLoader {
 	PreparedStatement stmt = conn.prepareStatement("insert into github.org_json(id,login,json) values(?,?,?)");
 	stmt.setInt(1, id);
 	stmt.setString(2, login);
-	stmt.setString(3, org.toString());
+	stmt.setString(3, org.toString().replace('\u0000', ' '));
 	stmt.execute();
 	stmt.close();
     }
@@ -740,7 +740,7 @@ public class JSONLoader {
 	} catch (Exception e) {
 	}
 	if (readme != null)
-	    readme = readme.replace((char)0x00, ' ');
+	    readme = readme.replace('\u0000', ' ');
 	logger.info("repo: " + id + " : " + readme);
 	PreparedStatement stmt = conn.prepareStatement("insert into github.readme(id,readme) values(?,?)");
 	stmt.setInt(1, id);
