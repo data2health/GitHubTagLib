@@ -838,7 +838,7 @@ public class JSONLoader {
 		    stmt.execute();
 		    stmt.close();
 		} catch (SQLException e) {
-		    logger.error("exception raised: ", e);
+		    logger.info("\tcommits: " + i);
 		    return;  // we've reached already logged commits
 		}
 
