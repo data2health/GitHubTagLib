@@ -42,6 +42,8 @@ public class JSONLoader {
     static String client_id = "";
     static String client_secret = "";
     // curl 'https://api.github.com/users/whatever?client_id=xxxx&client_secret=yyyy'
+    
+    static int searchID = 0;
 
     public static void main(String[] args) throws Exception {
 	PropertyConfigurator.configure(args[0]);
@@ -78,6 +80,11 @@ public class JSONLoader {
 		mode = modes.PARENT;
 		break;
 	    }
+	
+	if (args.length > 2) {
+	    searchID = Integer.parseInt(args[2]);
+	    logger.info("limiting task to search id " + searchID);
+	}
 
 	// truncate();
 
@@ -91,13 +98,12 @@ public class JSONLoader {
 		    break;
 		case FULL:
 		    searchScan();
-		    refresh();
-//		    readmeScan();
+		    readmeScan();
 		    scanOrgMembers();
-		    parentScan();
 		    scanUserOrgs();
-		    conn.prepareStatement("refresh materialized view github.org_jsonb").execute();
 		    refresh();
+		    parentScan();
+		    commitScan();
 		    break;
 		case MEMBERS:
 		    scanUserOrgs();
@@ -185,7 +191,9 @@ public class JSONLoader {
     }
     
     static void searchScan() throws SQLException, IOException {
-	PreparedStatement stmt = conn.prepareStatement("select id,term from github.search_term where id >= 23 order by id");
+	PreparedStatement stmt = conn.prepareStatement("select id,term from github.search_term"
+							+ (searchID == 0 ? "" : " where id = "+searchID)
+							+ " order by id");
 	ResultSet rs = stmt.executeQuery();
 	while (rs.next()) {
 	    int id = rs.getInt(1);
@@ -578,7 +586,9 @@ public class JSONLoader {
     }
 
     static void scanUserOrgs() throws IOException, SQLException {
-	PreparedStatement stmt = conn.prepareStatement("select id,login from github.user_jsonb where id in (select uid from github.search_user where sid=1) and login not in (select login from github.orgs_json) order by id desc");
+	PreparedStatement stmt = conn.prepareStatement("select id,login from github.user_json where"
+							+ (searchID == 0 ? "" : " id in (select uid from github.search_user where sid="+searchID+") and")
+							+ " login not in (select login from github.orgs_json) order by id desc");
 	ResultSet rs = stmt.executeQuery();
 	while (rs.next()) {
 	    int id = rs.getInt(1);
@@ -621,7 +631,9 @@ public class JSONLoader {
     }
 
     static void scanOrgMembers() throws IOException, SQLException {
-	PreparedStatement stmt = conn.prepareStatement("select id,login from github.org_jsonb where id in (select orgid from github.search_organization where sid=1) and login not in (select login from github.members_json) order by id desc");
+	PreparedStatement stmt = conn.prepareStatement("select id,login from github.org_json where"
+							+ (searchID == 0 ? "" : " id in (select orgid from github.search_organization where sid="+searchID+") and")
+							+ " login not in (select login from github.members_json) order by id desc");
 	ResultSet rs = stmt.executeQuery();
 	while (rs.next()) {
 	    int id = rs.getInt(1);
@@ -710,8 +722,12 @@ public class JSONLoader {
     }
 
     static void readmeScan() throws SQLException, IOException {
-	readmeScan("select id,full_name from github.repository where id > 0 and not exists (select rid from github.search_repository where rid=id) and id not in (select id from github.readme) order by updated_at desc");
-	readmeScan("select id,full_name from github.repository where id > 0 and id not in (select id from github.readme) order by id desc");
+//	readmeScan("select id,full_name from github.repos_json where id > 0 and not exists (select rid from github.search_repository where rid=id) and id not in (select id from github.readme) order by updated_at desc");
+	readmeScan("select id,login,name from github.repos_json where"
+			+ " id > 0 and"
+			+ " id not in (select id from github.readme)"
+			+ (searchID == 0 ? "" : " and id in (select rid from github.search_repository where sid="+searchID+")")
+			+ " order by id desc");
     }
 
     static void readmeScan(String queryString) throws SQLException, IOException {
@@ -719,7 +735,8 @@ public class JSONLoader {
 	ResultSet rs = stmt.executeQuery();
 	while (rs.next()) {
 	    int id = rs.getInt(1);
-	    String repo = rs.getString(2);
+	    String login = rs.getString(2);
+	    String repo = login + "/" + rs.getString(3);
 	    logger.info("querying for: " + repo);
 	    readmeScan(id, repo);
 	}
@@ -751,11 +768,14 @@ public class JSONLoader {
 
     static void commitScan() throws SQLException, IOException {
 	conn.setAutoCommit(false);
-	PreparedStatement stmt = conn.prepareStatement("select id,full_name from github.repository where id in (select rid from github.search_repository where sid=1) order by id desc");
+	PreparedStatement stmt = conn.prepareStatement("select id,login,name from github.repos_json"
+							+ (searchID == 0 ? "" : " where id in (select rid from github.search_repository where sid="+searchID+")")
+							+ " order by id desc");
 	ResultSet rs = stmt.executeQuery();
 	while (rs.next()) {
 	    int id = rs.getInt(1);
-	    String name = rs.getString(2);
+	    String login = rs.getString(2);
+	    String name = login + "/" + rs.getString(3);
 	    rateLimitAPI();
 	    logger.info("querying for: " + name);
 	    commitScan(id, name);
@@ -829,7 +849,10 @@ public class JSONLoader {
     }
     
     static void parentScan() throws SQLException, IOException {
-	PreparedStatement stmt = conn.prepareStatement("select id,full_name from github.repository where fork and id not in (select id from github.parent) and id in (select rid from github.search_repository where sid=1) order by id desc");
+	PreparedStatement stmt = conn.prepareStatement("select id,full_name from github.repository where fork"
+							+ " and id not in (select id from github.parent)"
+							+ (searchID == 0 ? "" : " and id in (select rid from github.search_repository where sid="+searchID+")")
+							+ " order by id desc");
 	ResultSet rs = stmt.executeQuery();
 	while (rs.next()) {
 	    int id = rs.getInt(1);
