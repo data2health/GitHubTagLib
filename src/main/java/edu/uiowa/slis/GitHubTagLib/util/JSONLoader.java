@@ -31,18 +31,23 @@ public class JSONLoader {
     static Logger logger = Logger.getLogger(JSONLoader.class);
     protected static LocalProperties prop_file = null;
     static Connection conn = null;
-    static enum modes {SEARCH, FULL, MEMBERS, REFRESH, README, NEW_SEARCH, COMMITS, PARENT};
+
+    static enum modes {
+	SEARCH, FULL, MEMBERS, REFRESH, README, NEW_SEARCH, COMMITS, PARENT
+    };
+
     static modes mode = modes.README;
     static int queryCount = 0;
     static int apiCount = 0;
-    static Hashtable<String,String> loginHash = new Hashtable<String,String>();
-    
+    static Hashtable<String, String> loginHash = new Hashtable<String, String>();
+
     static Decoder decoder = Base64.getMimeDecoder();
-    
+
     static String client_id = "";
     static String client_secret = "";
-    // curl 'https://api.github.com/users/whatever?client_id=xxxx&client_secret=yyyy'
-    
+    // curl
+    // 'https://api.github.com/users/whatever?client_id=xxxx&client_secret=yyyy'
+
     static int searchID = 0;
 
     public static void main(String[] args) throws Exception {
@@ -52,9 +57,9 @@ public class JSONLoader {
 	client_secret = prop_file.getProperty("client_secret");
 	getConnection();
 	loadLoginHash();
-	
+
 	if (args.length > 1)
-	    switch(args[1]) {
+	    switch (args[1]) {
 	    case "search":
 		mode = modes.SEARCH;
 		break;
@@ -80,14 +85,59 @@ public class JSONLoader {
 		mode = modes.PARENT;
 		break;
 	    }
-	
+
 	if (args.length > 2) {
-	    searchID = Integer.parseInt(args[2]);
-	    logger.info("limiting task to search id " + searchID);
+	    if (args[2].equals("scan")) {
+		PreparedStatement stmt = conn.prepareStatement("select id from github.search_term order by id");
+		ResultSet rs = stmt.executeQuery();
+		while (rs.next()) {
+		    searchID = rs.getInt(1);
+		    logger.info("searchScan search id " + searchID);
+		    searchScan();
+		}
+		rs = stmt.executeQuery();
+		while (rs.next()) {
+		    searchID = rs.getInt(1);
+		    logger.info("readmeScan search id " + searchID);
+		    readmeScan();
+		}
+		rs = stmt.executeQuery();
+		while (rs.next()) {
+		    searchID = rs.getInt(1);
+		    logger.info("scanOrgMembers search id " + searchID);
+		    scanOrgMembers();
+		}
+		rs = stmt.executeQuery();
+		while (rs.next()) {
+		    searchID = rs.getInt(1);
+		    logger.info("scanUserOrgs search id " + searchID);
+		    scanUserOrgs();
+		}
+		refresh();
+		rs = stmt.executeQuery();
+		while (rs.next()) {
+		    searchID = rs.getInt(1);
+		    logger.info("parentScan search id " + searchID);
+		    parentScan();
+		}
+		rs = stmt.executeQuery();
+		while (rs.next()) {
+		    searchID = rs.getInt(1);
+		    logger.info("commitScan search id " + searchID);
+		    commitScan();
+		}
+		stmt.close();
+	    } else {
+		searchID = Integer.parseInt(args[2]);
+		logger.info("limiting task to search id " + searchID);
+		process();
+	    }
 	}
 
-	// truncate();
+	logger.info("done");
+    }
 
+    static void process() throws InterruptedException {
 	boolean exceptionRaised = true;
 	while (exceptionRaised) {
 	    exceptionRaised = false;
@@ -133,21 +183,18 @@ public class JSONLoader {
 		Thread.sleep(60 * 60 * 1000);
 	    }
 	}
-
-//	refresh();
-	logger.info("done");
     }
-    
+
     static void getConnection() throws ClassNotFoundException, SQLException {
 	logger.info("connecting to database...");
 	Class.forName("org.postgresql.Driver");
 	Properties props = new Properties();
 	props.setProperty("user", prop_file.getProperty("jdbc.user"));
 	props.setProperty("password", prop_file.getProperty("jdbc.password"));
-	conn = DriverManager.getConnection("jdbc:postgresql://"+prop_file.getProperty("jdbc.host")+"/"+prop_file.getProperty("jdbc.database"), props);
+	conn = DriverManager.getConnection("jdbc:postgresql://" + prop_file.getProperty("jdbc.host") + "/" + prop_file.getProperty("jdbc.database"), props);
 	conn.setAutoCommit(true);
     }
-    
+
     public static void truncate() throws SQLException {
 	logger.info("truncating tables...");
 	conn.prepareStatement("truncate github.users_json cascade").execute();
@@ -180,7 +227,7 @@ public class JSONLoader {
 	conn.prepareStatement("refresh materialized view github.user_repo").execute();
 	conn.prepareStatement("refresh materialized view github.org_repo").execute();
     }
-    
+
     static void fullScan() throws IOException, SQLException {
 	// this scans for existence of users
 	scanUsers();
@@ -189,11 +236,10 @@ public class JSONLoader {
 	// this scans for users' repo profiles not yet retrieved
 	scanRepos();
     }
-    
+
     static void searchScan() throws SQLException, IOException {
-	PreparedStatement stmt = conn.prepareStatement("select id,term from github.search_term"
-							+ (searchID == 0 ? "" : " where id = "+searchID)
-							+ " order by id");
+	PreparedStatement stmt = conn
+		.prepareStatement("select id,term from github.search_term" + (searchID == 0 ? "" : " where id = " + searchID) + " order by id");
 	ResultSet rs = stmt.executeQuery();
 	while (rs.next()) {
 	    int id = rs.getInt(1);
@@ -207,10 +253,9 @@ public class JSONLoader {
 	}
 	stmt.close();
     }
-    
+
     static void newSearchScan() throws SQLException, IOException {
-	PreparedStatement stmt = conn.prepareStatement("select id,term from github.search_term"
-							+ " where last_run is null");
+	PreparedStatement stmt = conn.prepareStatement("select id,term from github.search_term" + " where last_run is null");
 	ResultSet rs = stmt.executeQuery();
 	while (rs.next()) {
 	    int id = rs.getInt(1);
@@ -224,7 +269,7 @@ public class JSONLoader {
 	}
 	stmt.close();
     }
-    
+
     static void loadLoginHash() throws SQLException {
 	PreparedStatement stmt = conn.prepareStatement("select login,count(*) from github.repos_json group by 1 having count(*) > 1000 order by 2 desc");
 	ResultSet rs = stmt.executeQuery();
@@ -236,7 +281,7 @@ public class JSONLoader {
 	}
 	stmt.close();
     }
-    
+
     static void rateLimitSearch() {
 	if (++queryCount < 25) {
 	    return;
@@ -248,7 +293,7 @@ public class JSONLoader {
 	}
 	queryCount = 0;
     }
-    
+
     static void rateLimitAPI() {
 	if (++apiCount < 4950) {
 	    return;
@@ -260,7 +305,7 @@ public class JSONLoader {
 	}
 	apiCount = 0;
     }
-    
+
     static void searchScanUsers(int sid, String term) throws IOException, SQLException {
 	int hitCount = Integer.MAX_VALUE;
 	int retrievedCount = 0;
@@ -268,15 +313,15 @@ public class JSONLoader {
 	while (retrievedCount < hitCount && retrievedCount < 1000) {
 	    rateLimitSearch();
 	    logger.info("scanning users for search term: " + term + "\tpage: " + pageCount);
-	    URL theURL = new URL("https://api.github.com/search/users?q=" + term + "&page=" + pageCount + "&per_page=100"
-		    			+ "&client_id=" + client_id + "&client_secret=" + client_secret);
+	    URL theURL = new URL("https://api.github.com/search/users?q=" + term + "&page=" + pageCount + "&per_page=100" + "&client_id=" + client_id
+		    + "&client_secret=" + client_secret);
 	    BufferedReader reader = new BufferedReader(new InputStreamReader(theURL.openConnection().getInputStream()));
 
 	    JSONObject results = new JSONObject(new JSONTokener(reader));
 	    hitCount = results.getInt("total_count");
 	    if (retrievedCount == 0)
 		logger.info("hitCount: " + hitCount);
-	    
+
 	    JSONArray users = results.getJSONArray("items");
 	    for (int i = 0; i < users.length(); i++) {
 		JSONObject user = users.getJSONObject(i);
@@ -294,15 +339,15 @@ public class JSONLoader {
 		    loginHash.put(login, login);
 		}
 		if (type.equals("User"))
-		    storeUserSearchHit(sid,id,retrievedCount);
+		    storeUserSearchHit(sid, id, retrievedCount);
 		else
-		    storeOrganizationSearchHit(sid,id,retrievedCount);
+		    storeOrganizationSearchHit(sid, id, retrievedCount);
 	    }
-	    
+
 	    pageCount++;
 	}
     }
-    
+
     static void storeUserSearchHit(int sid, int uid, int rank) throws SQLException {
 	PreparedStatement stmt;
 	try {
@@ -324,7 +369,7 @@ public class JSONLoader {
 	    }
 	}
     }
-    
+
     static void storeOrganizationSearchHit(int sid, int uid, int rank) throws SQLException {
 	PreparedStatement stmt;
 	try {
@@ -346,7 +391,7 @@ public class JSONLoader {
 	    }
 	}
     }
-    
+
     static void searchScanRepositories(int sid, String term) throws IOException, SQLException {
 	int hitCount = Integer.MAX_VALUE;
 	int retrievedCount = 0;
@@ -354,15 +399,15 @@ public class JSONLoader {
 	while (retrievedCount < hitCount && retrievedCount < 1000) {
 	    rateLimitSearch();
 	    logger.info("scanning repos for search term: " + term + "\tpage: " + pageCount);
-	    URL theURL = new URL("https://api.github.com/search/repositories?q=" + term + "&page=" + pageCount + "&per_page=100"
-		    			+ "&client_id=" + client_id + "&client_secret=" + client_secret);
+	    URL theURL = new URL("https://api.github.com/search/repositories?q=" + term + "&page=" + pageCount + "&per_page=100" + "&client_id=" + client_id
+		    + "&client_secret=" + client_secret);
 	    BufferedReader reader = new BufferedReader(new InputStreamReader(theURL.openConnection().getInputStream()));
 
 	    JSONObject results = new JSONObject(new JSONTokener(reader));
 	    hitCount = results.getInt("total_count");
 	    if (retrievedCount == 0)
 		logger.info("hitCount: " + hitCount);
-	    
+
 	    JSONArray repos = results.getJSONArray("items");
 	    for (int i = 0; i < repos.length(); i++) {
 		JSONObject repo = repos.getJSONObject(i);
@@ -381,13 +426,13 @@ public class JSONLoader {
 		    scanRepos(login);
 		    loginHash.put(login, login);
 		}
-		storeRepositorySearchHit(sid,id,retrievedCount);
+		storeRepositorySearchHit(sid, id, retrievedCount);
 	    }
-	    
+
 	    pageCount++;
 	}
     }
-    
+
     static void storeRepositorySearchHit(int sid, int rid, int rank) throws SQLException {
 	PreparedStatement stmt;
 	try {
@@ -409,17 +454,17 @@ public class JSONLoader {
 	    }
 	}
     }
-    
+
     static int initializeUserSince() throws SQLException {
 	int since = 0;
-	
+
 	PreparedStatement stmt = conn.prepareStatement("select max(id) from github.users_json");
 	ResultSet rs = stmt.executeQuery();
 	while (rs.next()) {
 	    since = rs.getInt(1);
 	}
 	stmt.close();
-	
+
 	return since;
     }
 
@@ -432,7 +477,7 @@ public class JSONLoader {
 	    flag = false;
 	}
 	stmt.close();
-	
+
 	return flag;
     }
 
@@ -459,7 +504,7 @@ public class JSONLoader {
 	    flag = false;
 	}
 	stmt.close();
-	
+
 	return flag;
     }
 
@@ -469,10 +514,9 @@ public class JSONLoader {
 	while (foundUser) {
 	    logger.info("since: " + since);
 	    rateLimitAPI();
-	    URL theURL = since == 0 ? new URL("https://api.github.com/users"
-							+ "?client_id=" + client_id + "&client_secret=" + client_secret)
-					: new URL("https://api.github.com/users?page=1&per_page=100&since=" + since
-						+ "&client_id=" + client_id + "&client_secret=" + client_secret);
+	    URL theURL = since == 0 ? new URL("https://api.github.com/users" + "?client_id=" + client_id + "&client_secret=" + client_secret)
+		    : new URL(
+			    "https://api.github.com/users?page=1&per_page=100&since=" + since + "&client_id=" + client_id + "&client_secret=" + client_secret);
 	    BufferedReader reader = new BufferedReader(new InputStreamReader(theURL.openConnection().getInputStream()));
 
 	    JSONArray users = new JSONArray(new JSONTokener(reader));
@@ -496,7 +540,7 @@ public class JSONLoader {
 	    }
 	}
     }
-    
+
     static void scanUser() throws SQLException, IOException {
 	PreparedStatement stmt = conn.prepareStatement("select login from github.users_json where id not in (select id from github.user_json) order by id");
 	ResultSet rs = stmt.executeQuery();
@@ -511,10 +555,9 @@ public class JSONLoader {
     static void scanUser(String login) throws IOException, SQLException {
 	if (!newUser(login))
 	    return;
-	
+
 	rateLimitAPI();
-	URL theURL = new URL("https://api.github.com/users/" + login
-		+ "?client_id=" + client_id + "&client_secret=" + client_secret);
+	URL theURL = new URL("https://api.github.com/users/" + login + "?client_id=" + client_id + "&client_secret=" + client_secret);
 	BufferedReader reader = new BufferedReader(new InputStreamReader(theURL.openConnection().getInputStream()));
 
 	JSONObject user = new JSONObject(new JSONTokener(reader));
@@ -529,7 +572,8 @@ public class JSONLoader {
     }
 
     static void scanRepos() throws IOException, SQLException {
-	PreparedStatement stmt = conn.prepareStatement("select login from github.users_json where login not in (select login from github.repos_json) order by id");
+	PreparedStatement stmt = conn
+		.prepareStatement("select login from github.users_json where login not in (select login from github.repos_json) order by id");
 	ResultSet rs = stmt.executeQuery();
 	while (rs.next()) {
 	    String user = rs.getString(1);
@@ -544,13 +588,12 @@ public class JSONLoader {
 	int pageCount = 1;
 	while (retrievedCount == 100) {
 	    rateLimitAPI();
-	    URL theURL = new URL("https://api.github.com/users/" + login + "/repos"
-		    		+ "?client_id=" + client_id + "&client_secret=" + client_secret
-		    		+ "&page=" + pageCount + "&per_page=100");
+	    URL theURL = new URL("https://api.github.com/users/" + login + "/repos" + "?client_id=" + client_id + "&client_secret=" + client_secret + "&page="
+		    + pageCount + "&per_page=100");
 	    BufferedReader reader = new BufferedReader(new InputStreamReader(theURL.openConnection().getInputStream()));
 
 	    JSONArray repos = new JSONArray(new JSONTokener(reader));
-//	     logger.info("repos:" + repos);
+	    // logger.info("repos:" + repos);
 	    retrievedCount = 0;
 	    for (int i = 0; i < repos.length(); i++) {
 		JSONObject repo = repos.getJSONObject(i);
@@ -580,22 +623,22 @@ public class JSONLoader {
 		stmt.execute();
 		stmt.close();
 	    }
-	    
+
 	    pageCount++;
 	}
     }
 
     static void scanUserOrgs() throws IOException, SQLException {
 	PreparedStatement stmt = conn.prepareStatement("select id,login from github.user_json where"
-							+ (searchID == 0 ? "" : " id in (select uid from github.search_user where sid="+searchID+") and")
-							+ " login not in (select login from github.orgs_json) order by id desc");
+		+ (searchID == 0 ? "" : " id in (select uid from github.search_user where sid=" + searchID + ") and")
+		+ " login not in (select login from github.orgs_json) order by id desc");
 	ResultSet rs = stmt.executeQuery();
 	while (rs.next()) {
 	    int id = rs.getInt(1);
 	    String user = rs.getString(2);
 	    logger.info("querying for: " + user);
 	    try {
-		scanUserOrgs(id,user);
+		scanUserOrgs(id, user);
 	    } catch (java.io.FileNotFoundException e) {
 		logger.error("error scannon orgs for " + user, e);
 	    }
@@ -605,8 +648,7 @@ public class JSONLoader {
 
     static void scanUserOrgs(int user_id, String user_login) throws IOException, SQLException {
 	rateLimitAPI();
-	URL theURL = new URL("https://api.github.com/users/" + user_login + "/orgs"
-		+ "?client_id=" + client_id + "&client_secret=" + client_secret);
+	URL theURL = new URL("https://api.github.com/users/" + user_login + "/orgs" + "?client_id=" + client_id + "&client_secret=" + client_secret);
 	BufferedReader reader = new BufferedReader(new InputStreamReader(theURL.openConnection().getInputStream()));
 
 	JSONArray orgs = new JSONArray(new JSONTokener(reader));
@@ -632,15 +674,15 @@ public class JSONLoader {
 
     static void scanOrgMembers() throws IOException, SQLException {
 	PreparedStatement stmt = conn.prepareStatement("select id,login from github.org_json where"
-							+ (searchID == 0 ? "" : " id in (select orgid from github.search_organization where sid="+searchID+") and")
-							+ " login not in (select login from github.members_json) order by id desc");
+		+ (searchID == 0 ? "" : " id in (select orgid from github.search_organization where sid=" + searchID + ") and")
+		+ " login not in (select login from github.members_json) order by id desc");
 	ResultSet rs = stmt.executeQuery();
 	while (rs.next()) {
 	    int id = rs.getInt(1);
 	    String org = rs.getString(2);
 	    logger.info("querying for: " + org);
 	    try {
-		scanOrgMembers(id,org);
+		scanOrgMembers(id, org);
 	    } catch (java.io.FileNotFoundException e) {
 		logger.error("error scanning members for " + org, e);
 	    }
@@ -655,9 +697,8 @@ public class JSONLoader {
 	    rateLimitAPI();
 	    BufferedReader reader = null;
 	    try {
-		URL theURL = new URL("https://api.github.com/orgs/" + org_login + "/members"
-		    + "?client_id=" + client_id + "&client_secret=" + client_secret
-		    + "&page=" + pageCount + "&per_page=100");
+		URL theURL = new URL("https://api.github.com/orgs/" + org_login + "/members" + "?client_id=" + client_id + "&client_secret=" + client_secret
+			+ "&page=" + pageCount + "&per_page=100");
 		reader = new BufferedReader(new InputStreamReader(theURL.openConnection().getInputStream()));
 	    } catch (Exception e) {
 		return;
@@ -700,14 +741,13 @@ public class JSONLoader {
 	} catch (SQLException e) {
 	}
     }
-    
+
     static void scanOrg(String login) throws IOException, SQLException {
 	if (!newOrg(login))
 	    return;
-	
+
 	rateLimitAPI();
-	URL theURL = new URL("https://api.github.com/orgs/" + login
-		+ "?client_id=" + client_id + "&client_secret=" + client_secret);
+	URL theURL = new URL("https://api.github.com/orgs/" + login + "?client_id=" + client_id + "&client_secret=" + client_secret);
 	BufferedReader reader = new BufferedReader(new InputStreamReader(theURL.openConnection().getInputStream()));
 
 	JSONObject org = new JSONObject(new JSONTokener(reader));
@@ -722,12 +762,12 @@ public class JSONLoader {
     }
 
     static void readmeScan() throws SQLException, IOException {
-//	readmeScan("select id,full_name from github.repos_json where id > 0 and not exists (select rid from github.search_repository where rid=id) and id not in (select id from github.readme) order by updated_at desc");
-	readmeScan("select id,login,name from github.repos_json where"
-			+ " id > 0 and"
-			+ " id not in (select id from github.readme)"
-			+ (searchID == 0 ? "" : " and id in (select rid from github.search_repository where sid="+searchID+")")
-			+ " order by id desc");
+	// readmeScan("select id,full_name from github.repos_json where id > 0
+	// and not exists (select rid from github.search_repository where
+	// rid=id) and id not in (select id from github.readme) order by
+	// updated_at desc");
+	readmeScan("select id,login,name from github.repos_json where" + " id > 0 and" + " id not in (select id from github.readme)"
+		+ (searchID == 0 ? "" : " and id in (select rid from github.search_repository where sid=" + searchID + ")") + " order by id desc");
     }
 
     static void readmeScan(String queryString) throws SQLException, IOException {
@@ -748,8 +788,8 @@ public class JSONLoader {
 	JSONObject container;
 	rateLimitAPI();
 	try {
-	    URL theURL = new URL("https://api.github.com/repos/" + name + "/contents/README.md"
-	    	+ "?client_id=" + client_id + "&client_secret=" + client_secret);
+	    URL theURL = new URL(
+		    "https://api.github.com/repos/" + name + "/contents/README.md" + "?client_id=" + client_id + "&client_secret=" + client_secret);
 	    BufferedReader reader = new BufferedReader(new InputStreamReader(theURL.openConnection().getInputStream()));
 
 	    container = new JSONObject(new JSONTokener(reader));
@@ -769,8 +809,7 @@ public class JSONLoader {
     static void commitScan() throws SQLException, IOException {
 	conn.setAutoCommit(false);
 	PreparedStatement stmt = conn.prepareStatement("select id,login,name from github.repos_json"
-							+ (searchID == 0 ? "" : " where id in (select rid from github.search_repository where sid="+searchID+")")
-							+ " order by id desc");
+		+ (searchID == 0 ? "" : " where id in (select rid from github.search_repository where sid=" + searchID + ")") + " order by id desc");
 	ResultSet rs = stmt.executeQuery();
 	while (rs.next()) {
 	    int id = rs.getInt(1);
@@ -791,9 +830,8 @@ public class JSONLoader {
 	    rateLimitAPI();
 	    BufferedReader reader;
 	    try {
-		URL theURL = new URL("https://api.github.com/repos/" + repo_name + "/commits"
-		    		+ "?client_id=" + client_id + "&client_secret=" + client_secret
-		    		+ "&page=" + pageCount + "&per_page=100");
+		URL theURL = new URL("https://api.github.com/repos/" + repo_name + "/commits" + "?client_id=" + client_id + "&client_secret=" + client_secret
+			+ "&page=" + pageCount + "&per_page=100");
 		reader = new BufferedReader(new InputStreamReader(theURL.openConnection().getInputStream()));
 	    } catch (Exception e1) {
 		return;
@@ -824,7 +862,8 @@ public class JSONLoader {
 		retrievedCount++;
 
 		try {
-		    PreparedStatement stmt = conn.prepareStatement("insert into github.commit(id,committed,name,email,user_id,login,message) values(?,?::timestamp,?,?,?,?,?)");
+		    PreparedStatement stmt = conn
+			    .prepareStatement("insert into github.commit(id,committed,name,email,user_id,login,message) values(?,?::timestamp,?,?,?,?,?)");
 		    stmt.setInt(1, id);
 		    stmt.setString(2, date);
 		    stmt.setString(3, name);
@@ -839,7 +878,7 @@ public class JSONLoader {
 		    stmt.close();
 		} catch (SQLException e) {
 		    logger.info("\tcommits: " + i);
-		    return;  // we've reached already logged commits
+		    return; // we've reached already logged commits
 		}
 
 	    }
@@ -847,12 +886,10 @@ public class JSONLoader {
 	    pageCount++;
 	}
     }
-    
+
     static void parentScan() throws SQLException, IOException {
-	PreparedStatement stmt = conn.prepareStatement("select id,full_name from github.repository where fork"
-							+ " and id not in (select id from github.parent)"
-							+ (searchID == 0 ? "" : " and id in (select rid from github.search_repository where sid="+searchID+")")
-							+ " order by id desc");
+	PreparedStatement stmt = conn.prepareStatement("select id,full_name from github.repository where fork" + " and id not in (select id from github.parent)"
+		+ (searchID == 0 ? "" : " and id in (select rid from github.search_repository where sid=" + searchID + ")") + " order by id desc");
 	ResultSet rs = stmt.executeQuery();
 	while (rs.next()) {
 	    int id = rs.getInt(1);
@@ -884,7 +921,7 @@ public class JSONLoader {
 	    JSONObject error = new JSONObject(new JSONTokener(reader));
 	    logger.error("error message: " + error);
 	    if (!error.has("block"))
-		throw(ioe);
+		throw (ioe);
 	    PreparedStatement stmt = conn.prepareStatement("insert into github.parent(id,parent_id,parent_full_name) values(?,?,?)");
 	    stmt.setInt(1, id);
 	    stmt.setNull(2, Types.INTEGER);
@@ -895,10 +932,10 @@ public class JSONLoader {
 	}
 
 	JSONObject parent = new JSONObject(new JSONTokener(reader)).optJSONObject("parent");
-	
+
 	if (parent == null)
 	    return;
-	
+
 	int parent_id = parent.getInt("id");
 	String owner = parent.getJSONObject("owner").getString("login");
 	String type = parent.getJSONObject("owner").getString("type");
