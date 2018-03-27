@@ -132,6 +132,8 @@ public class JSONLoader {
 		logger.info("limiting task to search id " + searchID);
 		process();
 	    }
+	} else {
+	    process();
 	}
 
 	logger.info("done");
