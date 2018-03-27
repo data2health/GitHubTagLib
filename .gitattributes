@@ -157,6 +157,7 @@ src/main/resources/META-INF/taglib.tld -text
 src/non-packaged-resources/Model.clay -text
 src/non-packaged-resources/Model.clay~ -text
 src/non-packaged-resources/model.sql -text
+src/non-packaged-resources/retool.sql -text
 src/non-packaged-resources/schema.sql -text
 src/test/java/edu/uiowa/slis/GitHubTagLib/README.txt -text
 src/test/resources/README.txt -text
