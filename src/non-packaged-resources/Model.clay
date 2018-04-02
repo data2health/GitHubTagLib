@@ -646,7 +646,7 @@
 </table>
 <table alias="" name="search_user" remarks="" uid="74dfb849:160dc4924bf:-7fea">
 <table-description/>
-<table-figure-bounds height="-1" width="-1" x="450" y="200"/>
+<table-figure-bounds height="-1" width="-1" x="444" y="169"/>
 <column-list>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="sid" remarks="" uid="74dfb849:160dc4924bf:-7fc2">
 <column-description/>
@@ -664,6 +664,12 @@
 <column-description/>
 <data-type jdbc-type="4" name="INT" selected-variant-pattern="INT">
 <variant type-name-pattern="INT"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="relevant" remarks="" uid="16302ee1:1628336ddab:-7fe2">
+<column-description/>
+<data-type jdbc-type="16" name="BOOLEAN" selected-variant-pattern="BOOLEAN">
+<variant type-name-pattern="BOOLEAN"/>
 </data-type>
 </column>
 </column-list>
@@ -713,6 +719,12 @@
 <variant type-name-pattern="INT"/>
 </data-type>
 </column>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="relevant" remarks="" uid="16302ee1:1628336ddab:-7fdc">
+<column-description/>
+<data-type jdbc-type="16" name="BOOLEAN" selected-variant-pattern="BOOLEAN">
+<variant type-name-pattern="BOOLEAN"/>
+</data-type>
+</column>
 </column-list>
 <primary-key alias="" name="PK_SEARCH_REPOSITORY" remarks="" uid="74dfb849:160dc4924bf:-7f4d">
 <primary-key-description/>
@@ -758,6 +770,12 @@
 <column-description/>
 <data-type jdbc-type="4" name="INT" selected-variant-pattern="INT">
 <variant type-name-pattern="INT"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="relevant" remarks="" uid="16302ee1:1628336ddab:-7fdf">
+<column-description/>
+<data-type jdbc-type="16" name="BOOLEAN" selected-variant-pattern="BOOLEAN">
+<variant type-name-pattern="BOOLEAN"/>
 </data-type>
 </column>
 </column-list>

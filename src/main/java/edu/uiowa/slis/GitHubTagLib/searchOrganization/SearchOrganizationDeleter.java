@@ -21,6 +21,7 @@ public class SearchOrganizationDeleter extends GitHubTagLibBodyTagSupport {
     int sid = 0;
     int orgid = 0;
     int rank = 0;
+    boolean relevant = false;
 	Vector<GitHubTagLibTagSupport> parentEntities = new Vector<GitHubTagLibTagSupport>();
 
 	private static final Log log = LogFactory.getLog(SearchOrganizationDeleter.class);

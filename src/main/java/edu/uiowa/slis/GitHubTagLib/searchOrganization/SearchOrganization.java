@@ -30,6 +30,7 @@ public class SearchOrganization extends GitHubTagLibTagSupport {
 	int sid = 0;
 	int orgid = 0;
 	int rank = 0;
+	boolean relevant = false;
 
 	public int doStartTag() throws JspException {
 		currentInstance = this;
@@ -64,7 +65,7 @@ public class SearchOrganization extends GitHubTagLibTagSupport {
 			} else if (theSearchOrganizationIterator == null && theSearchTerm != null && theOrganization == null) {
 				// an sid was provided as an attribute - we need to load a SearchOrganization from the database
 				boolean found = false;
-				PreparedStatement stmt = getConnection().prepareStatement("select sid,orgid,rank from github.search_organization where");
+				PreparedStatement stmt = getConnection().prepareStatement("select sid,orgid,rank,relevant from github.search_organization where");
 				ResultSet rs = stmt.executeQuery();
 				while (rs.next()) {
 					if (sid == 0)
@@ -73,6 +74,8 @@ public class SearchOrganization extends GitHubTagLibTagSupport {
 						orgid = rs.getInt(2);
 					if (rank == 0)
 						rank = rs.getInt(3);
+					if (relevant == false)
+						relevant = rs.getBoolean(4);
 					found = true;
 				}
 				stmt.close();
@@ -83,7 +86,7 @@ public class SearchOrganization extends GitHubTagLibTagSupport {
 			} else if (theSearchOrganizationIterator == null && theSearchTerm == null && theOrganization != null) {
 				// an sid was provided as an attribute - we need to load a SearchOrganization from the database
 				boolean found = false;
-				PreparedStatement stmt = getConnection().prepareStatement("select sid,orgid,rank from github.search_organization where");
+				PreparedStatement stmt = getConnection().prepareStatement("select sid,orgid,rank,relevant from github.search_organization where");
 				ResultSet rs = stmt.executeQuery();
 				while (rs.next()) {
 					if (sid == 0)
@@ -92,6 +95,8 @@ public class SearchOrganization extends GitHubTagLibTagSupport {
 						orgid = rs.getInt(2);
 					if (rank == 0)
 						rank = rs.getInt(3);
+					if (relevant == false)
+						relevant = rs.getBoolean(4);
 					found = true;
 				}
 				stmt.close();
@@ -102,13 +107,15 @@ public class SearchOrganization extends GitHubTagLibTagSupport {
 			} else {
 				// an iterator or sid was provided as an attribute - we need to load a SearchOrganization from the database
 				boolean found = false;
-				PreparedStatement stmt = getConnection().prepareStatement("select rank from github.search_organization where sid = ? and orgid = ?");
+				PreparedStatement stmt = getConnection().prepareStatement("select rank,relevant from github.search_organization where sid = ? and orgid = ?");
 				stmt.setInt(1,sid);
 				stmt.setInt(2,orgid);
 				ResultSet rs = stmt.executeQuery();
 				while (rs.next()) {
 					if (rank == 0)
 						rank = rs.getInt(1);
+					if (relevant == false)
+						relevant = rs.getBoolean(2);
 					found = true;
 				}
 				stmt.close();
@@ -130,10 +137,11 @@ public class SearchOrganization extends GitHubTagLibTagSupport {
 		currentInstance = null;
 		try {
 			if (commitNeeded) {
-				PreparedStatement stmt = getConnection().prepareStatement("update github.search_organization set rank = ? where sid = ? and orgid = ?");
+				PreparedStatement stmt = getConnection().prepareStatement("update github.search_organization set rank = ?, relevant = ? where sid = ? and orgid = ?");
 				stmt.setInt(1,rank);
-				stmt.setInt(2,sid);
-				stmt.setInt(3,orgid);
+				stmt.setBoolean(2,relevant);
+				stmt.setInt(3,sid);
+				stmt.setInt(4,orgid);
 				stmt.executeUpdate();
 				stmt.close();
 			}
@@ -159,10 +167,11 @@ public class SearchOrganization extends GitHubTagLibTagSupport {
 				log.debug("generating new SearchOrganization " + orgid);
 			}
 
-			PreparedStatement stmt = getConnection().prepareStatement("insert into github.search_organization(sid,orgid,rank) values (?,?,?)");
+			PreparedStatement stmt = getConnection().prepareStatement("insert into github.search_organization(sid,orgid,rank,relevant) values (?,?,?,?)");
 			stmt.setInt(1,sid);
 			stmt.setInt(2,orgid);
 			stmt.setInt(3,rank);
+			stmt.setBoolean(4,relevant);
 			stmt.executeUpdate();
 			stmt.close();
 		} catch (SQLException e) {
@@ -210,6 +219,19 @@ public class SearchOrganization extends GitHubTagLibTagSupport {
 		return rank;
 	}
 
+	public boolean getRelevant () {
+		return relevant;
+	}
+
+	public void setRelevant (boolean relevant) {
+		this.relevant = relevant;
+		commitNeeded = true;
+	}
+
+	public boolean getActualRelevant () {
+		return relevant;
+	}
+
 	public static Integer sidValue() throws JspException {
 		try {
 			return currentInstance.getSid();
@@ -234,10 +256,19 @@ public class SearchOrganization extends GitHubTagLibTagSupport {
 		}
 	}
 
+	public static Boolean relevantValue() throws JspException {
+		try {
+			return currentInstance.getRelevant();
+		} catch (Exception e) {
+			 throw new JspTagException("Error in tag function relevantValue()");
+		}
+	}
+
 	private void clearServiceState () {
 		sid = 0;
 		orgid = 0;
 		rank = 0;
+		relevant = false;
 		newRecord = false;
 		commitNeeded = false;
 		parentEntities = new Vector<GitHubTagLibTagSupport>();

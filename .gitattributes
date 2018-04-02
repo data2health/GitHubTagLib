@@ -108,11 +108,13 @@ src/main/java/edu/uiowa/slis/GitHubTagLib/searchOrganization/SearchOrganizationD
 src/main/java/edu/uiowa/slis/GitHubTagLib/searchOrganization/SearchOrganizationIterator.java -text
 src/main/java/edu/uiowa/slis/GitHubTagLib/searchOrganization/SearchOrganizationOrgid.java -text
 src/main/java/edu/uiowa/slis/GitHubTagLib/searchOrganization/SearchOrganizationRank.java -text
+src/main/java/edu/uiowa/slis/GitHubTagLib/searchOrganization/SearchOrganizationRelevant.java -text
 src/main/java/edu/uiowa/slis/GitHubTagLib/searchOrganization/SearchOrganizationSid.java -text
 src/main/java/edu/uiowa/slis/GitHubTagLib/searchRepository/SearchRepository.java -text
 src/main/java/edu/uiowa/slis/GitHubTagLib/searchRepository/SearchRepositoryDeleter.java -text
 src/main/java/edu/uiowa/slis/GitHubTagLib/searchRepository/SearchRepositoryIterator.java -text
 src/main/java/edu/uiowa/slis/GitHubTagLib/searchRepository/SearchRepositoryRank.java -text
+src/main/java/edu/uiowa/slis/GitHubTagLib/searchRepository/SearchRepositoryRelevant.java -text
 src/main/java/edu/uiowa/slis/GitHubTagLib/searchRepository/SearchRepositoryRid.java -text
 src/main/java/edu/uiowa/slis/GitHubTagLib/searchRepository/SearchRepositorySid.java -text
 src/main/java/edu/uiowa/slis/GitHubTagLib/searchTerm/SearchTerm.java -text
@@ -124,6 +126,7 @@ src/main/java/edu/uiowa/slis/GitHubTagLib/searchUser/SearchUser.java -text
 src/main/java/edu/uiowa/slis/GitHubTagLib/searchUser/SearchUserDeleter.java -text
 src/main/java/edu/uiowa/slis/GitHubTagLib/searchUser/SearchUserIterator.java -text
 src/main/java/edu/uiowa/slis/GitHubTagLib/searchUser/SearchUserRank.java -text
+src/main/java/edu/uiowa/slis/GitHubTagLib/searchUser/SearchUserRelevant.java -text
 src/main/java/edu/uiowa/slis/GitHubTagLib/searchUser/SearchUserSid.java -text
 src/main/java/edu/uiowa/slis/GitHubTagLib/searchUser/SearchUserUid.java -text
 src/main/java/edu/uiowa/slis/GitHubTagLib/user/User.java -text

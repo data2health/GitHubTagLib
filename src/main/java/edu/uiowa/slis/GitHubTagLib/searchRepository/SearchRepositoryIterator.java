@@ -21,6 +21,7 @@ public class SearchRepositoryIterator extends GitHubTagLibBodyTagSupport {
     int sid = 0;
     int rid = 0;
     int rank = 0;
+    boolean relevant = false;
 	Vector<GitHubTagLibTagSupport> parentEntities = new Vector<GitHubTagLibTagSupport>();
 
 	private static final Log log = LogFactory.getLog(SearchRepositoryIterator.class);

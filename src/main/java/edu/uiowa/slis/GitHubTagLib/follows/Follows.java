@@ -36,7 +36,7 @@ public class Follows extends GitHubTagLibTagSupport {
 			User theUser = (User)findAncestorWithClass(this, User.class);
 			if (theUser!= null)
 				parentEntities.addElement(theUser);
-			User theUser2 = (User)findAncestorWithClass(this, User.class);
+			User theUser = (User)findAncestorWithClass(this, User.class);
 			if (theUser!= null)
 				parentEntities.addElement(theUser);
 

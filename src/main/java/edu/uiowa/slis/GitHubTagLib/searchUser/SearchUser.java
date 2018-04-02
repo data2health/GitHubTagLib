@@ -30,6 +30,7 @@ public class SearchUser extends GitHubTagLibTagSupport {
 	int sid = 0;
 	int uid = 0;
 	int rank = 0;
+	boolean relevant = false;
 
 	public int doStartTag() throws JspException {
 		currentInstance = this;
@@ -64,7 +65,7 @@ public class SearchUser extends GitHubTagLibTagSupport {
 			} else if (theSearchUserIterator == null && theSearchTerm != null && theUser == null) {
 				// an sid was provided as an attribute - we need to load a SearchUser from the database
 				boolean found = false;
-				PreparedStatement stmt = getConnection().prepareStatement("select sid,uid,rank from github.search_user where");
+				PreparedStatement stmt = getConnection().prepareStatement("select sid,uid,rank,relevant from github.search_user where");
 				ResultSet rs = stmt.executeQuery();
 				while (rs.next()) {
 					if (sid == 0)
@@ -73,6 +74,8 @@ public class SearchUser extends GitHubTagLibTagSupport {
 						uid = rs.getInt(2);
 					if (rank == 0)
 						rank = rs.getInt(3);
+					if (relevant == false)
+						relevant = rs.getBoolean(4);
 					found = true;
 				}
 				stmt.close();
@@ -83,7 +86,7 @@ public class SearchUser extends GitHubTagLibTagSupport {
 			} else if (theSearchUserIterator == null && theSearchTerm == null && theUser != null) {
 				// an sid was provided as an attribute - we need to load a SearchUser from the database
 				boolean found = false;
-				PreparedStatement stmt = getConnection().prepareStatement("select sid,uid,rank from github.search_user where");
+				PreparedStatement stmt = getConnection().prepareStatement("select sid,uid,rank,relevant from github.search_user where");
 				ResultSet rs = stmt.executeQuery();
 				while (rs.next()) {
 					if (sid == 0)
@@ -92,6 +95,8 @@ public class SearchUser extends GitHubTagLibTagSupport {
 						uid = rs.getInt(2);
 					if (rank == 0)
 						rank = rs.getInt(3);
+					if (relevant == false)
+						relevant = rs.getBoolean(4);
 					found = true;
 				}
 				stmt.close();
@@ -102,13 +107,15 @@ public class SearchUser extends GitHubTagLibTagSupport {
 			} else {
 				// an iterator or sid was provided as an attribute - we need to load a SearchUser from the database
 				boolean found = false;
-				PreparedStatement stmt = getConnection().prepareStatement("select rank from github.search_user where sid = ? and uid = ?");
+				PreparedStatement stmt = getConnection().prepareStatement("select rank,relevant from github.search_user where sid = ? and uid = ?");
 				stmt.setInt(1,sid);
 				stmt.setInt(2,uid);
 				ResultSet rs = stmt.executeQuery();
 				while (rs.next()) {
 					if (rank == 0)
 						rank = rs.getInt(1);
+					if (relevant == false)
+						relevant = rs.getBoolean(2);
 					found = true;
 				}
 				stmt.close();
@@ -130,10 +137,11 @@ public class SearchUser extends GitHubTagLibTagSupport {
 		currentInstance = null;
 		try {
 			if (commitNeeded) {
-				PreparedStatement stmt = getConnection().prepareStatement("update github.search_user set rank = ? where sid = ? and uid = ?");
+				PreparedStatement stmt = getConnection().prepareStatement("update github.search_user set rank = ?, relevant = ? where sid = ? and uid = ?");
 				stmt.setInt(1,rank);
-				stmt.setInt(2,sid);
-				stmt.setInt(3,uid);
+				stmt.setBoolean(2,relevant);
+				stmt.setInt(3,sid);
+				stmt.setInt(4,uid);
 				stmt.executeUpdate();
 				stmt.close();
 			}
@@ -159,10 +167,11 @@ public class SearchUser extends GitHubTagLibTagSupport {
 				log.debug("generating new SearchUser " + uid);
 			}
 
-			PreparedStatement stmt = getConnection().prepareStatement("insert into github.search_user(sid,uid,rank) values (?,?,?)");
+			PreparedStatement stmt = getConnection().prepareStatement("insert into github.search_user(sid,uid,rank,relevant) values (?,?,?,?)");
 			stmt.setInt(1,sid);
 			stmt.setInt(2,uid);
 			stmt.setInt(3,rank);
+			stmt.setBoolean(4,relevant);
 			stmt.executeUpdate();
 			stmt.close();
 		} catch (SQLException e) {
@@ -210,6 +219,19 @@ public class SearchUser extends GitHubTagLibTagSupport {
 		return rank;
 	}
 
+	public boolean getRelevant () {
+		return relevant;
+	}
+
+	public void setRelevant (boolean relevant) {
+		this.relevant = relevant;
+		commitNeeded = true;
+	}
+
+	public boolean getActualRelevant () {
+		return relevant;
+	}
+
 	public static Integer sidValue() throws JspException {
 		try {
 			return currentInstance.getSid();
@@ -234,10 +256,19 @@ public class SearchUser extends GitHubTagLibTagSupport {
 		}
 	}
 
+	public static Boolean relevantValue() throws JspException {
+		try {
+			return currentInstance.getRelevant();
+		} catch (Exception e) {
+			 throw new JspTagException("Error in tag function relevantValue()");
+		}
+	}
+
 	private void clearServiceState () {
 		sid = 0;
 		uid = 0;
 		rank = 0;
+		relevant = false;
 		newRecord = false;
 		commitNeeded = false;
 		parentEntities = new Vector<GitHubTagLibTagSupport>();

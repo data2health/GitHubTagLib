@@ -21,6 +21,7 @@ public class SearchUserIterator extends GitHubTagLibBodyTagSupport {
     int sid = 0;
     int uid = 0;
     int rank = 0;
+    boolean relevant = false;
 	Vector<GitHubTagLibTagSupport> parentEntities = new Vector<GitHubTagLibTagSupport>();
 
 	private static final Log log = LogFactory.getLog(SearchUserIterator.class);
@@ -219,7 +220,7 @@ public class SearchUserIterator extends GitHubTagLibBodyTagSupport {
        if (useSearchTerm)
           theBuffer.append(" and search_term.ID = search_user.sid");
        if (useUser)
-          theBuffer.append(" and github.user.ID = search_user.uid");
+          theBuffer.append(" and user.ID = search_user.uid");
 
       return theBuffer.toString();
     }

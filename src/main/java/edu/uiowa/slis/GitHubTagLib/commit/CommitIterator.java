@@ -4,6 +4,7 @@ package edu.uiowa.slis.GitHubTagLib.commit;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -75,7 +76,7 @@ public class CommitIterator extends GitHubTagLibBodyTagSupport {
 						);
 
 			stat.setInt(1,Integer.parseInt(ID));
-			stat.setTimestamp(2,new java.util.Date(Integer.parseInt(committed)));
+			stat.setTimestamp(2,(Timestamp) new java.util.Date(Integer.parseInt(committed)));
 			ResultSet crs = stat.executeQuery();
 
 			if (crs.next()) {

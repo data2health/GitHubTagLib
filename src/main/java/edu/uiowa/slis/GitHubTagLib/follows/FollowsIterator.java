@@ -33,7 +33,7 @@ public class FollowsIterator extends GitHubTagLibBodyTagSupport {
     int rsCount = 0;
 
    boolean useUser = false;
-   boolean useUser2 = false;
+   boolean useUser = false;
 
 	public static String followsCountByUser(String ID) throws JspTagException {
 		int count = 0;
@@ -63,33 +63,33 @@ public class FollowsIterator extends GitHubTagLibBodyTagSupport {
 		return ! followsCountByUser(ID).equals("0");
 	}
 
-//	public static String followsCountByUser(String ID) throws JspTagException {
-//		int count = 0;
-//		FollowsIterator theIterator = new FollowsIterator();
-//		try {
-//			PreparedStatement stat = theIterator.getConnection().prepareStatement("SELECT count(*) from github.follows where 1=1"
-//						+ " and id = ?"
-//						);
-//
-//			stat.setInt(1,Integer.parseInt(ID));
-//			ResultSet crs = stat.executeQuery();
-//
-//			if (crs.next()) {
-//				count = crs.getInt(1);
-//			}
-//			stat.close();
-//		} catch (SQLException e) {
-//			log.error("JDBC error generating Follows iterator", e);
-//			throw new JspTagException("Error: JDBC error generating Follows iterator");
-//		} finally {
-//			theIterator.freeConnection();
-//		}
-//		return "" + count;
-//	}
-//
-//	public static Boolean userHasFollows(String ID) throws JspTagException {
-//		return ! followsCountByUser(ID).equals("0");
-//	}
+	public static String followsCountByUser(String ID) throws JspTagException {
+		int count = 0;
+		FollowsIterator theIterator = new FollowsIterator();
+		try {
+			PreparedStatement stat = theIterator.getConnection().prepareStatement("SELECT count(*) from github.follows where 1=1"
+						+ " and id = ?"
+						);
+
+			stat.setInt(1,Integer.parseInt(ID));
+			ResultSet crs = stat.executeQuery();
+
+			if (crs.next()) {
+				count = crs.getInt(1);
+			}
+			stat.close();
+		} catch (SQLException e) {
+			log.error("JDBC error generating Follows iterator", e);
+			throw new JspTagException("Error: JDBC error generating Follows iterator");
+		} finally {
+			theIterator.freeConnection();
+		}
+		return "" + count;
+	}
+
+	public static Boolean userHasFollows(String ID) throws JspTagException {
+		return ! followsCountByUser(ID).equals("0");
+	}
 
 	public static Boolean followsExists (String follower, String following) throws JspTagException {
 		int count = 0;
@@ -145,7 +145,7 @@ public class FollowsIterator extends GitHubTagLibBodyTagSupport {
 		User theUser = (User)findAncestorWithClass(this, User.class);
 		if (theUser!= null)
 			parentEntities.addElement(theUser);
-		User theUser2 = (User)findAncestorWithClass(this, User.class);
+		User theUser = (User)findAncestorWithClass(this, User.class);
 		if (theUser!= null)
 			parentEntities.addElement(theUser);
 
@@ -315,13 +315,13 @@ public class FollowsIterator extends GitHubTagLibBodyTagSupport {
         this.useUser = useUser;
     }
 
-//   public boolean getUseUser() {
-//        return useUser;
-//    }
-//
-//    public void setUseUser(boolean useUser) {
-//        this.useUser = useUser;
-//    }
+   public boolean getUseUser() {
+        return useUser;
+    }
+
+    public void setUseUser(boolean useUser) {
+        this.useUser = useUser;
+    }
 
 
 

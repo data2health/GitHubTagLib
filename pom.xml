@@ -102,8 +102,8 @@
         <executions>
           <execution>
             <goals>
-<!--               <goal>WebApp</goal>
- -->            </goals>
+               <goal>WebApp</goal>
+            </goals>
 
           </execution>
         </executions>

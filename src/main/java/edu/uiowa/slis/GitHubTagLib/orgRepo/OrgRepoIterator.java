@@ -216,9 +216,9 @@ public class OrgRepoIterator extends GitHubTagLibBodyTagSupport {
     private String generateJoinCriteria() {
        StringBuffer theBuffer = new StringBuffer();
        if (useOrganization)
-          theBuffer.append(" and organization.ID = org_repo.organization_id");
+          theBuffer.append(" and organization.ID = org_repo.null");
        if (useRepository)
-          theBuffer.append(" and repository.ID = org_repo.repository_id");
+          theBuffer.append(" and repository.ID = org_repo.null");
 
       return theBuffer.toString();
     }

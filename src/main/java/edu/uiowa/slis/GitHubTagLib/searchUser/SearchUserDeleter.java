@@ -21,6 +21,7 @@ public class SearchUserDeleter extends GitHubTagLibBodyTagSupport {
     int sid = 0;
     int uid = 0;
     int rank = 0;
+    boolean relevant = false;
 	Vector<GitHubTagLibTagSupport> parentEntities = new Vector<GitHubTagLibTagSupport>();
 
 	private static final Log log = LogFactory.getLog(SearchUserDeleter.class);

@@ -1,5 +1,7 @@
 package edu.uiowa.slis.GitHubTagLib.commit;
 
+import java.util.Date;
+
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import org.apache.commons.logging.Log;

@@ -116,6 +116,7 @@ CREATE TABLE github.search_user (
        sid INT NOT NULL
      , uid INT NOT NULL
      , rank INT
+     , relevant BOOLEAN
      , PRIMARY KEY (sid, uid)
      , CONSTRAINT FK_search_user_1 FOREIGN KEY (sid)
                   REFERENCES github.search_term (id)
@@ -127,6 +128,7 @@ CREATE TABLE github.search_repository (
        sid INT NOT NULL
      , rid INT NOT NULL
      , rank INT
+     , relevant BOOLEAN
      , PRIMARY KEY (sid, rid)
      , CONSTRAINT FK_search_repository_1 FOREIGN KEY (sid)
                   REFERENCES github.search_term (id)
@@ -138,6 +140,7 @@ CREATE TABLE github.search_organization (
        sid INT NOT NULL
      , orgid INT NOT NULL
      , rank INT
+     , relevant BOOLEAN
      , PRIMARY KEY (sid, orgid)
      , CONSTRAINT FK_search_organization_1 FOREIGN KEY (sid)
                   REFERENCES github.search_term (id)
