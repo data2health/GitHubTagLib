@@ -220,7 +220,7 @@ public class SearchUserIterator extends GitHubTagLibBodyTagSupport {
        if (useSearchTerm)
           theBuffer.append(" and search_term.ID = search_user.sid");
        if (useUser)
-          theBuffer.append(" and user.ID = search_user.uid");
+          theBuffer.append(" and github.user.ID = search_user.uid");
 
       return theBuffer.toString();
     }
