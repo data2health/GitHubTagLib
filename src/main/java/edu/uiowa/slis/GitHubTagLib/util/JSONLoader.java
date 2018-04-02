@@ -353,7 +353,7 @@ public class JSONLoader {
     static void storeUserSearchHit(int sid, int uid, int rank) throws SQLException {
 	PreparedStatement stmt;
 	try {
-	    stmt = conn.prepareStatement("insert into github.search_user values(?,?,?)");
+	    stmt = conn.prepareStatement("insert into github.search_user(sid,uid,rank) values(?,?,?)");
 	    stmt.setInt(1, sid);
 	    stmt.setInt(2, uid);
 	    stmt.setInt(3, rank);
@@ -375,7 +375,7 @@ public class JSONLoader {
     static void storeOrganizationSearchHit(int sid, int uid, int rank) throws SQLException {
 	PreparedStatement stmt;
 	try {
-	    stmt = conn.prepareStatement("insert into github.search_organization values(?,?,?)");
+	    stmt = conn.prepareStatement("insert into github.search_organization(sid,orgid,rank) values(?,?,?)");
 	    stmt.setInt(1, sid);
 	    stmt.setInt(2, uid);
 	    stmt.setInt(3, rank);
@@ -438,7 +438,7 @@ public class JSONLoader {
     static void storeRepositorySearchHit(int sid, int rid, int rank) throws SQLException {
 	PreparedStatement stmt;
 	try {
-	    stmt = conn.prepareStatement("insert into github.search_repository values(?,?,?)");
+	    stmt = conn.prepareStatement("insert into github.search_repository(sid,rid,rank) values(?,?,?)");
 	    stmt.setInt(1, sid);
 	    stmt.setInt(2, rid);
 	    stmt.setInt(3, rank);
@@ -810,8 +810,10 @@ public class JSONLoader {
 
     static void commitScan() throws SQLException, IOException {
 	conn.setAutoCommit(false);
-	PreparedStatement stmt = conn.prepareStatement("select id,login,name from github.repos_json"
-		+ (searchID == 0 ? "" : " where id in (select rid from github.search_repository where sid=" + searchID + ")") + " order by id desc");
+	PreparedStatement stmt = conn.prepareStatement("select id,login,name from github.repos_json where 1=1"
+		+ (searchID == 0 ? "" : " and id in (select rid from github.search_repository where sid=" + searchID + ")")
+		+ " and id in (select id from github.commit_recent)"
+		+ " order by id desc");
 	ResultSet rs = stmt.executeQuery();
 	while (rs.next()) {
 	    int id = rs.getInt(1);
