@@ -40,7 +40,7 @@ public class MemberIterator extends GitHubTagLibBodyTagSupport {
 		MemberIterator theIterator = new MemberIterator();
 		try {
 			PreparedStatement stat = theIterator.getConnection().prepareStatement("SELECT count(*) from github.member where 1=1"
-						+ " and id = ?"
+						+ " and user_id = ?"
 						);
 
 			stat.setInt(1,Integer.parseInt(ID));
@@ -68,7 +68,7 @@ public class MemberIterator extends GitHubTagLibBodyTagSupport {
 		MemberIterator theIterator = new MemberIterator();
 		try {
 			PreparedStatement stat = theIterator.getConnection().prepareStatement("SELECT count(*) from github.member where 1=1"
-						+ " and id = ?"
+						+ " and organization_id = ?"
 						);
 
 			stat.setInt(1,Integer.parseInt(ID));
@@ -216,9 +216,9 @@ public class MemberIterator extends GitHubTagLibBodyTagSupport {
     private String generateJoinCriteria() {
        StringBuffer theBuffer = new StringBuffer();
        if (useUser)
-          theBuffer.append(" and user.ID = member.null");
+          theBuffer.append(" and github.user.ID = member.user_id");
        if (useOrganization)
-          theBuffer.append(" and organization.ID = member.null");
+          theBuffer.append(" and organization.ID = member.organization_id");
 
       return theBuffer.toString();
     }

@@ -40,7 +40,7 @@ public class OrgRepoIterator extends GitHubTagLibBodyTagSupport {
 		OrgRepoIterator theIterator = new OrgRepoIterator();
 		try {
 			PreparedStatement stat = theIterator.getConnection().prepareStatement("SELECT count(*) from github.org_repo where 1=1"
-						+ " and id = ?"
+						+ " and organization_id = ?"
 						);
 
 			stat.setInt(1,Integer.parseInt(ID));
@@ -68,7 +68,7 @@ public class OrgRepoIterator extends GitHubTagLibBodyTagSupport {
 		OrgRepoIterator theIterator = new OrgRepoIterator();
 		try {
 			PreparedStatement stat = theIterator.getConnection().prepareStatement("SELECT count(*) from github.org_repo where 1=1"
-						+ " and id = ?"
+						+ " and repository_id = ?"
 						);
 
 			stat.setInt(1,Integer.parseInt(ID));
@@ -216,9 +216,9 @@ public class OrgRepoIterator extends GitHubTagLibBodyTagSupport {
     private String generateJoinCriteria() {
        StringBuffer theBuffer = new StringBuffer();
        if (useOrganization)
-          theBuffer.append(" and organization.ID = org_repo.null");
+          theBuffer.append(" and organization.ID = org_repo.organization_id");
        if (useRepository)
-          theBuffer.append(" and repository.ID = org_repo.null");
+          theBuffer.append(" and repository.ID = org_repo.repository_id");
 
       return theBuffer.toString();
     }
