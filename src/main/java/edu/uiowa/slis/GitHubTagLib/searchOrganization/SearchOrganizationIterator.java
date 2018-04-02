@@ -41,7 +41,7 @@ public class SearchOrganizationIterator extends GitHubTagLibBodyTagSupport {
 		SearchOrganizationIterator theIterator = new SearchOrganizationIterator();
 		try {
 			PreparedStatement stat = theIterator.getConnection().prepareStatement("SELECT count(*) from github.search_organization where 1=1"
-						+ " and id = ?"
+						+ " and sid = ?"
 						);
 
 			stat.setInt(1,Integer.parseInt(ID));

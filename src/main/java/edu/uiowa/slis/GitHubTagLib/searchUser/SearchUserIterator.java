@@ -217,9 +217,9 @@ public class SearchUserIterator extends GitHubTagLibBodyTagSupport {
     private String generateJoinCriteria() {
        StringBuffer theBuffer = new StringBuffer();
        if (useSearchTerm)
-          theBuffer.append(" and search_term.ID = search_user.null");
+          theBuffer.append(" and search_term.ID = search_user.sid");
        if (useUser)
-          theBuffer.append(" and user.ID = search_user.null");
+          theBuffer.append(" and github.user.ID = search_user.uid");
 
       return theBuffer.toString();
     }

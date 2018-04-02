@@ -217,9 +217,9 @@ public class SearchRepositoryIterator extends GitHubTagLibBodyTagSupport {
     private String generateJoinCriteria() {
        StringBuffer theBuffer = new StringBuffer();
        if (useSearchTerm)
-          theBuffer.append(" and search_term.ID = search_repository.null");
+          theBuffer.append(" and search_term.ID = search_repository.sid");
        if (useRepository)
-          theBuffer.append(" and repository.ID = search_repository.null");
+          theBuffer.append(" and repository.ID = search_repository.rid");
 
       return theBuffer.toString();
     }
