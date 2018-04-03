@@ -33,7 +33,7 @@ public class JSONLoader {
     static Connection conn = null;
 
     static enum modes {
-	SEARCH, FULL, MEMBERS, REFRESH, README, NEW_SEARCH, COMMITS, PARENT
+	SEARCH, FULL, MEMBERS, REFRESH, README, NEW_SEARCH, COMMITS, PARENT, COMMIT_USERS
     };
 
     static modes mode = modes.README;
@@ -83,6 +83,8 @@ public class JSONLoader {
 		break;
 	    case "parent":
 		mode = modes.PARENT;
+	    case "commit_users":
+		mode = modes.COMMIT_USERS;
 		break;
 	    }
 
@@ -176,6 +178,9 @@ public class JSONLoader {
 		    break;
 		case PARENT:
 		    parentScan();
+		    break;
+		case COMMIT_USERS:
+		    commitUserScan();
 		    break;
 		}
 	    } catch (Exception e) {
@@ -889,6 +894,26 @@ public class JSONLoader {
 
 	    pageCount++;
 	}
+    }
+
+    static void commitUserScan() throws SQLException, IOException {
+	conn.setAutoCommit(false);
+	PreparedStatement stmt = conn.prepareStatement("select distinct login from github.commit where login not in (select login from github.user) and login not in (select login from github.user) order by login");
+	ResultSet rs = stmt.executeQuery();
+	while (rs.next()) {
+	    String login = rs.getString(1);
+	    if (login == null || login.trim().length() == 0)
+		continue;
+	    rateLimitAPI();
+	    logger.info("querying for: " + login);
+	    try {
+		scanUser(login);
+	    } catch (java.io.FileNotFoundException e) {
+		logger.error("error scanning commit users for " + login, e);
+	    }
+	    conn.commit();
+	}
+	stmt.close();
     }
 
     static void parentScan() throws SQLException, IOException {
