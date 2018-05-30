@@ -33,6 +33,8 @@ public class json_loader {
     protected static Character separator = ',';
     protected static String fileSuffix = ".json";
     protected static LocalProperties prop_file = null;
+    
+    // this is in this project only as a temporary convenience
 
     public static void main(String args[]) throws Exception {
 	PropertyConfigurator.configure(args[0]);
