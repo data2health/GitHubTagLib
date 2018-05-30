@@ -6,6 +6,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import edu.uiowa.extraction.LocalProperties;
+import edu.uiowa.extraction.PropertyLoader;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,9 +32,11 @@ public class json_loader {
 
     protected static Character separator = ',';
     protected static String fileSuffix = ".json";
+    protected static LocalProperties prop_file = null;
 
     public static void main(String args[]) throws Exception {
 	PropertyConfigurator.configure(args[0]);
+	prop_file = PropertyLoader.loadProperties("github");
 
 	databaseName = args[1];
 	schemaName = args[2];
@@ -42,8 +47,8 @@ public class json_loader {
 	    logger.info("connecting to database...");
 	    Class.forName("org.postgresql.Driver");
 	    Properties props = new Properties();
-	    props.setProperty("user", "eichmann");
-	    props.setProperty("password", "translational");
+		props.setProperty("user", prop_file.getProperty("jdbc.user"));
+		props.setProperty("password", prop_file.getProperty("jdbc.password"));
 	    // props.setProperty("sslfactory",
 	    // "org.postgresql.ssl.NonValidatingFactory");
 	    // props.setProperty("ssl", "true");
