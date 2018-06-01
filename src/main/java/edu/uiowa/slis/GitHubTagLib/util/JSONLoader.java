@@ -152,7 +152,7 @@ public class JSONLoader {
 		    break;
 		case FULL:
 		    searchScan();
-		    searchID = -1;
+		    searchID = -1; // assert dummy search ID to trigger query logic in subsequent scan methods
 		    readmeScan();
 		    scanOrgMembers();
 		    scanUserOrgs();
