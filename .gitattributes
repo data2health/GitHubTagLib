@@ -171,7 +171,10 @@ src/main/java/edu/uiowa/slis/GitHubTagLib/userRepo/UserRepoDeleter.java -text
 src/main/java/edu/uiowa/slis/GitHubTagLib/userRepo/UserRepoIterator.java -text
 src/main/java/edu/uiowa/slis/GitHubTagLib/userRepo/UserRepoRepositoryId.java -text
 src/main/java/edu/uiowa/slis/GitHubTagLib/userRepo/UserRepoUserId.java -text
+src/main/java/edu/uiowa/slis/GitHubTagLib/util/Content.java -text
 src/main/java/edu/uiowa/slis/GitHubTagLib/util/JSONLoader.java -text
+src/main/java/edu/uiowa/slis/GitHubTagLib/util/LocalProperties.java -text
+src/main/java/edu/uiowa/slis/GitHubTagLib/util/PropertyLoader.java -text
 src/main/java/edu/uiowa/slis/GitHubTagLib/util/json_loader.java -text
 src/main/resources/META-INF/taglib.tld -text
 src/non-packaged-resources/Model.clay -text
