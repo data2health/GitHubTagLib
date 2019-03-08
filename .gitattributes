@@ -176,6 +176,7 @@ src/main/java/edu/uiowa/slis/GitHubTagLib/util/JSONLoader.java -text
 src/main/java/edu/uiowa/slis/GitHubTagLib/util/LocalProperties.java -text
 src/main/java/edu/uiowa/slis/GitHubTagLib/util/PropertyLoader.java -text
 src/main/java/edu/uiowa/slis/GitHubTagLib/util/RoadmapMaintainer.java -text
+src/main/java/edu/uiowa/slis/GitHubTagLib/util/TeamMaintainer.java -text
 src/main/java/edu/uiowa/slis/GitHubTagLib/util/json_loader.java -text
 src/main/resources/META-INF/taglib.tld -text
 src/non-packaged-resources/Model.clay -text

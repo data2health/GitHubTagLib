@@ -12,8 +12,8 @@ import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
-public class RoadmapMaintainer {
-    static Logger logger = Logger.getLogger(RoadmapMaintainer.class);
+public class TeamMaintainer {
+    static Logger logger = Logger.getLogger(TeamMaintainer.class);
     protected static LocalProperties prop_file = null;
     static Connection conn = null;
 
@@ -24,7 +24,7 @@ public class RoadmapMaintainer {
 	prop_file = PropertyLoader.loadProperties("github");
 	getConnection();
 	
-	String originalContent = Content.read("data2health", "roadmap", "README.md");
+	String originalContent = Content.read("data2health", "roadmap", "team.md");
 	StringBuffer newContent = new StringBuffer();
 	String buffer = null;
 	BufferedReader reader = new BufferedReader(new StringReader(originalContent));
