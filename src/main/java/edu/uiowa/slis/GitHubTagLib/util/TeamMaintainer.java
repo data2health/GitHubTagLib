@@ -18,52 +18,65 @@ public class TeamMaintainer {
     static Connection conn = null;
 
     public static void main(String[] args) throws ClassNotFoundException, SQLException, IOException {
-	boolean inPrefix = true;
-	boolean inList = true;
-	boolean databaseCalled = false;
 	prop_file = PropertyLoader.loadProperties("github");
 	getConnection();
-	
-	String originalContent = Content.read("data2health", "roadmap", "team.md");
-	StringBuffer newContent = new StringBuffer();
-	String buffer = null;
-	BufferedReader reader = new BufferedReader(new StringReader(originalContent));
-	while ((buffer = reader.readLine()) != null) {
-	    logger.info("buffer: " + buffer);
-	    if (inPrefix) {
-		newContent.append(buffer + "\n");
-		if (buffer.equals("# Phase 2 Projects"))
-		    inPrefix = false;
-	    }
-	    if (!inPrefix && inList) {
-		if (!buffer.equals("# Phase 2 Projects") && buffer.startsWith("# ")) {
-		    inList = false;
-		    newContent.append("\n");
-		}
-		if (!databaseCalled) {
-		    logger.info("calling database..,");
-		    // call the database for repo list
-		    injectProjects(newContent);
-		    databaseCalled = true;
-		}
-	    }
-	    if (!inPrefix && !inList) {
-		newContent.append(buffer + "\n");
-	    }
-	}
-	logger.info("final result:\n" + newContent);
-	Content.replace("data2health", "roadmap", "README.md", newContent.toString(), "refreshed by RoadmapMaintainer");
-    }
-    
-    static void injectProjects(StringBuffer buffer) throws SQLException {
-	PreparedStatement stmt = conn.prepareStatement("select repo_name,updated_title,actual_github_repo_link from dashboard.dashboard where actual_github_repo_link is not null order by lower(repo_name)");
+	PreparedStatement stmt = conn.prepareStatement("select id,repo_name,title from dashboard.dashboard,google.project where title=updated_title");
 	ResultSet rs = stmt.executeQuery();
 	while (rs.next()) {
-	    String repo = rs.getString(1);
+	    int id = rs.getInt(1);
+	    String repo = rs.getString(2);
 	    String title = rs.getString(2);
-	    String url = rs.getString(3);
-	    buffer.append("## [" + repo + "](" + url + ")\n");
-	    buffer.append(title + "\n");
+	    logger.info("repo: " + repo + " - " + title);
+	    processProject(id,repo);
+	}
+    }
+	
+    static void processProject(int id, String repo) throws SQLException, IOException {
+	StringBuffer newContent = new StringBuffer();
+	newContent.append("# Team Members\n");
+	newContent.append("\n");
+	newContent.append("## Lead(s)\n");
+	newContent.append("Name | GitHub Handle | Site\n");
+	newContent.append("-- | -- | --\n");
+	injectParticipants(newContent, id, "Lead");
+	newContent.append("\n");
+	newContent.append("## Contributor(s)\n");
+	newContent.append("Name | GitHub Handle | Site\n");
+	newContent.append("-- | -- | --\n");
+	injectParticipants(newContent, id, "Contributor");
+	newContent.append("\n");
+	newContent.append("## Mailing list only\n");
+	newContent.append("Name | GitHub Handle | Site\n");
+	newContent.append("-- | -- | --\n");
+	injectParticipants(newContent, 14, "Mailing list only");
+	newContent.append("\n");
+
+	logger.info("final result:\n" + newContent);
+	try {
+	    Content.replace("data2health", repo, "team.md", newContent.toString(), "refreshed by TeamMaintainer");
+	} catch (Exception e) {
+	    Content.write("data2health", repo, "team.md", newContent.toString(), "refreshed by TeamMaintainer");
+	}
+    }
+    
+    // Name | GitHub Handle | Site
+    // -- | -- | --
+    static void injectParticipants(StringBuffer buffer, int id, String targetRole) throws SQLException {
+	PreparedStatement stmt = conn.prepareStatement("select * from google.role natural join google.person where id=? and role=? order by last_name,preferred_first_name");
+	stmt.setInt(1, id);
+	stmt.setString(2, targetRole);
+	ResultSet rs = stmt.executeQuery();
+	while (rs.next()) {
+	    String email = rs.getString(1);
+	    int tableID = rs.getInt(2);
+	    String role = rs.getString(3);
+	    String firstName = rs.getString(4);
+	    String lastName = rs.getString(5);
+	    String projectRole = rs.getString(6);
+	    String institution = rs.getString(7);
+	    String githubURL = rs.getString(8);
+	    String githubHandle = githubURL.substring(githubURL.lastIndexOf('/')+ 1);
+	    buffer.append(firstName + " " + lastName + " | [" + githubHandle + "](" + githubURL + ") | " + institution + "\n");
 	}
 	stmt.close();
     }
