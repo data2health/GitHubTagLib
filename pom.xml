@@ -74,6 +74,11 @@
   	<artifactId>NLP</artifactId>
   	<version>0.0.1-SNAPSHOT</version>
   </dependency>
+  <dependency>
+  	<groupId>JSONTagLib</groupId>
+  	<artifactId>JSONTagLib</artifactId>
+  	<version>0.0.1-SNAPSHOT</version>
+  </dependency>
   </dependencies>
 	<build>
 	  	<plugins>

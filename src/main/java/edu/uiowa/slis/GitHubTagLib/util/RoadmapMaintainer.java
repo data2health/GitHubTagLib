@@ -11,6 +11,8 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
+import org.cd2h.JSONTagLib.GraphQL.GitHubAPI;
+import org.json.JSONObject;
 
 public class RoadmapMaintainer {
     static Logger logger = Logger.getLogger(RoadmapMaintainer.class);
@@ -18,12 +20,19 @@ public class RoadmapMaintainer {
     static Connection conn = null;
 
     public static void main(String[] args) throws ClassNotFoundException, SQLException, IOException {
-	boolean inPrefix = true;
-	boolean inList = true;
-	boolean databaseCalled = false;
 	prop_file = PropertyLoader.loadProperties("github");
 	getConnection();
 	
+//	regenerateRoadMap();
+	GitHubAPI theAPI = new GitHubAPI();
+	JSONObject results =theAPI.submitSearch(theAPI.getStatement("projectDashboardsingle"));
+	logger.info("results:\n" + results.toString(3));
+    }
+	
+    static void regenerateRoadmap() throws IOException, SQLException {
+	boolean inPrefix = true;
+	boolean inList = true;
+	boolean databaseCalled = false;
 	String originalContent = Content.read("data2health", "roadmap", "README.md");
 	StringBuffer newContent = new StringBuffer();
 	String buffer = null;
