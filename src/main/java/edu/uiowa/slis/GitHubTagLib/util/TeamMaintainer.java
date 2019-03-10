@@ -1,25 +1,62 @@
 package edu.uiowa.slis.GitHubTagLib.util;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.StringReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Hashtable;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+import org.cd2h.JSONTagLib.GraphQL.GitHubAPI;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class TeamMaintainer {
     static Logger logger = Logger.getLogger(TeamMaintainer.class);
     protected static LocalProperties prop_file = null;
     static Connection conn = null;
+    static Hashtable<String,String> membershipHash = new Hashtable<String,String>();
 
     public static void main(String[] args) throws ClassNotFoundException, SQLException, IOException {
+	PropertyConfigurator.configure(args[0]);
 	prop_file = PropertyLoader.loadProperties("github");
 	getConnection();
+	
+	updateOrgMembership();
+//	updateTeamMembership();
+    }
+    
+    static void updateOrgMembership() throws IOException, SQLException {
+	refreshMembershipHash();
+	PreparedStatement stmt = conn.prepareStatement("select github_handle_url from drive.person where github_handle_url is not null");
+	ResultSet rs = stmt.executeQuery();
+	while (rs.next()) {
+	    String githubURL = rs.getString(1);
+	    String github = githubURL.substring(githubURL.lastIndexOf('/')+1);
+	    if (github.endsWith(".com") || github.endsWith(".edu") || github.endsWith(".org") || membershipHash.containsKey(github))
+		continue;
+	    logger.info("user: " + github);
+	    Content.addMember("data2health", github);
+	}
+	stmt.close();
+    }
+    
+    static void refreshMembershipHash() throws IOException {
+	GitHubAPI theAPI = new GitHubAPI();
+	JSONArray results =theAPI.submitQuery(theAPI.getStatement("memberList")).getJSONObject("data").getJSONObject("organization").getJSONObject("members").getJSONArray("nodes");
+	logger.trace("results:\n" + results.toString(3));
+	for(int i = 0; i < results.length(); i++) {
+	    JSONObject current = results.getJSONObject(i);
+	    logger.debug("caching: " + current.getString("login"));
+	    membershipHash.put(current.getString("login"), current.getString("login"));
+	}
+    }
+    
+    static void updateTeamMembership() throws SQLException, IOException {
 	PreparedStatement stmt = conn.prepareStatement("select id,repo_name,title from dashboard.dashboard,google.project where title=updated_title");
 	ResultSet rs = stmt.executeQuery();
 	while (rs.next()) {
@@ -67,12 +104,8 @@ public class TeamMaintainer {
 	stmt.setString(2, targetRole);
 	ResultSet rs = stmt.executeQuery();
 	while (rs.next()) {
-	    String email = rs.getString(1);
-	    int tableID = rs.getInt(2);
-	    String role = rs.getString(3);
 	    String firstName = rs.getString(4);
 	    String lastName = rs.getString(5);
-	    String projectRole = rs.getString(6);
 	    String institution = rs.getString(7);
 	    String githubURL = rs.getString(8);
 	    String githubHandle = githubURL.substring(githubURL.lastIndexOf('/')+ 1);

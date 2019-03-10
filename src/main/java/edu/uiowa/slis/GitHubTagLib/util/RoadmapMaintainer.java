@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 import org.cd2h.JSONTagLib.GraphQL.GitHubAPI;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,6 +28,7 @@ public class RoadmapMaintainer {
     static boolean useAPI = true;
 
     public static void main(String[] args) throws ClassNotFoundException, SQLException, IOException {
+	PropertyConfigurator.configure(args[0]);
 	prop_file = PropertyLoader.loadProperties("github");
 	getConnection();
 	

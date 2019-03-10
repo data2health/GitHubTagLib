@@ -131,6 +131,10 @@ public class Content {
 	logger.debug("newContent:\n" + newContent);
 	replace(owner, repo, path, newContent, message);
     }
+    
+    static void addMember(String owner, String login) throws IOException {
+	submit("https://api.github.com/orgs/" + owner + "/memberships/" + login, null);
+    }
 
     static private JSONObject submit(String url, String request) throws IOException {
 	// configure the connection
@@ -140,15 +144,17 @@ public class Content {
 	if (prop_file.getProperty("token") != null)
 	    con.setRequestProperty("Authorization", "token " + prop_file.getProperty("token"));
 	con.setRequestProperty("Accept","application/json");
-	con.setDoOutput(true);
+	con.setDoOutput(request != null);
 	con.setDoInput(true);
 	
-	// submit the GraphQL construct
-	logger.debug("request: " + request);
-	BufferedWriter out = new BufferedWriter(new OutputStreamWriter(con.getOutputStream()));
-	out.write(request);
-	out.flush();
-	out.close();
+	if (request != null) {
+	    // submit the construct
+	    logger.debug("request: " + request);
+	    BufferedWriter out = new BufferedWriter(new OutputStreamWriter(con.getOutputStream()));
+	    out.write(request);
+	    out.flush();
+	    out.close();
+	}
 
 	// pull down the response JSON
 	con.connect();
