@@ -27,7 +27,7 @@ public class TeamMaintainer {
 	getConnection();
 	
 	updateOrgMembership();
-//	updateTeamMembership();
+	updateTeamMembership();
     }
     
     static void updateOrgMembership() throws IOException, SQLException {
@@ -40,15 +40,19 @@ public class TeamMaintainer {
 	    if (github.endsWith(".com") || github.endsWith(".edu") || github.endsWith(".org") || membershipHash.containsKey(github))
 		continue;
 	    logger.info("user: " + github);
-	    Content.addMember("data2health", github);
+	    try {
+		Content.addMember("data2health", github);
+	    } catch (Exception e) {
+		logger.error("\t*** invalid user ID: " + github);
+	    }
 	}
 	stmt.close();
     }
     
     static void refreshMembershipHash() throws IOException {
 	GitHubAPI theAPI = new GitHubAPI();
-	JSONArray results =theAPI.submitQuery(theAPI.getStatement("memberList")).getJSONObject("data").getJSONObject("organization").getJSONObject("members").getJSONArray("nodes");
-	logger.trace("results:\n" + results.toString(3));
+	logger.info("results:\n" + theAPI.submitQuery(theAPI.getStatement("memberList")).toString(3));
+	JSONArray results =theAPI.submitQuery(theAPI.getStatement("memberList")).getJSONObject("data").getJSONObject("organization").getJSONObject("membersWithRole").getJSONArray("nodes");
 	for(int i = 0; i < results.length(); i++) {
 	    JSONObject current = results.getJSONObject(i);
 	    logger.debug("caching: " + current.getString("login"));
@@ -57,7 +61,7 @@ public class TeamMaintainer {
     }
     
     static void updateTeamMembership() throws SQLException, IOException {
-	PreparedStatement stmt = conn.prepareStatement("select id,repo_name,title from dashboard.dashboard,google.project where title=updated_title");
+	PreparedStatement stmt = conn.prepareStatement("select project.project_id,repo_name,title from dashboard.dashboard,google.project where title=updated_title");
 	ResultSet rs = stmt.executeQuery();
 	while (rs.next()) {
 	    int id = rs.getInt(1);
@@ -99,15 +103,15 @@ public class TeamMaintainer {
     // Name | GitHub Handle | Site
     // -- | -- | --
     static void injectParticipants(StringBuffer buffer, int id, String targetRole) throws SQLException {
-	PreparedStatement stmt = conn.prepareStatement("select * from google.role natural join google.person where id=? and role=? order by last_name,preferred_first_name");
+	PreparedStatement stmt = conn.prepareStatement("select preferred_first_name,last_name,institution,github_handle_url from google.role natural join google.person where project_id=? and role=? order by last_name,preferred_first_name");
 	stmt.setInt(1, id);
 	stmt.setString(2, targetRole);
 	ResultSet rs = stmt.executeQuery();
 	while (rs.next()) {
-	    String firstName = rs.getString(4);
-	    String lastName = rs.getString(5);
-	    String institution = rs.getString(7);
-	    String githubURL = rs.getString(8);
+	    String firstName = rs.getString(1);
+	    String lastName = rs.getString(2);
+	    String institution = rs.getString(3);
+	    String githubURL = rs.getString(4);
 	    String githubHandle = githubURL.substring(githubURL.lastIndexOf('/')+ 1);
 	    buffer.append(firstName + " " + lastName + " | [" + githubHandle + "](" + githubURL + ") | " + institution + "\n");
 	}
