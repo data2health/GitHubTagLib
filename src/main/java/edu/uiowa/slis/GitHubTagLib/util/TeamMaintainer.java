@@ -89,7 +89,7 @@ public class TeamMaintainer {
 	newContent.append("## Mailing list only\n");
 	newContent.append("Name | GitHub Handle | Site\n");
 	newContent.append("-- | -- | --\n");
-	injectParticipants(newContent, 14, "Mailing list only");
+	injectParticipants(newContent, id, "Mailing list only");
 	newContent.append("\n");
 
 	logger.info("final result:\n" + newContent);
