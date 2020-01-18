@@ -22,7 +22,8 @@ select
     (json->>'following'::text)::int as following,
     (json->>'created_at'::text)::timestamp as created_at,
     (json->>'updated_at'::text)::timestamp as updated_at
-from github.user_jsonb;
+from github.user_jsonb
+where not exists (select login from github.user_invisible where user_invisible.login = user_jsonb.login);
 
 create materialized view github.organization as
 select
