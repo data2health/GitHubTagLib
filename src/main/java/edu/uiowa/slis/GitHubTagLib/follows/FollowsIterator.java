@@ -5,15 +5,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.Tag;
 
 import edu.uiowa.slis.GitHubTagLib.GitHubTagLibTagSupport;
 import edu.uiowa.slis.GitHubTagLib.GitHubTagLibBodyTagSupport;
-import edu.uiowa.slis.GitHubTagLib.user.User;
 import edu.uiowa.slis.GitHubTagLib.user.User;
 
 @SuppressWarnings("serial")
@@ -22,7 +22,7 @@ public class FollowsIterator extends GitHubTagLibBodyTagSupport {
     int following = 0;
 	Vector<GitHubTagLibTagSupport> parentEntities = new Vector<GitHubTagLibTagSupport>();
 
-	private static final Log log = LogFactory.getLog(FollowsIterator.class);
+	private static final Logger log = LogManager.getLogger(FollowsIterator.class);
 
 
     PreparedStatement stat = null;
@@ -33,42 +33,13 @@ public class FollowsIterator extends GitHubTagLibBodyTagSupport {
     int rsCount = 0;
 
    boolean useUser = false;
-   boolean useUser = false;
 
 	public static String followsCountByUser(String ID) throws JspTagException {
 		int count = 0;
 		FollowsIterator theIterator = new FollowsIterator();
 		try {
 			PreparedStatement stat = theIterator.getConnection().prepareStatement("SELECT count(*) from github.follows where 1=1"
-						+ " and id = ?"
-						);
-
-			stat.setInt(1,Integer.parseInt(ID));
-			ResultSet crs = stat.executeQuery();
-
-			if (crs.next()) {
-				count = crs.getInt(1);
-			}
-			stat.close();
-		} catch (SQLException e) {
-			log.error("JDBC error generating Follows iterator", e);
-			throw new JspTagException("Error: JDBC error generating Follows iterator");
-		} finally {
-			theIterator.freeConnection();
-		}
-		return "" + count;
-	}
-
-	public static Boolean userHasFollows(String ID) throws JspTagException {
-		return ! followsCountByUser(ID).equals("0");
-	}
-
-	public static String followsCountByUser(String ID) throws JspTagException {
-		int count = 0;
-		FollowsIterator theIterator = new FollowsIterator();
-		try {
-			PreparedStatement stat = theIterator.getConnection().prepareStatement("SELECT count(*) from github.follows where 1=1"
-						+ " and id = ?"
+						+ " and follower = ?"
 						);
 
 			stat.setInt(1,Integer.parseInt(ID));
@@ -145,17 +116,10 @@ public class FollowsIterator extends GitHubTagLibBodyTagSupport {
 		User theUser = (User)findAncestorWithClass(this, User.class);
 		if (theUser!= null)
 			parentEntities.addElement(theUser);
-		User theUser = (User)findAncestorWithClass(this, User.class);
-		if (theUser!= null)
-			parentEntities.addElement(theUser);
 
 		if (theUser == null) {
 		} else {
 			follower = theUser.getID();
-		}
-		if (theUser == null) {
-		} else {
-			following = theUser.getID();
 		}
 
 
@@ -166,7 +130,7 @@ public class FollowsIterator extends GitHubTagLibBodyTagSupport {
                                                         + generateJoinCriteria()
                                                         + (follower == 0 ? "" : " and follower = ?")
                                                         + (following == 0 ? "" : " and following = ?")
-                                                        +  generateLimitCriteria());
+                                                        + generateLimitCriteria());
             if (follower != 0) stat.setInt(webapp_keySeq++, follower);
             if (following != 0) stat.setInt(webapp_keySeq++, following);
             rs = stat.executeQuery();
@@ -182,22 +146,33 @@ public class FollowsIterator extends GitHubTagLibBodyTagSupport {
                                                         + generateJoinCriteria()
                                                         + (follower == 0 ? "" : " and follower = ?")
                                                         + (following == 0 ? "" : " and following = ?")
-                                                        + " order by " + generateSortCriteria() + generateLimitCriteria());
+                                                        + " order by " + generateSortCriteria()  +  generateLimitCriteria());
             if (follower != 0) stat.setInt(webapp_keySeq++, follower);
             if (following != 0) stat.setInt(webapp_keySeq++, following);
             rs = stat.executeQuery();
 
-            if (rs.next()) {
+            if ( rs != null && rs.next() ) {
                 follower = rs.getInt(1);
                 following = rs.getInt(2);
                 pageContext.setAttribute(var, ++rsCount);
                 return EVAL_BODY_INCLUDE;
             }
         } catch (SQLException e) {
-            log.error("JDBC error generating Follows iterator: " + stat.toString(), e);
-            clearServiceState();
-            freeConnection();
-            throw new JspTagException("Error: JDBC error generating Follows iterator: " + stat.toString());
+            log.error("JDBC error generating Follows iterator: " + stat, e);
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: JDBC error generating Follows iterator: " + stat);
+				return parent.doEndTag();
+			}else{
+				throw new JspException("Error: JDBC error generating Follows iterator: " + stat,e);
+			}
+
         }
 
         return SKIP_BODY;
@@ -216,9 +191,9 @@ public class FollowsIterator extends GitHubTagLibBodyTagSupport {
     private String generateJoinCriteria() {
        StringBuffer theBuffer = new StringBuffer();
        if (useUser)
-          theBuffer.append(" and user.ID = follows.null");
+          theBuffer.append(" and github.user.id = github.follows.follower");
        if (useUser)
-          theBuffer.append(" and user.ID = follows.null");
+          theBuffer.append(" and github.user.id = github.follows.following");
 
       return theBuffer.toString();
     }
@@ -239,9 +214,9 @@ public class FollowsIterator extends GitHubTagLibBodyTagSupport {
         }
     }
 
-    public int doAfterBody() throws JspTagException {
+    public int doAfterBody() throws JspException {
         try {
-            if (rs.next()) {
+            if ( rs != null && rs.next() ) {
                 follower = rs.getInt(1);
                 following = rs.getInt(2);
                 pageContext.setAttribute(var, ++rsCount);
@@ -249,20 +224,76 @@ public class FollowsIterator extends GitHubTagLibBodyTagSupport {
             }
         } catch (SQLException e) {
             log.error("JDBC error iterating across Follows", e);
-            clearServiceState();
-            freeConnection();
-            throw new JspTagException("Error: JDBC error iterating across Follows");
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "JDBC error iterating across Follows" + stat.toString());
+				return parent.doEndTag();
+			}else{
+				throw new JspException("JDBC error iterating across Follows",e);
+			}
+
         }
         return SKIP_BODY;
     }
 
     public int doEndTag() throws JspTagException, JspException {
         try {
-            rs.close();
-            stat.close();
-        } catch (SQLException e) {
+			if( pageContext != null ){
+				Boolean error = (Boolean) pageContext.getAttribute("tagError");
+				if( error != null && error ){
+
+					freeConnection();
+					clearServiceState();
+
+					Exception e = null; // (Exception) pageContext.getAttribute("tagErrorException");
+					String message = null; // (String) pageContext.getAttribute("tagErrorMessage");
+
+					if(pageContext != null){
+						e = (Exception) pageContext.getAttribute("tagErrorException");
+						message = (String) pageContext.getAttribute("tagErrorMessage");
+
+					}
+					Tag parent = getParent();
+					if(parent != null){
+						return parent.doEndTag();
+					}else if(e != null && message != null){
+						throw new JspException(message,e);
+					}else if(parent == null && pageContext != null){
+						pageContext.removeAttribute("tagError");
+						pageContext.removeAttribute("tagErrorException");
+						pageContext.removeAttribute("tagErrorMessage");
+					}
+				}
+			}
+
+            if( rs != null ){
+                rs.close();
+            }
+
+            if( stat != null ){
+                stat.close();
+            }
+
+        } catch ( SQLException e ) {
             log.error("JDBC error ending Follows iterator",e);
-            throw new JspTagException("Error: JDBC error ending Follows iterator");
+			freeConnection();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "JDBC error retrieving follower " + follower);
+				return parent.doEndTag();
+			}else{
+				throw new JspException("Error: JDBC error ending Follows iterator",e);
+			}
+
         } finally {
             clearServiceState();
             freeConnection();
@@ -306,14 +337,6 @@ public class FollowsIterator extends GitHubTagLibBodyTagSupport {
         this.var = var;
     }
 
-
-   public boolean getUseUser() {
-        return useUser;
-    }
-
-    public void setUseUser(boolean useUser) {
-        this.useUser = useUser;
-    }
 
    public boolean getUseUser() {
         return useUser;

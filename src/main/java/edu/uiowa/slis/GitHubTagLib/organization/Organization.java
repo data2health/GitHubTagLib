@@ -5,12 +5,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import java.util.Date;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import java.sql.Timestamp;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.Tag;
+
 
 import edu.uiowa.slis.GitHubTagLib.GitHubTagLibTagSupport;
 import edu.uiowa.slis.GitHubTagLib.Sequence;
@@ -22,7 +24,7 @@ public class Organization extends GitHubTagLibTagSupport {
 	boolean commitNeeded = false;
 	boolean newRecord = false;
 
-	private static final Log log = LogFactory.getLog(Organization.class);
+	private static final Logger log = LogManager.getLogger(Organization.class);
 
 	Vector<GitHubTagLibTagSupport> parentEntities = new Vector<GitHubTagLibTagSupport>();
 
@@ -40,8 +42,12 @@ public class Organization extends GitHubTagLibTagSupport {
 	int publicGists = 0;
 	int followers = 0;
 	int following = 0;
-	Date createdAt = null;
-	Date updatedAt = null;
+	Timestamp createdAt = null;
+	Timestamp updatedAt = null;
+
+	private String var = null;
+
+	private Organization cachedOrganization = null;
 
 	public int doStartTag() throws JspException {
 		currentInstance = this;
@@ -105,40 +111,110 @@ public class Organization extends GitHubTagLibTagSupport {
 			}
 		} catch (SQLException e) {
 			log.error("JDBC error retrieving ID " + ID, e);
-			throw new JspTagException("Error: JDBC error retrieving ID " + ID);
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "JDBC error retrieving ID " + ID);
+				return parent.doEndTag();
+			}else{
+				throw new JspException("JDBC error retrieving ID " + ID,e);
+			}
+
 		} finally {
 			freeConnection();
 		}
+
+		if(pageContext != null){
+			Organization currentOrganization = (Organization) pageContext.getAttribute("tag_organization");
+			if(currentOrganization != null){
+				cachedOrganization = currentOrganization;
+			}
+			currentOrganization = this;
+			pageContext.setAttribute((var == null ? "tag_organization" : var), currentOrganization);
+		}
+
 		return EVAL_PAGE;
 	}
 
 	public int doEndTag() throws JspException {
 		currentInstance = null;
+
+		if(pageContext != null){
+			if(this.cachedOrganization != null){
+				pageContext.setAttribute((var == null ? "tag_organization" : var), this.cachedOrganization);
+			}else{
+				pageContext.removeAttribute((var == null ? "tag_organization" : var));
+				this.cachedOrganization = null;
+			}
+		}
+
 		try {
+			Boolean error = null; // (Boolean) pageContext.getAttribute("tagError");
+			if(pageContext != null){
+				error = (Boolean) pageContext.getAttribute("tagError");
+			}
+
+			if(error != null && error){
+
+				freeConnection();
+				clearServiceState();
+
+				Exception e = (Exception) pageContext.getAttribute("tagErrorException");
+				String message = (String) pageContext.getAttribute("tagErrorMessage");
+
+				Tag parent = getParent();
+				if(parent != null){
+					return parent.doEndTag();
+				}else if(e != null && message != null){
+					throw new JspException(message,e);
+				}else if(parent == null){
+					pageContext.removeAttribute("tagError");
+					pageContext.removeAttribute("tagErrorException");
+					pageContext.removeAttribute("tagErrorMessage");
+				}
+			}
 			if (commitNeeded) {
-				PreparedStatement stmt = getConnection().prepareStatement("update github.organization set login = ?, name = ?, company = ?, location = ?, email = ?, description = ?, blog = ?, has_organization_projects = ?, has_repository_projects = ?, public_repos = ?, public_gists = ?, followers = ?, following = ?, created_at = ?, updated_at = ? where id = ?");
-				stmt.setString(1,login);
-				stmt.setString(2,name);
-				stmt.setString(3,company);
-				stmt.setString(4,location);
-				stmt.setString(5,email);
-				stmt.setString(6,description);
-				stmt.setString(7,blog);
-				stmt.setBoolean(8,hasOrganizationProjects);
-				stmt.setBoolean(9,hasRepositoryProjects);
-				stmt.setInt(10,publicRepos);
-				stmt.setInt(11,publicGists);
-				stmt.setInt(12,followers);
-				stmt.setInt(13,following);
-				stmt.setTimestamp(14,createdAt == null ? null : new java.sql.Timestamp(createdAt.getTime()));
-				stmt.setTimestamp(15,updatedAt == null ? null : new java.sql.Timestamp(updatedAt.getTime()));
+				PreparedStatement stmt = getConnection().prepareStatement("update github.organization set login = ?, name = ?, company = ?, location = ?, email = ?, description = ?, blog = ?, has_organization_projects = ?, has_repository_projects = ?, public_repos = ?, public_gists = ?, followers = ?, following = ?, created_at = ?, updated_at = ? where id = ? ");
+				stmt.setString( 1, login );
+				stmt.setString( 2, name );
+				stmt.setString( 3, company );
+				stmt.setString( 4, location );
+				stmt.setString( 5, email );
+				stmt.setString( 6, description );
+				stmt.setString( 7, blog );
+				stmt.setBoolean( 8, hasOrganizationProjects );
+				stmt.setBoolean( 9, hasRepositoryProjects );
+				stmt.setInt( 10, publicRepos );
+				stmt.setInt( 11, publicGists );
+				stmt.setInt( 12, followers );
+				stmt.setInt( 13, following );
+				stmt.setTimestamp( 14, createdAt );
+				stmt.setTimestamp( 15, updatedAt );
 				stmt.setInt(16,ID);
 				stmt.executeUpdate();
 				stmt.close();
 			}
 		} catch (SQLException e) {
 			log.error("Error: IOException while writing to the user", e);
-			throw new JspTagException("Error: IOException while writing to the user");
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: IOException while writing to the user");
+				return parent.doEndTag();
+			}else{
+				throw new JspTagException("Error: IOException while writing to the user");
+			}
+
 		} finally {
 			clearServiceState();
 			freeConnection();
@@ -146,52 +222,53 @@ public class Organization extends GitHubTagLibTagSupport {
 		return super.doEndTag();
 	}
 
-	public void insertEntity() throws JspException {
-		try {
-			if (ID == 0) {
-				ID = Sequence.generateID();
-				log.debug("generating new Organization " + ID);
-			}
-
-			if (login == null)
-				login = "";
-			if (name == null)
-				name = "";
-			if (company == null)
-				company = "";
-			if (location == null)
-				location = "";
-			if (email == null)
-				email = "";
-			if (description == null)
-				description = "";
-			if (blog == null)
-				blog = "";
-			PreparedStatement stmt = getConnection().prepareStatement("insert into github.organization(id,login,name,company,location,email,description,blog,has_organization_projects,has_repository_projects,public_repos,public_gists,followers,following,created_at,updated_at) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-			stmt.setInt(1,ID);
-			stmt.setString(2,login);
-			stmt.setString(3,name);
-			stmt.setString(4,company);
-			stmt.setString(5,location);
-			stmt.setString(6,email);
-			stmt.setString(7,description);
-			stmt.setString(8,blog);
-			stmt.setBoolean(9,hasOrganizationProjects);
-			stmt.setBoolean(10,hasRepositoryProjects);
-			stmt.setInt(11,publicRepos);
-			stmt.setInt(12,publicGists);
-			stmt.setInt(13,followers);
-			stmt.setInt(14,following);
-			stmt.setTimestamp(15,createdAt == null ? null : new java.sql.Timestamp(createdAt.getTime()));
-			stmt.setTimestamp(16,updatedAt == null ? null : new java.sql.Timestamp(updatedAt.getTime()));
-			stmt.executeUpdate();
-			stmt.close();
-		} catch (SQLException e) {
-			log.error("Error: IOException while writing to the user", e);
-			throw new JspTagException("Error: IOException while writing to the user");
-		} finally {
-			freeConnection();
+	public void insertEntity() throws JspException, SQLException {
+		if (ID == 0) {
+			ID = Sequence.generateID();
+			log.debug("generating new Organization " + ID);
 		}
+
+		if (login == null){
+			login = "";
+		}
+		if (name == null){
+			name = "";
+		}
+		if (company == null){
+			company = "";
+		}
+		if (location == null){
+			location = "";
+		}
+		if (email == null){
+			email = "";
+		}
+		if (description == null){
+			description = "";
+		}
+		if (blog == null){
+			blog = "";
+		}
+		PreparedStatement stmt = getConnection().prepareStatement("insert into github.organization(id,login,name,company,location,email,description,blog,has_organization_projects,has_repository_projects,public_repos,public_gists,followers,following,created_at,updated_at) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+		stmt.setInt(1,ID);
+		stmt.setString(2,login);
+		stmt.setString(3,name);
+		stmt.setString(4,company);
+		stmt.setString(5,location);
+		stmt.setString(6,email);
+		stmt.setString(7,description);
+		stmt.setString(8,blog);
+		stmt.setBoolean(9,hasOrganizationProjects);
+		stmt.setBoolean(10,hasRepositoryProjects);
+		stmt.setInt(11,publicRepos);
+		stmt.setInt(12,publicGists);
+		stmt.setInt(13,followers);
+		stmt.setInt(14,following);
+		stmt.setTimestamp(15,createdAt);
+		stmt.setTimestamp(16,updatedAt);
+		stmt.executeUpdate();
+		stmt.close();
+		freeConnection();
 	}
 
 	public int getID () {
@@ -396,40 +473,52 @@ public class Organization extends GitHubTagLibTagSupport {
 		return following;
 	}
 
-	public Date getCreatedAt () {
+	public Timestamp getCreatedAt () {
 		return createdAt;
 	}
 
-	public void setCreatedAt (Date createdAt) {
+	public void setCreatedAt (Timestamp createdAt) {
 		this.createdAt = createdAt;
 		commitNeeded = true;
 	}
 
-	public Date getActualCreatedAt () {
+	public Timestamp getActualCreatedAt () {
 		return createdAt;
 	}
 
 	public void setCreatedAtToNow ( ) {
-		this.createdAt = new java.util.Date();
+		this.createdAt = new java.sql.Timestamp(new java.util.Date().getTime());
 		commitNeeded = true;
 	}
 
-	public Date getUpdatedAt () {
+	public Timestamp getUpdatedAt () {
 		return updatedAt;
 	}
 
-	public void setUpdatedAt (Date updatedAt) {
+	public void setUpdatedAt (Timestamp updatedAt) {
 		this.updatedAt = updatedAt;
 		commitNeeded = true;
 	}
 
-	public Date getActualUpdatedAt () {
+	public Timestamp getActualUpdatedAt () {
 		return updatedAt;
 	}
 
 	public void setUpdatedAtToNow ( ) {
-		this.updatedAt = new java.util.Date();
+		this.updatedAt = new java.sql.Timestamp(new java.util.Date().getTime());
 		commitNeeded = true;
+	}
+
+	public String getVar () {
+		return var;
+	}
+
+	public void setVar (String var) {
+		this.var = var;
+	}
+
+	public String getActualVar () {
+		return var;
 	}
 
 	public static Integer IDValue() throws JspException {
@@ -544,7 +633,7 @@ public class Organization extends GitHubTagLibTagSupport {
 		}
 	}
 
-	public static Date createdAtValue() throws JspException {
+	public static Timestamp createdAtValue() throws JspException {
 		try {
 			return currentInstance.getCreatedAt();
 		} catch (Exception e) {
@@ -552,7 +641,7 @@ public class Organization extends GitHubTagLibTagSupport {
 		}
 	}
 
-	public static Date updatedAtValue() throws JspException {
+	public static Timestamp updatedAtValue() throws JspException {
 		try {
 			return currentInstance.getUpdatedAt();
 		} catch (Exception e) {
@@ -580,6 +669,7 @@ public class Organization extends GitHubTagLibTagSupport {
 		newRecord = false;
 		commitNeeded = false;
 		parentEntities = new Vector<GitHubTagLibTagSupport>();
+		this.var = null;
 
 	}
 

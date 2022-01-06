@@ -14,21 +14,20 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cd2h.JSONTagLib.GraphQL.GitHubAPI;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class RoadmapMaintainer {
-    static Logger logger = Logger.getLogger(RoadmapMaintainer.class);
+    static Logger logger = LogManager.getLogger(RoadmapMaintainer.class);
     protected static LocalProperties prop_file = null;
     static Connection conn = null;
     static boolean useAPI = true;
 
     public static void main(String[] args) throws ClassNotFoundException, SQLException, IOException {
-	PropertyConfigurator.configure(args[0]);
 	prop_file = PropertyLoader.loadProperties("github");
 	getConnection();
 	

@@ -5,11 +5,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.Tag;
 
 import edu.uiowa.slis.GitHubTagLib.GitHubTagLibTagSupport;
 import edu.uiowa.slis.GitHubTagLib.GitHubTagLibBodyTagSupport;
@@ -22,7 +23,7 @@ public class UserRepoIterator extends GitHubTagLibBodyTagSupport {
     int repositoryId = 0;
 	Vector<GitHubTagLibTagSupport> parentEntities = new Vector<GitHubTagLibTagSupport>();
 
-	private static final Log log = LogFactory.getLog(UserRepoIterator.class);
+	private static final Logger log = LogManager.getLogger(UserRepoIterator.class);
 
 
     PreparedStatement stat = null;
@@ -40,7 +41,7 @@ public class UserRepoIterator extends GitHubTagLibBodyTagSupport {
 		UserRepoIterator theIterator = new UserRepoIterator();
 		try {
 			PreparedStatement stat = theIterator.getConnection().prepareStatement("SELECT count(*) from github.user_repo where 1=1"
-						+ " and id = ?"
+						+ " and user_id = ?"
 						);
 
 			stat.setInt(1,Integer.parseInt(ID));
@@ -68,7 +69,7 @@ public class UserRepoIterator extends GitHubTagLibBodyTagSupport {
 		UserRepoIterator theIterator = new UserRepoIterator();
 		try {
 			PreparedStatement stat = theIterator.getConnection().prepareStatement("SELECT count(*) from github.user_repo where 1=1"
-						+ " and id = ?"
+						+ " and repository_id = ?"
 						);
 
 			stat.setInt(1,Integer.parseInt(ID));
@@ -166,7 +167,7 @@ public class UserRepoIterator extends GitHubTagLibBodyTagSupport {
                                                         + generateJoinCriteria()
                                                         + (userId == 0 ? "" : " and user_id = ?")
                                                         + (repositoryId == 0 ? "" : " and repository_id = ?")
-                                                        +  generateLimitCriteria());
+                                                        + generateLimitCriteria());
             if (userId != 0) stat.setInt(webapp_keySeq++, userId);
             if (repositoryId != 0) stat.setInt(webapp_keySeq++, repositoryId);
             rs = stat.executeQuery();
@@ -182,22 +183,33 @@ public class UserRepoIterator extends GitHubTagLibBodyTagSupport {
                                                         + generateJoinCriteria()
                                                         + (userId == 0 ? "" : " and user_id = ?")
                                                         + (repositoryId == 0 ? "" : " and repository_id = ?")
-                                                        + " order by " + generateSortCriteria() + generateLimitCriteria());
+                                                        + " order by " + generateSortCriteria()  +  generateLimitCriteria());
             if (userId != 0) stat.setInt(webapp_keySeq++, userId);
             if (repositoryId != 0) stat.setInt(webapp_keySeq++, repositoryId);
             rs = stat.executeQuery();
 
-            if (rs.next()) {
+            if ( rs != null && rs.next() ) {
                 userId = rs.getInt(1);
                 repositoryId = rs.getInt(2);
                 pageContext.setAttribute(var, ++rsCount);
                 return EVAL_BODY_INCLUDE;
             }
         } catch (SQLException e) {
-            log.error("JDBC error generating UserRepo iterator: " + stat.toString(), e);
-            clearServiceState();
-            freeConnection();
-            throw new JspTagException("Error: JDBC error generating UserRepo iterator: " + stat.toString());
+            log.error("JDBC error generating UserRepo iterator: " + stat, e);
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: JDBC error generating UserRepo iterator: " + stat);
+				return parent.doEndTag();
+			}else{
+				throw new JspException("Error: JDBC error generating UserRepo iterator: " + stat,e);
+			}
+
         }
 
         return SKIP_BODY;
@@ -216,9 +228,9 @@ public class UserRepoIterator extends GitHubTagLibBodyTagSupport {
     private String generateJoinCriteria() {
        StringBuffer theBuffer = new StringBuffer();
        if (useUser)
-          theBuffer.append(" and user.ID = user_repo.user_id");
+          theBuffer.append(" and github.user.id = github.user_repo.user_id");
        if (useRepository)
-          theBuffer.append(" and repository.ID = user_repo.repository_id");
+          theBuffer.append(" and github.repository.id = github.user_repo.repository_id");
 
       return theBuffer.toString();
     }
@@ -239,9 +251,9 @@ public class UserRepoIterator extends GitHubTagLibBodyTagSupport {
         }
     }
 
-    public int doAfterBody() throws JspTagException {
+    public int doAfterBody() throws JspException {
         try {
-            if (rs.next()) {
+            if ( rs != null && rs.next() ) {
                 userId = rs.getInt(1);
                 repositoryId = rs.getInt(2);
                 pageContext.setAttribute(var, ++rsCount);
@@ -249,20 +261,76 @@ public class UserRepoIterator extends GitHubTagLibBodyTagSupport {
             }
         } catch (SQLException e) {
             log.error("JDBC error iterating across UserRepo", e);
-            clearServiceState();
-            freeConnection();
-            throw new JspTagException("Error: JDBC error iterating across UserRepo");
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "JDBC error iterating across UserRepo" + stat.toString());
+				return parent.doEndTag();
+			}else{
+				throw new JspException("JDBC error iterating across UserRepo",e);
+			}
+
         }
         return SKIP_BODY;
     }
 
     public int doEndTag() throws JspTagException, JspException {
         try {
-            rs.close();
-            stat.close();
-        } catch (SQLException e) {
+			if( pageContext != null ){
+				Boolean error = (Boolean) pageContext.getAttribute("tagError");
+				if( error != null && error ){
+
+					freeConnection();
+					clearServiceState();
+
+					Exception e = null; // (Exception) pageContext.getAttribute("tagErrorException");
+					String message = null; // (String) pageContext.getAttribute("tagErrorMessage");
+
+					if(pageContext != null){
+						e = (Exception) pageContext.getAttribute("tagErrorException");
+						message = (String) pageContext.getAttribute("tagErrorMessage");
+
+					}
+					Tag parent = getParent();
+					if(parent != null){
+						return parent.doEndTag();
+					}else if(e != null && message != null){
+						throw new JspException(message,e);
+					}else if(parent == null && pageContext != null){
+						pageContext.removeAttribute("tagError");
+						pageContext.removeAttribute("tagErrorException");
+						pageContext.removeAttribute("tagErrorMessage");
+					}
+				}
+			}
+
+            if( rs != null ){
+                rs.close();
+            }
+
+            if( stat != null ){
+                stat.close();
+            }
+
+        } catch ( SQLException e ) {
             log.error("JDBC error ending UserRepo iterator",e);
-            throw new JspTagException("Error: JDBC error ending UserRepo iterator");
+			freeConnection();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "JDBC error retrieving userId " + userId);
+				return parent.doEndTag();
+			}else{
+				throw new JspException("Error: JDBC error ending UserRepo iterator",e);
+			}
+
         } finally {
             clearServiceState();
             freeConnection();

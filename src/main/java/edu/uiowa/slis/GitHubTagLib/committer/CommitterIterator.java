@@ -5,12 +5,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import java.util.Date;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import java.sql.Timestamp;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.Tag;
 
 import edu.uiowa.slis.GitHubTagLib.GitHubTagLibTagSupport;
 import edu.uiowa.slis.GitHubTagLib.GitHubTagLibBodyTagSupport;
@@ -21,11 +22,11 @@ import edu.uiowa.slis.GitHubTagLib.repository.Repository;
 public class CommitterIterator extends GitHubTagLibBodyTagSupport {
     int uid = 0;
     int rid = 0;
-    Date mostRecent = null;
+    Timestamp mostRecent = null;
     int count = 0;
 	Vector<GitHubTagLibTagSupport> parentEntities = new Vector<GitHubTagLibTagSupport>();
 
-	private static final Log log = LogFactory.getLog(CommitterIterator.class);
+	private static final Logger log = LogManager.getLogger(CommitterIterator.class);
 
 
     PreparedStatement stat = null;
@@ -43,7 +44,7 @@ public class CommitterIterator extends GitHubTagLibBodyTagSupport {
 		CommitterIterator theIterator = new CommitterIterator();
 		try {
 			PreparedStatement stat = theIterator.getConnection().prepareStatement("SELECT count(*) from github.committer where 1=1"
-						+ " and id = ?"
+						+ " and uid = ?"
 						);
 
 			stat.setInt(1,Integer.parseInt(ID));
@@ -71,7 +72,7 @@ public class CommitterIterator extends GitHubTagLibBodyTagSupport {
 		CommitterIterator theIterator = new CommitterIterator();
 		try {
 			PreparedStatement stat = theIterator.getConnection().prepareStatement("SELECT count(*) from github.committer where 1=1"
-						+ " and id = ?"
+						+ " and rid = ?"
 						);
 
 			stat.setInt(1,Integer.parseInt(ID));
@@ -169,7 +170,7 @@ public class CommitterIterator extends GitHubTagLibBodyTagSupport {
                                                         + generateJoinCriteria()
                                                         + (uid == 0 ? "" : " and uid = ?")
                                                         + (rid == 0 ? "" : " and rid = ?")
-                                                        +  generateLimitCriteria());
+                                                        + generateLimitCriteria());
             if (uid != 0) stat.setInt(webapp_keySeq++, uid);
             if (rid != 0) stat.setInt(webapp_keySeq++, rid);
             rs = stat.executeQuery();
@@ -185,22 +186,33 @@ public class CommitterIterator extends GitHubTagLibBodyTagSupport {
                                                         + generateJoinCriteria()
                                                         + (uid == 0 ? "" : " and uid = ?")
                                                         + (rid == 0 ? "" : " and rid = ?")
-                                                        + " order by " + generateSortCriteria() + generateLimitCriteria());
+                                                        + " order by " + generateSortCriteria()  +  generateLimitCriteria());
             if (uid != 0) stat.setInt(webapp_keySeq++, uid);
             if (rid != 0) stat.setInt(webapp_keySeq++, rid);
             rs = stat.executeQuery();
 
-            if (rs.next()) {
+            if ( rs != null && rs.next() ) {
                 uid = rs.getInt(1);
                 rid = rs.getInt(2);
                 pageContext.setAttribute(var, ++rsCount);
                 return EVAL_BODY_INCLUDE;
             }
         } catch (SQLException e) {
-            log.error("JDBC error generating Committer iterator: " + stat.toString(), e);
-            clearServiceState();
-            freeConnection();
-            throw new JspTagException("Error: JDBC error generating Committer iterator: " + stat.toString());
+            log.error("JDBC error generating Committer iterator: " + stat, e);
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: JDBC error generating Committer iterator: " + stat);
+				return parent.doEndTag();
+			}else{
+				throw new JspException("Error: JDBC error generating Committer iterator: " + stat,e);
+			}
+
         }
 
         return SKIP_BODY;
@@ -219,9 +231,9 @@ public class CommitterIterator extends GitHubTagLibBodyTagSupport {
     private String generateJoinCriteria() {
        StringBuffer theBuffer = new StringBuffer();
        if (useUser)
-          theBuffer.append(" and user.ID = committer.null");
+          theBuffer.append(" and github.user.id = github.committer.uid");
        if (useRepository)
-          theBuffer.append(" and repository.ID = committer.null");
+          theBuffer.append(" and github.repository.id = github.committer.rid");
 
       return theBuffer.toString();
     }
@@ -242,9 +254,9 @@ public class CommitterIterator extends GitHubTagLibBodyTagSupport {
         }
     }
 
-    public int doAfterBody() throws JspTagException {
+    public int doAfterBody() throws JspException {
         try {
-            if (rs.next()) {
+            if ( rs != null && rs.next() ) {
                 uid = rs.getInt(1);
                 rid = rs.getInt(2);
                 pageContext.setAttribute(var, ++rsCount);
@@ -252,20 +264,76 @@ public class CommitterIterator extends GitHubTagLibBodyTagSupport {
             }
         } catch (SQLException e) {
             log.error("JDBC error iterating across Committer", e);
-            clearServiceState();
-            freeConnection();
-            throw new JspTagException("Error: JDBC error iterating across Committer");
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "JDBC error iterating across Committer" + stat.toString());
+				return parent.doEndTag();
+			}else{
+				throw new JspException("JDBC error iterating across Committer",e);
+			}
+
         }
         return SKIP_BODY;
     }
 
     public int doEndTag() throws JspTagException, JspException {
         try {
-            rs.close();
-            stat.close();
-        } catch (SQLException e) {
+			if( pageContext != null ){
+				Boolean error = (Boolean) pageContext.getAttribute("tagError");
+				if( error != null && error ){
+
+					freeConnection();
+					clearServiceState();
+
+					Exception e = null; // (Exception) pageContext.getAttribute("tagErrorException");
+					String message = null; // (String) pageContext.getAttribute("tagErrorMessage");
+
+					if(pageContext != null){
+						e = (Exception) pageContext.getAttribute("tagErrorException");
+						message = (String) pageContext.getAttribute("tagErrorMessage");
+
+					}
+					Tag parent = getParent();
+					if(parent != null){
+						return parent.doEndTag();
+					}else if(e != null && message != null){
+						throw new JspException(message,e);
+					}else if(parent == null && pageContext != null){
+						pageContext.removeAttribute("tagError");
+						pageContext.removeAttribute("tagErrorException");
+						pageContext.removeAttribute("tagErrorMessage");
+					}
+				}
+			}
+
+            if( rs != null ){
+                rs.close();
+            }
+
+            if( stat != null ){
+                stat.close();
+            }
+
+        } catch ( SQLException e ) {
             log.error("JDBC error ending Committer iterator",e);
-            throw new JspTagException("Error: JDBC error ending Committer iterator");
+			freeConnection();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "JDBC error retrieving uid " + uid);
+				return parent.doEndTag();
+			}else{
+				throw new JspException("Error: JDBC error ending Committer iterator",e);
+			}
+
         } finally {
             clearServiceState();
             freeConnection();

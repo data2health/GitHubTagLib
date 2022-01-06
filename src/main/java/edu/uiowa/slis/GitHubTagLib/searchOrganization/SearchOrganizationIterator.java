@@ -5,11 +5,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.Tag;
 
 import edu.uiowa.slis.GitHubTagLib.GitHubTagLibTagSupport;
 import edu.uiowa.slis.GitHubTagLib.GitHubTagLibBodyTagSupport;
@@ -24,7 +25,7 @@ public class SearchOrganizationIterator extends GitHubTagLibBodyTagSupport {
     boolean relevant = false;
 	Vector<GitHubTagLibTagSupport> parentEntities = new Vector<GitHubTagLibTagSupport>();
 
-	private static final Log log = LogFactory.getLog(SearchOrganizationIterator.class);
+	private static final Logger log = LogManager.getLogger(SearchOrganizationIterator.class);
 
 
     PreparedStatement stat = null;
@@ -70,7 +71,7 @@ public class SearchOrganizationIterator extends GitHubTagLibBodyTagSupport {
 		SearchOrganizationIterator theIterator = new SearchOrganizationIterator();
 		try {
 			PreparedStatement stat = theIterator.getConnection().prepareStatement("SELECT count(*) from github.search_organization where 1=1"
-						+ " and id = ?"
+						+ " and orgid = ?"
 						);
 
 			stat.setInt(1,Integer.parseInt(ID));
@@ -168,7 +169,7 @@ public class SearchOrganizationIterator extends GitHubTagLibBodyTagSupport {
                                                         + generateJoinCriteria()
                                                         + (sid == 0 ? "" : " and sid = ?")
                                                         + (orgid == 0 ? "" : " and orgid = ?")
-                                                        +  generateLimitCriteria());
+                                                        + generateLimitCriteria());
             if (sid != 0) stat.setInt(webapp_keySeq++, sid);
             if (orgid != 0) stat.setInt(webapp_keySeq++, orgid);
             rs = stat.executeQuery();
@@ -184,22 +185,33 @@ public class SearchOrganizationIterator extends GitHubTagLibBodyTagSupport {
                                                         + generateJoinCriteria()
                                                         + (sid == 0 ? "" : " and sid = ?")
                                                         + (orgid == 0 ? "" : " and orgid = ?")
-                                                        + " order by " + generateSortCriteria() + generateLimitCriteria());
+                                                        + " order by " + generateSortCriteria()  +  generateLimitCriteria());
             if (sid != 0) stat.setInt(webapp_keySeq++, sid);
             if (orgid != 0) stat.setInt(webapp_keySeq++, orgid);
             rs = stat.executeQuery();
 
-            if (rs.next()) {
+            if ( rs != null && rs.next() ) {
                 sid = rs.getInt(1);
                 orgid = rs.getInt(2);
                 pageContext.setAttribute(var, ++rsCount);
                 return EVAL_BODY_INCLUDE;
             }
         } catch (SQLException e) {
-            log.error("JDBC error generating SearchOrganization iterator: " + stat.toString(), e);
-            clearServiceState();
-            freeConnection();
-            throw new JspTagException("Error: JDBC error generating SearchOrganization iterator: " + stat.toString());
+            log.error("JDBC error generating SearchOrganization iterator: " + stat, e);
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: JDBC error generating SearchOrganization iterator: " + stat);
+				return parent.doEndTag();
+			}else{
+				throw new JspException("Error: JDBC error generating SearchOrganization iterator: " + stat,e);
+			}
+
         }
 
         return SKIP_BODY;
@@ -218,9 +230,9 @@ public class SearchOrganizationIterator extends GitHubTagLibBodyTagSupport {
     private String generateJoinCriteria() {
        StringBuffer theBuffer = new StringBuffer();
        if (useSearchTerm)
-          theBuffer.append(" and search_term.ID = search_organization.sid");
+          theBuffer.append(" and github.search_term.id = github.search_organization.sid");
        if (useOrganization)
-          theBuffer.append(" and organization.ID = search_organization.orgid");
+          theBuffer.append(" and github.organization.id = github.search_organization.orgid");
 
       return theBuffer.toString();
     }
@@ -241,9 +253,9 @@ public class SearchOrganizationIterator extends GitHubTagLibBodyTagSupport {
         }
     }
 
-    public int doAfterBody() throws JspTagException {
+    public int doAfterBody() throws JspException {
         try {
-            if (rs.next()) {
+            if ( rs != null && rs.next() ) {
                 sid = rs.getInt(1);
                 orgid = rs.getInt(2);
                 pageContext.setAttribute(var, ++rsCount);
@@ -251,20 +263,76 @@ public class SearchOrganizationIterator extends GitHubTagLibBodyTagSupport {
             }
         } catch (SQLException e) {
             log.error("JDBC error iterating across SearchOrganization", e);
-            clearServiceState();
-            freeConnection();
-            throw new JspTagException("Error: JDBC error iterating across SearchOrganization");
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "JDBC error iterating across SearchOrganization" + stat.toString());
+				return parent.doEndTag();
+			}else{
+				throw new JspException("JDBC error iterating across SearchOrganization",e);
+			}
+
         }
         return SKIP_BODY;
     }
 
     public int doEndTag() throws JspTagException, JspException {
         try {
-            rs.close();
-            stat.close();
-        } catch (SQLException e) {
+			if( pageContext != null ){
+				Boolean error = (Boolean) pageContext.getAttribute("tagError");
+				if( error != null && error ){
+
+					freeConnection();
+					clearServiceState();
+
+					Exception e = null; // (Exception) pageContext.getAttribute("tagErrorException");
+					String message = null; // (String) pageContext.getAttribute("tagErrorMessage");
+
+					if(pageContext != null){
+						e = (Exception) pageContext.getAttribute("tagErrorException");
+						message = (String) pageContext.getAttribute("tagErrorMessage");
+
+					}
+					Tag parent = getParent();
+					if(parent != null){
+						return parent.doEndTag();
+					}else if(e != null && message != null){
+						throw new JspException(message,e);
+					}else if(parent == null && pageContext != null){
+						pageContext.removeAttribute("tagError");
+						pageContext.removeAttribute("tagErrorException");
+						pageContext.removeAttribute("tagErrorMessage");
+					}
+				}
+			}
+
+            if( rs != null ){
+                rs.close();
+            }
+
+            if( stat != null ){
+                stat.close();
+            }
+
+        } catch ( SQLException e ) {
             log.error("JDBC error ending SearchOrganization iterator",e);
-            throw new JspTagException("Error: JDBC error ending SearchOrganization iterator");
+			freeConnection();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "JDBC error retrieving sid " + sid);
+				return parent.doEndTag();
+			}else{
+				throw new JspException("Error: JDBC error ending SearchOrganization iterator",e);
+			}
+
         } finally {
             clearServiceState();
             freeConnection();

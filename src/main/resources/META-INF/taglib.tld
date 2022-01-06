@@ -61,6 +61,12 @@
 		<body-content>JSP</body-content>
 
 		<attribute>
+			<name>var</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
+		<attribute>
 			<name>ID</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -245,30 +251,6 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
-
-		<attribute>
-			<name>type</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>dateStyle</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>timeStyle</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>pattern</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
 	</tag>
 
 	<tag>
@@ -290,30 +272,6 @@
 
 		<attribute>
 			<name>updatedAt</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>type</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>dateStyle</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>timeStyle</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>pattern</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
@@ -365,6 +323,12 @@
 		<name>organization</name>
 		<tag-class>edu.uiowa.slis.GitHubTagLib.organization.Organization</tag-class>
 		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>var</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
 
 		<attribute>
 			<name>ID</name>
@@ -563,30 +527,6 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
-
-		<attribute>
-			<name>type</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>dateStyle</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>timeStyle</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>pattern</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
 	</tag>
 
 	<tag>
@@ -608,30 +548,6 @@
 
 		<attribute>
 			<name>updatedAt</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>type</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>dateStyle</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>timeStyle</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>pattern</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
@@ -690,18 +606,18 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 
-		<attribute>
-			<name>useUser</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
 	</tag>
 
 	<tag>
 		<name>follows</name>
 		<tag-class>edu.uiowa.slis.GitHubTagLib.follows.Follows</tag-class>
 		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>var</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
 
 		<attribute>
 			<name>follower</name>
@@ -813,6 +729,12 @@
 		<body-content>JSP</body-content>
 
 		<attribute>
+			<name>var</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
+		<attribute>
 			<name>userId</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -901,6 +823,12 @@
 		<name>repository</name>
 		<tag-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</tag-class>
 		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>var</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
 
 		<attribute>
 			<name>ID</name>
@@ -1003,30 +931,6 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
-
-		<attribute>
-			<name>type</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>dateStyle</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>timeStyle</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>pattern</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
 	</tag>
 
 	<tag>
@@ -1051,30 +955,6 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
-
-		<attribute>
-			<name>type</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>dateStyle</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>timeStyle</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>pattern</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
 	</tag>
 
 	<tag>
@@ -1096,30 +976,6 @@
 
 		<attribute>
 			<name>pushedAt</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>type</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>dateStyle</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>timeStyle</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>pattern</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
@@ -1389,6 +1245,12 @@
 		<body-content>JSP</body-content>
 
 		<attribute>
+			<name>var</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
+		<attribute>
 			<name>ID</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -1484,6 +1346,12 @@
 		<name>orgRepo</name>
 		<tag-class>edu.uiowa.slis.GitHubTagLib.orgRepo.OrgRepo</tag-class>
 		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>var</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
 
 		<attribute>
 			<name>organizationId</name>
@@ -1595,6 +1463,12 @@
 		<body-content>JSP</body-content>
 
 		<attribute>
+			<name>var</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
+		<attribute>
 			<name>userId</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -1683,6 +1557,12 @@
 		<name>searchTerm</name>
 		<tag-class>edu.uiowa.slis.GitHubTagLib.searchTerm.SearchTerm</tag-class>
 		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>var</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
 
 		<attribute>
 			<name>ID</name>
@@ -1780,6 +1660,12 @@
 		<name>searchUser</name>
 		<tag-class>edu.uiowa.slis.GitHubTagLib.searchUser.SearchUser</tag-class>
 		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>var</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
 
 		<attribute>
 			<name>sid</name>
@@ -1915,6 +1801,12 @@
 		<body-content>JSP</body-content>
 
 		<attribute>
+			<name>var</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
+		<attribute>
 			<name>sid</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -2048,6 +1940,12 @@
 		<body-content>JSP</body-content>
 
 		<attribute>
+			<name>var</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
+		<attribute>
 			<name>sid</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -2168,6 +2066,12 @@
 		<body-content>JSP</body-content>
 
 		<attribute>
+			<name>var</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
+		<attribute>
 			<name>ID</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -2217,30 +2121,6 @@
 
 		<attribute>
 			<name>committed</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>type</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>dateStyle</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>timeStyle</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>pattern</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
@@ -2354,6 +2234,12 @@
 		<body-content>JSP</body-content>
 
 		<attribute>
+			<name>var</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
+		<attribute>
 			<name>ID</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -2463,6 +2349,12 @@
 		<body-content>JSP</body-content>
 
 		<attribute>
+			<name>var</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
+		<attribute>
 			<name>uid</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -2524,30 +2416,6 @@
 
 		<attribute>
 			<name>mostRecent</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>type</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>dateStyle</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>timeStyle</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>pattern</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
@@ -2617,6 +2485,12 @@
 		<name>otherCommitter</name>
 		<tag-class>edu.uiowa.slis.GitHubTagLib.otherCommitter.OtherCommitter</tag-class>
 		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>var</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
 
 		<attribute>
 			<name>rid</name>
@@ -2695,30 +2569,6 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
-
-		<attribute>
-			<name>type</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>dateStyle</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>timeStyle</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>pattern</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
 	</tag>
 
 	<tag>
@@ -2758,96 +2608,6 @@
 	</function>
 
 	<function>
-		<name>userIDValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.user.User</function-class>
-		<function-signature>java.lang.Integer IDValue()</function-signature>
-	</function>
-
-	<function>
-		<name>userLoginValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.user.User</function-class>
-		<function-signature>java.lang.String loginValue()</function-signature>
-	</function>
-
-	<function>
-		<name>userNameValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.user.User</function-class>
-		<function-signature>java.lang.String nameValue()</function-signature>
-	</function>
-
-	<function>
-		<name>userCompanyValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.user.User</function-class>
-		<function-signature>java.lang.String companyValue()</function-signature>
-	</function>
-
-	<function>
-		<name>userLocationValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.user.User</function-class>
-		<function-signature>java.lang.String locationValue()</function-signature>
-	</function>
-
-	<function>
-		<name>userEmailValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.user.User</function-class>
-		<function-signature>java.lang.String emailValue()</function-signature>
-	</function>
-
-	<function>
-		<name>userBioValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.user.User</function-class>
-		<function-signature>java.lang.String bioValue()</function-signature>
-	</function>
-
-	<function>
-		<name>userBlogValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.user.User</function-class>
-		<function-signature>java.lang.String blogValue()</function-signature>
-	</function>
-
-	<function>
-		<name>userSiteAdminValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.user.User</function-class>
-		<function-signature>java.lang.Boolean siteAdminValue()</function-signature>
-	</function>
-
-	<function>
-		<name>userPublicReposValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.user.User</function-class>
-		<function-signature>java.lang.Integer publicReposValue()</function-signature>
-	</function>
-
-	<function>
-		<name>userPublicGistsValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.user.User</function-class>
-		<function-signature>java.lang.Integer publicGistsValue()</function-signature>
-	</function>
-
-	<function>
-		<name>userFollowersValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.user.User</function-class>
-		<function-signature>java.lang.Integer followersValue()</function-signature>
-	</function>
-
-	<function>
-		<name>userFollowingValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.user.User</function-class>
-		<function-signature>java.lang.Integer followingValue()</function-signature>
-	</function>
-
-	<function>
-		<name>userCreatedAtValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.user.User</function-class>
-		<function-signature>java.lang.Date createdAtValue()</function-signature>
-	</function>
-
-	<function>
-		<name>userUpdatedAtValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.user.User</function-class>
-		<function-signature>java.lang.Date updatedAtValue()</function-signature>
-	</function>
-
-	<function>
 		<name>organizationCount</name>
 		<function-class>edu.uiowa.slis.GitHubTagLib.organization.OrganizationIterator</function-class>
 		<function-signature>java.lang.String organizationCount()</function-signature>
@@ -2857,102 +2617,6 @@
 		<name>organizationExists</name>
 		<function-class>edu.uiowa.slis.GitHubTagLib.organization.OrganizationIterator</function-class>
 		<function-signature>java.lang.String organizationExists(java.lang.String)</function-signature>
-	</function>
-
-	<function>
-		<name>organizationIDValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.organization.Organization</function-class>
-		<function-signature>java.lang.Integer IDValue()</function-signature>
-	</function>
-
-	<function>
-		<name>organizationLoginValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.organization.Organization</function-class>
-		<function-signature>java.lang.String loginValue()</function-signature>
-	</function>
-
-	<function>
-		<name>organizationNameValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.organization.Organization</function-class>
-		<function-signature>java.lang.String nameValue()</function-signature>
-	</function>
-
-	<function>
-		<name>organizationCompanyValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.organization.Organization</function-class>
-		<function-signature>java.lang.String companyValue()</function-signature>
-	</function>
-
-	<function>
-		<name>organizationLocationValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.organization.Organization</function-class>
-		<function-signature>java.lang.String locationValue()</function-signature>
-	</function>
-
-	<function>
-		<name>organizationEmailValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.organization.Organization</function-class>
-		<function-signature>java.lang.String emailValue()</function-signature>
-	</function>
-
-	<function>
-		<name>organizationDescriptionValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.organization.Organization</function-class>
-		<function-signature>java.lang.String descriptionValue()</function-signature>
-	</function>
-
-	<function>
-		<name>organizationBlogValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.organization.Organization</function-class>
-		<function-signature>java.lang.String blogValue()</function-signature>
-	</function>
-
-	<function>
-		<name>organizationHasOrganizationProjectsValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.organization.Organization</function-class>
-		<function-signature>java.lang.Boolean hasOrganizationProjectsValue()</function-signature>
-	</function>
-
-	<function>
-		<name>organizationHasRepositoryProjectsValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.organization.Organization</function-class>
-		<function-signature>java.lang.Boolean hasRepositoryProjectsValue()</function-signature>
-	</function>
-
-	<function>
-		<name>organizationPublicReposValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.organization.Organization</function-class>
-		<function-signature>java.lang.Integer publicReposValue()</function-signature>
-	</function>
-
-	<function>
-		<name>organizationPublicGistsValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.organization.Organization</function-class>
-		<function-signature>java.lang.Integer publicGistsValue()</function-signature>
-	</function>
-
-	<function>
-		<name>organizationFollowersValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.organization.Organization</function-class>
-		<function-signature>java.lang.Integer followersValue()</function-signature>
-	</function>
-
-	<function>
-		<name>organizationFollowingValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.organization.Organization</function-class>
-		<function-signature>java.lang.Integer followingValue()</function-signature>
-	</function>
-
-	<function>
-		<name>organizationCreatedAtValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.organization.Organization</function-class>
-		<function-signature>java.lang.Date createdAtValue()</function-signature>
-	</function>
-
-	<function>
-		<name>organizationUpdatedAtValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.organization.Organization</function-class>
-		<function-signature>java.lang.Date updatedAtValue()</function-signature>
 	</function>
 
 	<function>
@@ -2977,18 +2641,6 @@
 		<name>userUserExists</name>
 		<function-class>edu.uiowa.slis.GitHubTagLib.follows.FollowsIterator</function-class>
 		<function-signature>java.lang.Boolean userUserExists(java.lang.String, java.lang.String)</function-signature>
-	</function>
-
-	<function>
-		<name>followsFollowerValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.follows.Follows</function-class>
-		<function-signature>java.lang.Integer followerValue()</function-signature>
-	</function>
-
-	<function>
-		<name>followsFollowingValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.follows.Follows</function-class>
-		<function-signature>java.lang.Integer followingValue()</function-signature>
 	</function>
 
 	<function>
@@ -3028,18 +2680,6 @@
 	</function>
 
 	<function>
-		<name>memberUserIdValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.member.Member</function-class>
-		<function-signature>java.lang.Integer userIdValue()</function-signature>
-	</function>
-
-	<function>
-		<name>memberOrganizationIdValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.member.Member</function-class>
-		<function-signature>java.lang.Integer organizationIdValue()</function-signature>
-	</function>
-
-	<function>
 		<name>repositoryCount</name>
 		<function-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryIterator</function-class>
 		<function-signature>java.lang.String repositoryCount()</function-signature>
@@ -3049,168 +2689,6 @@
 		<name>repositoryExists</name>
 		<function-class>edu.uiowa.slis.GitHubTagLib.repository.RepositoryIterator</function-class>
 		<function-signature>java.lang.String repositoryExists(java.lang.String)</function-signature>
-	</function>
-
-	<function>
-		<name>repositoryIDValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
-		<function-signature>java.lang.Integer IDValue()</function-signature>
-	</function>
-
-	<function>
-		<name>repositoryNameValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
-		<function-signature>java.lang.String nameValue()</function-signature>
-	</function>
-
-	<function>
-		<name>repositoryFullNameValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
-		<function-signature>java.lang.String fullNameValue()</function-signature>
-	</function>
-
-	<function>
-		<name>repositoryIsPrivateValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
-		<function-signature>java.lang.Boolean isPrivateValue()</function-signature>
-	</function>
-
-	<function>
-		<name>repositoryDescriptionValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
-		<function-signature>java.lang.String descriptionValue()</function-signature>
-	</function>
-
-	<function>
-		<name>repositoryForkValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
-		<function-signature>java.lang.Boolean forkValue()</function-signature>
-	</function>
-
-	<function>
-		<name>repositoryCreatedAtValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
-		<function-signature>java.lang.Date createdAtValue()</function-signature>
-	</function>
-
-	<function>
-		<name>repositoryUpdatedAtValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
-		<function-signature>java.lang.Date updatedAtValue()</function-signature>
-	</function>
-
-	<function>
-		<name>repositoryPushedAtValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
-		<function-signature>java.lang.Date pushedAtValue()</function-signature>
-	</function>
-
-	<function>
-		<name>repositoryHomepageValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
-		<function-signature>java.lang.String homepageValue()</function-signature>
-	</function>
-
-	<function>
-		<name>repositorySizeValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
-		<function-signature>java.lang.Integer sizeValue()</function-signature>
-	</function>
-
-	<function>
-		<name>repositoryStargazersCountValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
-		<function-signature>java.lang.Integer stargazersCountValue()</function-signature>
-	</function>
-
-	<function>
-		<name>repositoryWatchersCountValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
-		<function-signature>java.lang.Integer watchersCountValue()</function-signature>
-	</function>
-
-	<function>
-		<name>repositoryLanguageValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
-		<function-signature>java.lang.String languageValue()</function-signature>
-	</function>
-
-	<function>
-		<name>repositoryHasIssuesValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
-		<function-signature>java.lang.Boolean hasIssuesValue()</function-signature>
-	</function>
-
-	<function>
-		<name>repositoryHasProjectsValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
-		<function-signature>java.lang.Boolean hasProjectsValue()</function-signature>
-	</function>
-
-	<function>
-		<name>repositoryHasDownloadsValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
-		<function-signature>java.lang.Boolean hasDownloadsValue()</function-signature>
-	</function>
-
-	<function>
-		<name>repositoryHasWikiValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
-		<function-signature>java.lang.Boolean hasWikiValue()</function-signature>
-	</function>
-
-	<function>
-		<name>repositoryHasPagesValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
-		<function-signature>java.lang.Boolean hasPagesValue()</function-signature>
-	</function>
-
-	<function>
-		<name>repositoryForksCountValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
-		<function-signature>java.lang.Integer forksCountValue()</function-signature>
-	</function>
-
-	<function>
-		<name>repositoryArchivedValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
-		<function-signature>java.lang.Boolean archivedValue()</function-signature>
-	</function>
-
-	<function>
-		<name>repositoryOpenIssuesCountValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
-		<function-signature>java.lang.Integer openIssuesCountValue()</function-signature>
-	</function>
-
-	<function>
-		<name>repositoryLicenseValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
-		<function-signature>java.lang.String licenseValue()</function-signature>
-	</function>
-
-	<function>
-		<name>repositoryForksValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
-		<function-signature>java.lang.Integer forksValue()</function-signature>
-	</function>
-
-	<function>
-		<name>repositoryOpenIssuesValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
-		<function-signature>java.lang.Integer openIssuesValue()</function-signature>
-	</function>
-
-	<function>
-		<name>repositoryWatchersValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
-		<function-signature>java.lang.Integer watchersValue()</function-signature>
-	</function>
-
-	<function>
-		<name>repositoryDefaultBranchValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.repository.Repository</function-class>
-		<function-signature>java.lang.String defaultBranchValue()</function-signature>
 	</function>
 
 	<function>
@@ -3229,18 +2707,6 @@
 		<name>repositoryHasReadme</name>
 		<function-class>edu.uiowa.slis.GitHubTagLib.readme.ReadmeIterator</function-class>
 		<function-signature>java.lang.Boolean repositoryHasReadme(java.lang.String)</function-signature>
-	</function>
-
-	<function>
-		<name>readmeIDValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.readme.Readme</function-class>
-		<function-signature>java.lang.Integer IDValue()</function-signature>
-	</function>
-
-	<function>
-		<name>readmeReadmeValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.readme.Readme</function-class>
-		<function-signature>java.lang.String readmeValue()</function-signature>
 	</function>
 
 	<function>
@@ -3280,18 +2746,6 @@
 	</function>
 
 	<function>
-		<name>orgRepoOrganizationIdValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.orgRepo.OrgRepo</function-class>
-		<function-signature>java.lang.Integer organizationIdValue()</function-signature>
-	</function>
-
-	<function>
-		<name>orgRepoRepositoryIdValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.orgRepo.OrgRepo</function-class>
-		<function-signature>java.lang.Integer repositoryIdValue()</function-signature>
-	</function>
-
-	<function>
 		<name>userRepoExists</name>
 		<function-class>edu.uiowa.slis.GitHubTagLib.userRepo.UserRepoIterator</function-class>
 		<function-signature>java.lang.String userRepoExists(java.lang.String, java.lang.String)</function-signature>
@@ -3328,18 +2782,6 @@
 	</function>
 
 	<function>
-		<name>userRepoUserIdValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.userRepo.UserRepo</function-class>
-		<function-signature>java.lang.Integer userIdValue()</function-signature>
-	</function>
-
-	<function>
-		<name>userRepoRepositoryIdValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.userRepo.UserRepo</function-class>
-		<function-signature>java.lang.Integer repositoryIdValue()</function-signature>
-	</function>
-
-	<function>
 		<name>searchTermCount</name>
 		<function-class>edu.uiowa.slis.GitHubTagLib.searchTerm.SearchTermIterator</function-class>
 		<function-signature>java.lang.String searchTermCount()</function-signature>
@@ -3349,18 +2791,6 @@
 		<name>searchTermExists</name>
 		<function-class>edu.uiowa.slis.GitHubTagLib.searchTerm.SearchTermIterator</function-class>
 		<function-signature>java.lang.String searchTermExists(java.lang.String)</function-signature>
-	</function>
-
-	<function>
-		<name>searchTermIDValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.searchTerm.SearchTerm</function-class>
-		<function-signature>java.lang.Integer IDValue()</function-signature>
-	</function>
-
-	<function>
-		<name>searchTermTermValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.searchTerm.SearchTerm</function-class>
-		<function-signature>java.lang.String termValue()</function-signature>
 	</function>
 
 	<function>
@@ -3400,30 +2830,6 @@
 	</function>
 
 	<function>
-		<name>searchUserSidValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.searchUser.SearchUser</function-class>
-		<function-signature>java.lang.Integer sidValue()</function-signature>
-	</function>
-
-	<function>
-		<name>searchUserUidValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.searchUser.SearchUser</function-class>
-		<function-signature>java.lang.Integer uidValue()</function-signature>
-	</function>
-
-	<function>
-		<name>searchUserRankValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.searchUser.SearchUser</function-class>
-		<function-signature>java.lang.Integer rankValue()</function-signature>
-	</function>
-
-	<function>
-		<name>searchUserRelevantValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.searchUser.SearchUser</function-class>
-		<function-signature>java.lang.Boolean relevantValue()</function-signature>
-	</function>
-
-	<function>
 		<name>searchRepositoryExists</name>
 		<function-class>edu.uiowa.slis.GitHubTagLib.searchRepository.SearchRepositoryIterator</function-class>
 		<function-signature>java.lang.String searchRepositoryExists(java.lang.String, java.lang.String)</function-signature>
@@ -3457,30 +2863,6 @@
 		<name>searchTermRepositoryExists</name>
 		<function-class>edu.uiowa.slis.GitHubTagLib.searchRepository.SearchRepositoryIterator</function-class>
 		<function-signature>java.lang.Boolean searchTermRepositoryExists(java.lang.String, java.lang.String)</function-signature>
-	</function>
-
-	<function>
-		<name>searchRepositorySidValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.searchRepository.SearchRepository</function-class>
-		<function-signature>java.lang.Integer sidValue()</function-signature>
-	</function>
-
-	<function>
-		<name>searchRepositoryRidValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.searchRepository.SearchRepository</function-class>
-		<function-signature>java.lang.Integer ridValue()</function-signature>
-	</function>
-
-	<function>
-		<name>searchRepositoryRankValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.searchRepository.SearchRepository</function-class>
-		<function-signature>java.lang.Integer rankValue()</function-signature>
-	</function>
-
-	<function>
-		<name>searchRepositoryRelevantValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.searchRepository.SearchRepository</function-class>
-		<function-signature>java.lang.Boolean relevantValue()</function-signature>
 	</function>
 
 	<function>
@@ -3520,30 +2902,6 @@
 	</function>
 
 	<function>
-		<name>searchOrganizationSidValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.searchOrganization.SearchOrganization</function-class>
-		<function-signature>java.lang.Integer sidValue()</function-signature>
-	</function>
-
-	<function>
-		<name>searchOrganizationOrgidValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.searchOrganization.SearchOrganization</function-class>
-		<function-signature>java.lang.Integer orgidValue()</function-signature>
-	</function>
-
-	<function>
-		<name>searchOrganizationRankValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.searchOrganization.SearchOrganization</function-class>
-		<function-signature>java.lang.Integer rankValue()</function-signature>
-	</function>
-
-	<function>
-		<name>searchOrganizationRelevantValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.searchOrganization.SearchOrganization</function-class>
-		<function-signature>java.lang.Boolean relevantValue()</function-signature>
-	</function>
-
-	<function>
 		<name>commitExists</name>
 		<function-class>edu.uiowa.slis.GitHubTagLib.commit.CommitIterator</function-class>
 		<function-signature>java.lang.String commitExists(java.lang.String, java.lang.String)</function-signature>
@@ -3562,48 +2920,6 @@
 	</function>
 
 	<function>
-		<name>commitIDValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.commit.Commit</function-class>
-		<function-signature>java.lang.Integer IDValue()</function-signature>
-	</function>
-
-	<function>
-		<name>commitCommittedValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.commit.Commit</function-class>
-		<function-signature>java.lang.Date committedValue()</function-signature>
-	</function>
-
-	<function>
-		<name>commitNameValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.commit.Commit</function-class>
-		<function-signature>java.lang.String nameValue()</function-signature>
-	</function>
-
-	<function>
-		<name>commitEmailValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.commit.Commit</function-class>
-		<function-signature>java.lang.String emailValue()</function-signature>
-	</function>
-
-	<function>
-		<name>commitUserIdValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.commit.Commit</function-class>
-		<function-signature>java.lang.Integer userIdValue()</function-signature>
-	</function>
-
-	<function>
-		<name>commitLoginValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.commit.Commit</function-class>
-		<function-signature>java.lang.String loginValue()</function-signature>
-	</function>
-
-	<function>
-		<name>commitMessageValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.commit.Commit</function-class>
-		<function-signature>java.lang.String messageValue()</function-signature>
-	</function>
-
-	<function>
 		<name>parentExists</name>
 		<function-class>edu.uiowa.slis.GitHubTagLib.parent.ParentIterator</function-class>
 		<function-signature>java.lang.String parentExists(java.lang.String)</function-signature>
@@ -3619,24 +2935,6 @@
 		<name>repositoryHasParent</name>
 		<function-class>edu.uiowa.slis.GitHubTagLib.parent.ParentIterator</function-class>
 		<function-signature>java.lang.Boolean repositoryHasParent(java.lang.String)</function-signature>
-	</function>
-
-	<function>
-		<name>parentIDValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.parent.Parent</function-class>
-		<function-signature>java.lang.Integer IDValue()</function-signature>
-	</function>
-
-	<function>
-		<name>parentParentIdValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.parent.Parent</function-class>
-		<function-signature>java.lang.Integer parentIdValue()</function-signature>
-	</function>
-
-	<function>
-		<name>parentParentFullNameValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.parent.Parent</function-class>
-		<function-signature>java.lang.String parentFullNameValue()</function-signature>
 	</function>
 
 	<function>
@@ -3670,30 +2968,6 @@
 	</function>
 
 	<function>
-		<name>committerUidValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.committer.Committer</function-class>
-		<function-signature>java.lang.Integer uidValue()</function-signature>
-	</function>
-
-	<function>
-		<name>committerRidValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.committer.Committer</function-class>
-		<function-signature>java.lang.Integer ridValue()</function-signature>
-	</function>
-
-	<function>
-		<name>committerMostRecentValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.committer.Committer</function-class>
-		<function-signature>java.lang.Date mostRecentValue()</function-signature>
-	</function>
-
-	<function>
-		<name>committerCountValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.committer.Committer</function-class>
-		<function-signature>java.lang.Integer countValue()</function-signature>
-	</function>
-
-	<function>
 		<name>otherCommitterExists</name>
 		<function-class>edu.uiowa.slis.GitHubTagLib.otherCommitter.OtherCommitterIterator</function-class>
 		<function-signature>java.lang.String otherCommitterExists(java.lang.String, java.lang.String)</function-signature>
@@ -3709,35 +2983,5 @@
 		<name>repositoryHasOtherCommitter</name>
 		<function-class>edu.uiowa.slis.GitHubTagLib.otherCommitter.OtherCommitterIterator</function-class>
 		<function-signature>java.lang.Boolean repositoryHasOtherCommitter(java.lang.String)</function-signature>
-	</function>
-
-	<function>
-		<name>otherCommitterRidValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.otherCommitter.OtherCommitter</function-class>
-		<function-signature>java.lang.Integer ridValue()</function-signature>
-	</function>
-
-	<function>
-		<name>otherCommitterNameValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.otherCommitter.OtherCommitter</function-class>
-		<function-signature>java.lang.String nameValue()</function-signature>
-	</function>
-
-	<function>
-		<name>otherCommitterEmailValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.otherCommitter.OtherCommitter</function-class>
-		<function-signature>java.lang.String emailValue()</function-signature>
-	</function>
-
-	<function>
-		<name>otherCommitterMostRecentValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.otherCommitter.OtherCommitter</function-class>
-		<function-signature>java.lang.Date mostRecentValue()</function-signature>
-	</function>
-
-	<function>
-		<name>otherCommitterCountValue</name>
-		<function-class>edu.uiowa.slis.GitHubTagLib.otherCommitter.OtherCommitter</function-class>
-		<function-signature>java.lang.Integer countValue()</function-signature>
 	</function>
 </taglib>

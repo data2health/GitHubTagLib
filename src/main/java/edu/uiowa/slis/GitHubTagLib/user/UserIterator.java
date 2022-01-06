@@ -5,12 +5,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import java.util.Date;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import java.sql.Timestamp;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.Tag;
 
 import edu.uiowa.slis.GitHubTagLib.GitHubTagLibTagSupport;
 import edu.uiowa.slis.GitHubTagLib.GitHubTagLibBodyTagSupport;
@@ -30,11 +31,11 @@ public class UserIterator extends GitHubTagLibBodyTagSupport {
     int publicGists = 0;
     int followers = 0;
     int following = 0;
-    Date createdAt = null;
-    Date updatedAt = null;
+    Timestamp createdAt = null;
+    Timestamp updatedAt = null;
 	Vector<GitHubTagLibTagSupport> parentEntities = new Vector<GitHubTagLibTagSupport>();
 
-	private static final Log log = LogFactory.getLog(UserIterator.class);
+	private static final Logger log = LogManager.getLogger(UserIterator.class);
 
 
     PreparedStatement stat = null;
@@ -99,7 +100,7 @@ public class UserIterator extends GitHubTagLibBodyTagSupport {
             int webapp_keySeq = 1;
             stat = getConnection().prepareStatement("SELECT count(*) from " + generateFromClause() + " where 1=1"
                                                         + generateJoinCriteria()
-                                                        +  generateLimitCriteria());
+                                                        + generateLimitCriteria());
             rs = stat.executeQuery();
 
             if (rs.next()) {
@@ -111,19 +112,30 @@ public class UserIterator extends GitHubTagLibBodyTagSupport {
             webapp_keySeq = 1;
             stat = getConnection().prepareStatement("SELECT github.user.id from " + generateFromClause() + " where 1=1"
                                                         + generateJoinCriteria()
-                                                        + " order by " + generateSortCriteria() + generateLimitCriteria());
+                                                        + " order by " + generateSortCriteria()  +  generateLimitCriteria());
             rs = stat.executeQuery();
 
-            if (rs.next()) {
+            if ( rs != null && rs.next() ) {
                 ID = rs.getInt(1);
                 pageContext.setAttribute(var, ++rsCount);
                 return EVAL_BODY_INCLUDE;
             }
         } catch (SQLException e) {
-            log.error("JDBC error generating User iterator: " + stat.toString(), e);
-            clearServiceState();
-            freeConnection();
-            throw new JspTagException("Error: JDBC error generating User iterator: " + stat.toString());
+            log.error("JDBC error generating User iterator: " + stat, e);
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: JDBC error generating User iterator: " + stat);
+				return parent.doEndTag();
+			}else{
+				throw new JspException("Error: JDBC error generating User iterator: " + stat,e);
+			}
+
         }
 
         return SKIP_BODY;
@@ -155,29 +167,85 @@ public class UserIterator extends GitHubTagLibBodyTagSupport {
         }
     }
 
-    public int doAfterBody() throws JspTagException {
+    public int doAfterBody() throws JspException {
         try {
-            if (rs.next()) {
+            if ( rs != null && rs.next() ) {
                 ID = rs.getInt(1);
                 pageContext.setAttribute(var, ++rsCount);
                 return EVAL_BODY_AGAIN;
             }
         } catch (SQLException e) {
             log.error("JDBC error iterating across User", e);
-            clearServiceState();
-            freeConnection();
-            throw new JspTagException("Error: JDBC error iterating across User");
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "JDBC error iterating across User" + stat.toString());
+				return parent.doEndTag();
+			}else{
+				throw new JspException("JDBC error iterating across User",e);
+			}
+
         }
         return SKIP_BODY;
     }
 
     public int doEndTag() throws JspTagException, JspException {
         try {
-            rs.close();
-            stat.close();
-        } catch (SQLException e) {
+			if( pageContext != null ){
+				Boolean error = (Boolean) pageContext.getAttribute("tagError");
+				if( error != null && error ){
+
+					freeConnection();
+					clearServiceState();
+
+					Exception e = null; // (Exception) pageContext.getAttribute("tagErrorException");
+					String message = null; // (String) pageContext.getAttribute("tagErrorMessage");
+
+					if(pageContext != null){
+						e = (Exception) pageContext.getAttribute("tagErrorException");
+						message = (String) pageContext.getAttribute("tagErrorMessage");
+
+					}
+					Tag parent = getParent();
+					if(parent != null){
+						return parent.doEndTag();
+					}else if(e != null && message != null){
+						throw new JspException(message,e);
+					}else if(parent == null && pageContext != null){
+						pageContext.removeAttribute("tagError");
+						pageContext.removeAttribute("tagErrorException");
+						pageContext.removeAttribute("tagErrorMessage");
+					}
+				}
+			}
+
+            if( rs != null ){
+                rs.close();
+            }
+
+            if( stat != null ){
+                stat.close();
+            }
+
+        } catch ( SQLException e ) {
             log.error("JDBC error ending User iterator",e);
-            throw new JspTagException("Error: JDBC error ending User iterator");
+			freeConnection();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "JDBC error retrieving ID " + ID);
+				return parent.doEndTag();
+			}else{
+				throw new JspException("Error: JDBC error ending User iterator",e);
+			}
+
         } finally {
             clearServiceState();
             freeConnection();

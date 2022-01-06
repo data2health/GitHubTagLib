@@ -5,11 +5,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.Tag;
 
 import edu.uiowa.slis.GitHubTagLib.GitHubTagLibTagSupport;
 import edu.uiowa.slis.GitHubTagLib.GitHubTagLibBodyTagSupport;
@@ -22,7 +23,7 @@ public class MemberIterator extends GitHubTagLibBodyTagSupport {
     int organizationId = 0;
 	Vector<GitHubTagLibTagSupport> parentEntities = new Vector<GitHubTagLibTagSupport>();
 
-	private static final Log log = LogFactory.getLog(MemberIterator.class);
+	private static final Logger log = LogManager.getLogger(MemberIterator.class);
 
 
     PreparedStatement stat = null;
@@ -166,7 +167,7 @@ public class MemberIterator extends GitHubTagLibBodyTagSupport {
                                                         + generateJoinCriteria()
                                                         + (userId == 0 ? "" : " and user_id = ?")
                                                         + (organizationId == 0 ? "" : " and organization_id = ?")
-                                                        +  generateLimitCriteria());
+                                                        + generateLimitCriteria());
             if (userId != 0) stat.setInt(webapp_keySeq++, userId);
             if (organizationId != 0) stat.setInt(webapp_keySeq++, organizationId);
             rs = stat.executeQuery();
@@ -182,22 +183,33 @@ public class MemberIterator extends GitHubTagLibBodyTagSupport {
                                                         + generateJoinCriteria()
                                                         + (userId == 0 ? "" : " and user_id = ?")
                                                         + (organizationId == 0 ? "" : " and organization_id = ?")
-                                                        + " order by " + generateSortCriteria() + generateLimitCriteria());
+                                                        + " order by " + generateSortCriteria()  +  generateLimitCriteria());
             if (userId != 0) stat.setInt(webapp_keySeq++, userId);
             if (organizationId != 0) stat.setInt(webapp_keySeq++, organizationId);
             rs = stat.executeQuery();
 
-            if (rs.next()) {
+            if ( rs != null && rs.next() ) {
                 userId = rs.getInt(1);
                 organizationId = rs.getInt(2);
                 pageContext.setAttribute(var, ++rsCount);
                 return EVAL_BODY_INCLUDE;
             }
         } catch (SQLException e) {
-            log.error("JDBC error generating Member iterator: " + stat.toString(), e);
-            clearServiceState();
-            freeConnection();
-            throw new JspTagException("Error: JDBC error generating Member iterator: " + stat.toString());
+            log.error("JDBC error generating Member iterator: " + stat, e);
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: JDBC error generating Member iterator: " + stat);
+				return parent.doEndTag();
+			}else{
+				throw new JspException("Error: JDBC error generating Member iterator: " + stat,e);
+			}
+
         }
 
         return SKIP_BODY;
@@ -216,9 +228,9 @@ public class MemberIterator extends GitHubTagLibBodyTagSupport {
     private String generateJoinCriteria() {
        StringBuffer theBuffer = new StringBuffer();
        if (useUser)
-          theBuffer.append(" and github.user.ID = member.user_id");
+          theBuffer.append(" and github.user.id = github.member.user_id");
        if (useOrganization)
-          theBuffer.append(" and organization.ID = member.organization_id");
+          theBuffer.append(" and github.organization.id = github.member.organization_id");
 
       return theBuffer.toString();
     }
@@ -239,9 +251,9 @@ public class MemberIterator extends GitHubTagLibBodyTagSupport {
         }
     }
 
-    public int doAfterBody() throws JspTagException {
+    public int doAfterBody() throws JspException {
         try {
-            if (rs.next()) {
+            if ( rs != null && rs.next() ) {
                 userId = rs.getInt(1);
                 organizationId = rs.getInt(2);
                 pageContext.setAttribute(var, ++rsCount);
@@ -249,20 +261,76 @@ public class MemberIterator extends GitHubTagLibBodyTagSupport {
             }
         } catch (SQLException e) {
             log.error("JDBC error iterating across Member", e);
-            clearServiceState();
-            freeConnection();
-            throw new JspTagException("Error: JDBC error iterating across Member");
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "JDBC error iterating across Member" + stat.toString());
+				return parent.doEndTag();
+			}else{
+				throw new JspException("JDBC error iterating across Member",e);
+			}
+
         }
         return SKIP_BODY;
     }
 
     public int doEndTag() throws JspTagException, JspException {
         try {
-            rs.close();
-            stat.close();
-        } catch (SQLException e) {
+			if( pageContext != null ){
+				Boolean error = (Boolean) pageContext.getAttribute("tagError");
+				if( error != null && error ){
+
+					freeConnection();
+					clearServiceState();
+
+					Exception e = null; // (Exception) pageContext.getAttribute("tagErrorException");
+					String message = null; // (String) pageContext.getAttribute("tagErrorMessage");
+
+					if(pageContext != null){
+						e = (Exception) pageContext.getAttribute("tagErrorException");
+						message = (String) pageContext.getAttribute("tagErrorMessage");
+
+					}
+					Tag parent = getParent();
+					if(parent != null){
+						return parent.doEndTag();
+					}else if(e != null && message != null){
+						throw new JspException(message,e);
+					}else if(parent == null && pageContext != null){
+						pageContext.removeAttribute("tagError");
+						pageContext.removeAttribute("tagErrorException");
+						pageContext.removeAttribute("tagErrorMessage");
+					}
+				}
+			}
+
+            if( rs != null ){
+                rs.close();
+            }
+
+            if( stat != null ){
+                stat.close();
+            }
+
+        } catch ( SQLException e ) {
             log.error("JDBC error ending Member iterator",e);
-            throw new JspTagException("Error: JDBC error ending Member iterator");
+			freeConnection();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "JDBC error retrieving userId " + userId);
+				return parent.doEndTag();
+			}else{
+				throw new JspException("Error: JDBC error ending Member iterator",e);
+			}
+
         } finally {
             clearServiceState();
             freeConnection();

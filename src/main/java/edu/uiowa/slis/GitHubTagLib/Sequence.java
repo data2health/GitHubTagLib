@@ -5,8 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Hashtable;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import javax.servlet.jsp.JspException;
 
@@ -22,7 +22,7 @@ public class Sequence extends GitHubTagLibTagSupport {
 		theDriverHash.put("PostgreSQL", Driver.POSTGRESQL);
 		theDriverHash.put("Microsoft SQL Server", Driver.SQLSERVER);
 	}
-	private static final Log log = LogFactory.getLog(Sequence.class);
+	private static final Logger log = LogManager.getLogger(Sequence.class);
 
 	public int doStartTag() throws JspException {
 		pageContext.setAttribute(var, generateID());

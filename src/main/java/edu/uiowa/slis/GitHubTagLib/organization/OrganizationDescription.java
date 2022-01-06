@@ -2,15 +2,17 @@ package edu.uiowa.slis.GitHubTagLib.organization;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import javax.servlet.jsp.tagext.Tag;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import edu.uiowa.slis.GitHubTagLib.GitHubTagLibTagSupport;
 
 @SuppressWarnings("serial")
 public class OrganizationDescription extends GitHubTagLibTagSupport {
-	private static final Log log = LogFactory.getLog(OrganizationDescription.class);
 
+	private static final Logger log = LogManager.getLogger(OrganizationDescription.class);
 
 	public int doStartTag() throws JspException {
 		try {
@@ -20,28 +22,57 @@ public class OrganizationDescription extends GitHubTagLibTagSupport {
 			}
 		} catch (Exception e) {
 			log.error("Can't find enclosing Organization for description tag ", e);
-			throw new JspTagException("Error: Can't find enclosing Organization for description tag ");
+			freeConnection();
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: Can't find enclosing Organization for description tag ");
+				return parent.doEndTag();
+			}else{
+				throw new JspTagException("Error: Can't find enclosing Organization for description tag ");
+			}
+
 		}
 		return SKIP_BODY;
 	}
 
-	public String getDescription() throws JspTagException {
+	public String getDescription() throws JspException {
 		try {
 			Organization theOrganization = (Organization)findAncestorWithClass(this, Organization.class);
 			return theOrganization.getDescription();
 		} catch (Exception e) {
-			log.error(" Can't find enclosing Organization for description tag ", e);
-			throw new JspTagException("Error: Can't find enclosing Organization for description tag ");
+			log.error("Can't find enclosing Organization for description tag ", e);
+			freeConnection();
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: Can't find enclosing Organization for description tag ");
+				parent.doEndTag();
+				return null;
+			}else{
+				throw new JspTagException("Error: Can't find enclosing Organization for description tag ");
+			}
 		}
 	}
 
-	public void setDescription(String description) throws JspTagException {
+	public void setDescription(String description) throws JspException {
 		try {
 			Organization theOrganization = (Organization)findAncestorWithClass(this, Organization.class);
 			theOrganization.setDescription(description);
 		} catch (Exception e) {
 			log.error("Can't find enclosing Organization for description tag ", e);
-			throw new JspTagException("Error: Can't find enclosing Organization for description tag ");
+			freeConnection();
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: Can't find enclosing Organization for description tag ");
+				parent.doEndTag();
+			}else{
+				throw new JspTagException("Error: Can't find enclosing Organization for description tag ");
+			}
 		}
 	}
 

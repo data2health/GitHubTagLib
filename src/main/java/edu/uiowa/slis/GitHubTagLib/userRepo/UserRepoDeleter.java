@@ -5,11 +5,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.Tag;
 
 import edu.uiowa.slis.GitHubTagLib.GitHubTagLibTagSupport;
 import edu.uiowa.slis.GitHubTagLib.GitHubTagLibBodyTagSupport;
@@ -22,7 +22,7 @@ public class UserRepoDeleter extends GitHubTagLibBodyTagSupport {
     int repositoryId = 0;
 	Vector<GitHubTagLibTagSupport> parentEntities = new Vector<GitHubTagLibTagSupport>();
 
-	private static final Log log = LogFactory.getLog(UserRepoDeleter.class);
+	private static final Logger log = LogManager.getLogger(UserRepoDeleter.class);
 
 
     ResultSet rs = null;
@@ -52,16 +52,32 @@ public class UserRepoDeleter extends GitHubTagLibBodyTagSupport {
             int webapp_keySeq = 1;
             stat = getConnection().prepareStatement("DELETE from github.user_repo where 1=1"
                                                         + (userId == 0 ? "" : " and user_id = ? ")
+                                                        + (repositoryId == 0 ? "" : " and repository_id = ? ")
+                                                        + (userId == 0 ? "" : " and user_id = ? ")
                                                         + (repositoryId == 0 ? "" : " and repository_id = ? "));
             if (userId != 0) stat.setInt(webapp_keySeq++, userId);
             if (repositoryId != 0) stat.setInt(webapp_keySeq++, repositoryId);
+			if (userId != 0) stat.setInt(webapp_keySeq++, userId);
+			if (repositoryId != 0) stat.setInt(webapp_keySeq++, repositoryId);
             stat.execute();
 
 			webapp_keySeq = 1;
         } catch (SQLException e) {
             log.error("JDBC error generating UserRepo deleter", e);
-            clearServiceState();
-            throw new JspTagException("Error: JDBC error generating UserRepo deleter");
+
+			clearServiceState();
+			freeConnection();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: JDBC error generating UserRepo deleter");
+				return parent.doEndTag();
+			}else{
+				throw new JspException("Error: JDBC error generating UserRepo deleter",e);
+			}
+
         } finally {
             freeConnection();
         }
@@ -70,7 +86,27 @@ public class UserRepoDeleter extends GitHubTagLibBodyTagSupport {
     }
 
 	public int doEndTag() throws JspException {
+
 		clearServiceState();
+		Boolean error = (Boolean) pageContext.getAttribute("tagError");
+		if(error != null && error){
+
+			freeConnection();
+
+			Exception e = (Exception) pageContext.getAttribute("tagErrorException");
+			String message = (String) pageContext.getAttribute("tagErrorMessage");
+
+			Tag parent = getParent();
+			if(parent != null){
+				return parent.doEndTag();
+			}else if(e != null && message != null){
+				throw new JspException(message,e);
+			}else if(parent == null){
+				pageContext.removeAttribute("tagError");
+				pageContext.removeAttribute("tagErrorException");
+				pageContext.removeAttribute("tagErrorMessage");
+			}
+		}
 		return super.doEndTag();
 	}
 

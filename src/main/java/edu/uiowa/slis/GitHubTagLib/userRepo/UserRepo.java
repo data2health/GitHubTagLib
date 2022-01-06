@@ -5,11 +5,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.Tag;
+
 import edu.uiowa.slis.GitHubTagLib.user.User;
 import edu.uiowa.slis.GitHubTagLib.repository.Repository;
 
@@ -23,12 +25,16 @@ public class UserRepo extends GitHubTagLibTagSupport {
 	boolean commitNeeded = false;
 	boolean newRecord = false;
 
-	private static final Log log = LogFactory.getLog(UserRepo.class);
+	private static final Logger log = LogManager.getLogger(UserRepo.class);
 
 	Vector<GitHubTagLibTagSupport> parentEntities = new Vector<GitHubTagLibTagSupport>();
 
 	int userId = 0;
 	int repositoryId = 0;
+
+	private String var = null;
+
+	private UserRepo cachedUserRepo = null;
 
 	public int doStartTag() throws JspException {
 		currentInstance = this;
@@ -112,18 +118,75 @@ public class UserRepo extends GitHubTagLibTagSupport {
 			}
 		} catch (SQLException e) {
 			log.error("JDBC error retrieving userId " + userId, e);
-			throw new JspTagException("Error: JDBC error retrieving userId " + userId);
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "JDBC error retrieving userId " + userId);
+				return parent.doEndTag();
+			}else{
+				throw new JspException("JDBC error retrieving userId " + userId,e);
+			}
+
 		} finally {
 			freeConnection();
 		}
+
+		if(pageContext != null){
+			UserRepo currentUserRepo = (UserRepo) pageContext.getAttribute("tag_userRepo");
+			if(currentUserRepo != null){
+				cachedUserRepo = currentUserRepo;
+			}
+			currentUserRepo = this;
+			pageContext.setAttribute((var == null ? "tag_userRepo" : var), currentUserRepo);
+		}
+
 		return EVAL_PAGE;
 	}
 
 	public int doEndTag() throws JspException {
 		currentInstance = null;
+
+		if(pageContext != null){
+			if(this.cachedUserRepo != null){
+				pageContext.setAttribute((var == null ? "tag_userRepo" : var), this.cachedUserRepo);
+			}else{
+				pageContext.removeAttribute((var == null ? "tag_userRepo" : var));
+				this.cachedUserRepo = null;
+			}
+		}
+
 		try {
+			Boolean error = null; // (Boolean) pageContext.getAttribute("tagError");
+			if(pageContext != null){
+				error = (Boolean) pageContext.getAttribute("tagError");
+			}
+
+			if(error != null && error){
+
+				freeConnection();
+				clearServiceState();
+
+				Exception e = (Exception) pageContext.getAttribute("tagErrorException");
+				String message = (String) pageContext.getAttribute("tagErrorMessage");
+
+				Tag parent = getParent();
+				if(parent != null){
+					return parent.doEndTag();
+				}else if(e != null && message != null){
+					throw new JspException(message,e);
+				}else if(parent == null){
+					pageContext.removeAttribute("tagError");
+					pageContext.removeAttribute("tagErrorException");
+					pageContext.removeAttribute("tagErrorMessage");
+				}
+			}
 			if (commitNeeded) {
-				PreparedStatement stmt = getConnection().prepareStatement("update github.user_repo set where user_id = ? and repository_id = ?");
+				PreparedStatement stmt = getConnection().prepareStatement("update github.user_repo set where user_id = ?  and repository_id = ? ");
 				stmt.setInt(1,userId);
 				stmt.setInt(2,repositoryId);
 				stmt.executeUpdate();
@@ -131,7 +194,20 @@ public class UserRepo extends GitHubTagLibTagSupport {
 			}
 		} catch (SQLException e) {
 			log.error("Error: IOException while writing to the user", e);
-			throw new JspTagException("Error: IOException while writing to the user");
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: IOException while writing to the user");
+				return parent.doEndTag();
+			}else{
+				throw new JspTagException("Error: IOException while writing to the user");
+			}
+
 		} finally {
 			clearServiceState();
 			freeConnection();
@@ -139,29 +215,23 @@ public class UserRepo extends GitHubTagLibTagSupport {
 		return super.doEndTag();
 	}
 
-	public void insertEntity() throws JspException {
-		try {
-			if (userId == 0) {
-				userId = Sequence.generateID();
-				log.debug("generating new UserRepo " + userId);
-			}
-
-			if (repositoryId == 0) {
-				repositoryId = Sequence.generateID();
-				log.debug("generating new UserRepo " + repositoryId);
-			}
-
-			PreparedStatement stmt = getConnection().prepareStatement("insert into github.user_repo(user_id,repository_id) values (?,?)");
-			stmt.setInt(1,userId);
-			stmt.setInt(2,repositoryId);
-			stmt.executeUpdate();
-			stmt.close();
-		} catch (SQLException e) {
-			log.error("Error: IOException while writing to the user", e);
-			throw new JspTagException("Error: IOException while writing to the user");
-		} finally {
-			freeConnection();
+	public void insertEntity() throws JspException, SQLException {
+		if (userId == 0) {
+			userId = Sequence.generateID();
+			log.debug("generating new UserRepo " + userId);
 		}
+
+		if (repositoryId == 0) {
+			repositoryId = Sequence.generateID();
+			log.debug("generating new UserRepo " + repositoryId);
+		}
+
+		PreparedStatement stmt = getConnection().prepareStatement("insert into github.user_repo(user_id,repository_id) values (?,?)");
+		stmt.setInt(1,userId);
+		stmt.setInt(2,repositoryId);
+		stmt.executeUpdate();
+		stmt.close();
+		freeConnection();
 	}
 
 	public int getUserId () {
@@ -188,6 +258,18 @@ public class UserRepo extends GitHubTagLibTagSupport {
 		return repositoryId;
 	}
 
+	public String getVar () {
+		return var;
+	}
+
+	public void setVar (String var) {
+		this.var = var;
+	}
+
+	public String getActualVar () {
+		return var;
+	}
+
 	public static Integer userIdValue() throws JspException {
 		try {
 			return currentInstance.getUserId();
@@ -210,6 +292,7 @@ public class UserRepo extends GitHubTagLibTagSupport {
 		newRecord = false;
 		commitNeeded = false;
 		parentEntities = new Vector<GitHubTagLibTagSupport>();
+		this.var = null;
 
 	}
 

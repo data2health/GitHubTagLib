@@ -5,12 +5,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
-import edu.uiowa.slis.GitHubTagLib.user.User;
+import javax.servlet.jsp.tagext.Tag;
+
 import edu.uiowa.slis.GitHubTagLib.user.User;
 
 import edu.uiowa.slis.GitHubTagLib.GitHubTagLibTagSupport;
@@ -23,12 +24,16 @@ public class Follows extends GitHubTagLibTagSupport {
 	boolean commitNeeded = false;
 	boolean newRecord = false;
 
-	private static final Log log = LogFactory.getLog(Follows.class);
+	private static final Logger log = LogManager.getLogger(Follows.class);
 
 	Vector<GitHubTagLibTagSupport> parentEntities = new Vector<GitHubTagLibTagSupport>();
 
 	int follower = 0;
 	int following = 0;
+
+	private String var = null;
+
+	private Follows cachedFollows = null;
 
 	public int doStartTag() throws JspException {
 		currentInstance = this;
@@ -36,17 +41,10 @@ public class Follows extends GitHubTagLibTagSupport {
 			User theUser = (User)findAncestorWithClass(this, User.class);
 			if (theUser!= null)
 				parentEntities.addElement(theUser);
-			User theUser = (User)findAncestorWithClass(this, User.class);
-			if (theUser!= null)
-				parentEntities.addElement(theUser);
 
 			if (theUser == null) {
 			} else {
 				follower = theUser.getID();
-			}
-			if (theUser == null) {
-			} else {
-				following = theUser.getID();
 			}
 
 			FollowsIterator theFollowsIterator = (FollowsIterator)findAncestorWithClass(this, FollowsIterator.class);
@@ -112,18 +110,75 @@ public class Follows extends GitHubTagLibTagSupport {
 			}
 		} catch (SQLException e) {
 			log.error("JDBC error retrieving follower " + follower, e);
-			throw new JspTagException("Error: JDBC error retrieving follower " + follower);
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "JDBC error retrieving follower " + follower);
+				return parent.doEndTag();
+			}else{
+				throw new JspException("JDBC error retrieving follower " + follower,e);
+			}
+
 		} finally {
 			freeConnection();
 		}
+
+		if(pageContext != null){
+			Follows currentFollows = (Follows) pageContext.getAttribute("tag_follows");
+			if(currentFollows != null){
+				cachedFollows = currentFollows;
+			}
+			currentFollows = this;
+			pageContext.setAttribute((var == null ? "tag_follows" : var), currentFollows);
+		}
+
 		return EVAL_PAGE;
 	}
 
 	public int doEndTag() throws JspException {
 		currentInstance = null;
+
+		if(pageContext != null){
+			if(this.cachedFollows != null){
+				pageContext.setAttribute((var == null ? "tag_follows" : var), this.cachedFollows);
+			}else{
+				pageContext.removeAttribute((var == null ? "tag_follows" : var));
+				this.cachedFollows = null;
+			}
+		}
+
 		try {
+			Boolean error = null; // (Boolean) pageContext.getAttribute("tagError");
+			if(pageContext != null){
+				error = (Boolean) pageContext.getAttribute("tagError");
+			}
+
+			if(error != null && error){
+
+				freeConnection();
+				clearServiceState();
+
+				Exception e = (Exception) pageContext.getAttribute("tagErrorException");
+				String message = (String) pageContext.getAttribute("tagErrorMessage");
+
+				Tag parent = getParent();
+				if(parent != null){
+					return parent.doEndTag();
+				}else if(e != null && message != null){
+					throw new JspException(message,e);
+				}else if(parent == null){
+					pageContext.removeAttribute("tagError");
+					pageContext.removeAttribute("tagErrorException");
+					pageContext.removeAttribute("tagErrorMessage");
+				}
+			}
 			if (commitNeeded) {
-				PreparedStatement stmt = getConnection().prepareStatement("update github.follows set where follower = ? and following = ?");
+				PreparedStatement stmt = getConnection().prepareStatement("update github.follows set where follower = ?  and following = ? ");
 				stmt.setInt(1,follower);
 				stmt.setInt(2,following);
 				stmt.executeUpdate();
@@ -131,7 +186,20 @@ public class Follows extends GitHubTagLibTagSupport {
 			}
 		} catch (SQLException e) {
 			log.error("Error: IOException while writing to the user", e);
-			throw new JspTagException("Error: IOException while writing to the user");
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: IOException while writing to the user");
+				return parent.doEndTag();
+			}else{
+				throw new JspTagException("Error: IOException while writing to the user");
+			}
+
 		} finally {
 			clearServiceState();
 			freeConnection();
@@ -139,29 +207,23 @@ public class Follows extends GitHubTagLibTagSupport {
 		return super.doEndTag();
 	}
 
-	public void insertEntity() throws JspException {
-		try {
-			if (follower == 0) {
-				follower = Sequence.generateID();
-				log.debug("generating new Follows " + follower);
-			}
-
-			if (following == 0) {
-				following = Sequence.generateID();
-				log.debug("generating new Follows " + following);
-			}
-
-			PreparedStatement stmt = getConnection().prepareStatement("insert into github.follows(follower,following) values (?,?)");
-			stmt.setInt(1,follower);
-			stmt.setInt(2,following);
-			stmt.executeUpdate();
-			stmt.close();
-		} catch (SQLException e) {
-			log.error("Error: IOException while writing to the user", e);
-			throw new JspTagException("Error: IOException while writing to the user");
-		} finally {
-			freeConnection();
+	public void insertEntity() throws JspException, SQLException {
+		if (follower == 0) {
+			follower = Sequence.generateID();
+			log.debug("generating new Follows " + follower);
 		}
+
+		if (following == 0) {
+			following = Sequence.generateID();
+			log.debug("generating new Follows " + following);
+		}
+
+		PreparedStatement stmt = getConnection().prepareStatement("insert into github.follows(follower,following) values (?,?)");
+		stmt.setInt(1,follower);
+		stmt.setInt(2,following);
+		stmt.executeUpdate();
+		stmt.close();
+		freeConnection();
 	}
 
 	public int getFollower () {
@@ -188,6 +250,18 @@ public class Follows extends GitHubTagLibTagSupport {
 		return following;
 	}
 
+	public String getVar () {
+		return var;
+	}
+
+	public void setVar (String var) {
+		this.var = var;
+	}
+
+	public String getActualVar () {
+		return var;
+	}
+
 	public static Integer followerValue() throws JspException {
 		try {
 			return currentInstance.getFollower();
@@ -210,6 +284,7 @@ public class Follows extends GitHubTagLibTagSupport {
 		newRecord = false;
 		commitNeeded = false;
 		parentEntities = new Vector<GitHubTagLibTagSupport>();
+		this.var = null;
 
 	}
 

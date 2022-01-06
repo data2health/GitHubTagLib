@@ -2,15 +2,17 @@ package edu.uiowa.slis.GitHubTagLib.member;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import javax.servlet.jsp.tagext.Tag;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import edu.uiowa.slis.GitHubTagLib.GitHubTagLibTagSupport;
 
 @SuppressWarnings("serial")
 public class MemberUserId extends GitHubTagLibTagSupport {
-	private static final Log log = LogFactory.getLog(MemberUserId.class);
 
+	private static final Logger log = LogManager.getLogger(MemberUserId.class);
 
 	public int doStartTag() throws JspException {
 		try {
@@ -20,28 +22,57 @@ public class MemberUserId extends GitHubTagLibTagSupport {
 			}
 		} catch (Exception e) {
 			log.error("Can't find enclosing Member for userId tag ", e);
-			throw new JspTagException("Error: Can't find enclosing Member for userId tag ");
+			freeConnection();
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: Can't find enclosing Member for userId tag ");
+				return parent.doEndTag();
+			}else{
+				throw new JspTagException("Error: Can't find enclosing Member for userId tag ");
+			}
+
 		}
 		return SKIP_BODY;
 	}
 
-	public int getUserId() throws JspTagException {
+	public int getUserId() throws JspException {
 		try {
 			Member theMember = (Member)findAncestorWithClass(this, Member.class);
 			return theMember.getUserId();
 		} catch (Exception e) {
-			log.error(" Can't find enclosing Member for userId tag ", e);
-			throw new JspTagException("Error: Can't find enclosing Member for userId tag ");
+			log.error("Can't find enclosing Member for userId tag ", e);
+			freeConnection();
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: Can't find enclosing Member for userId tag ");
+				parent.doEndTag();
+				return 0;
+			}else{
+				throw new JspTagException("Error: Can't find enclosing Member for userId tag ");
+			}
 		}
 	}
 
-	public void setUserId(int userId) throws JspTagException {
+	public void setUserId(int userId) throws JspException {
 		try {
 			Member theMember = (Member)findAncestorWithClass(this, Member.class);
 			theMember.setUserId(userId);
 		} catch (Exception e) {
 			log.error("Can't find enclosing Member for userId tag ", e);
-			throw new JspTagException("Error: Can't find enclosing Member for userId tag ");
+			freeConnection();
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: Can't find enclosing Member for userId tag ");
+				parent.doEndTag();
+			}else{
+				throw new JspTagException("Error: Can't find enclosing Member for userId tag ");
+			}
 		}
 	}
 

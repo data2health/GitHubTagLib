@@ -5,11 +5,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.Tag;
+
 import edu.uiowa.slis.GitHubTagLib.repository.Repository;
 
 import edu.uiowa.slis.GitHubTagLib.GitHubTagLibTagSupport;
@@ -22,13 +24,17 @@ public class Parent extends GitHubTagLibTagSupport {
 	boolean commitNeeded = false;
 	boolean newRecord = false;
 
-	private static final Log log = LogFactory.getLog(Parent.class);
+	private static final Logger log = LogManager.getLogger(Parent.class);
 
 	Vector<GitHubTagLibTagSupport> parentEntities = new Vector<GitHubTagLibTagSupport>();
 
 	int ID = 0;
 	int parentId = 0;
 	String parentFullName = null;
+
+	private String var = null;
+
+	private Parent cachedParent = null;
 
 	public int doStartTag() throws JspException {
 		currentInstance = this;
@@ -73,27 +79,97 @@ public class Parent extends GitHubTagLibTagSupport {
 			}
 		} catch (SQLException e) {
 			log.error("JDBC error retrieving ID " + ID, e);
-			throw new JspTagException("Error: JDBC error retrieving ID " + ID);
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "JDBC error retrieving ID " + ID);
+				return parent.doEndTag();
+			}else{
+				throw new JspException("JDBC error retrieving ID " + ID,e);
+			}
+
 		} finally {
 			freeConnection();
 		}
+
+		if(pageContext != null){
+			Parent currentParent = (Parent) pageContext.getAttribute("tag_parent");
+			if(currentParent != null){
+				cachedParent = currentParent;
+			}
+			currentParent = this;
+			pageContext.setAttribute((var == null ? "tag_parent" : var), currentParent);
+		}
+
 		return EVAL_PAGE;
 	}
 
 	public int doEndTag() throws JspException {
 		currentInstance = null;
+
+		if(pageContext != null){
+			if(this.cachedParent != null){
+				pageContext.setAttribute((var == null ? "tag_parent" : var), this.cachedParent);
+			}else{
+				pageContext.removeAttribute((var == null ? "tag_parent" : var));
+				this.cachedParent = null;
+			}
+		}
+
 		try {
+			Boolean error = null; // (Boolean) pageContext.getAttribute("tagError");
+			if(pageContext != null){
+				error = (Boolean) pageContext.getAttribute("tagError");
+			}
+
+			if(error != null && error){
+
+				freeConnection();
+				clearServiceState();
+
+				Exception e = (Exception) pageContext.getAttribute("tagErrorException");
+				String message = (String) pageContext.getAttribute("tagErrorMessage");
+
+				Tag parent = getParent();
+				if(parent != null){
+					return parent.doEndTag();
+				}else if(e != null && message != null){
+					throw new JspException(message,e);
+				}else if(parent == null){
+					pageContext.removeAttribute("tagError");
+					pageContext.removeAttribute("tagErrorException");
+					pageContext.removeAttribute("tagErrorMessage");
+				}
+			}
 			if (commitNeeded) {
-				PreparedStatement stmt = getConnection().prepareStatement("update github.parent set parent_id = ?, parent_full_name = ? where id = ?");
-				stmt.setInt(1,parentId);
-				stmt.setString(2,parentFullName);
+				PreparedStatement stmt = getConnection().prepareStatement("update github.parent set parent_id = ?, parent_full_name = ? where id = ? ");
+				stmt.setInt( 1, parentId );
+				stmt.setString( 2, parentFullName );
 				stmt.setInt(3,ID);
 				stmt.executeUpdate();
 				stmt.close();
 			}
 		} catch (SQLException e) {
 			log.error("Error: IOException while writing to the user", e);
-			throw new JspTagException("Error: IOException while writing to the user");
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: IOException while writing to the user");
+				return parent.doEndTag();
+			}else{
+				throw new JspTagException("Error: IOException while writing to the user");
+			}
+
 		} finally {
 			clearServiceState();
 			freeConnection();
@@ -101,22 +177,17 @@ public class Parent extends GitHubTagLibTagSupport {
 		return super.doEndTag();
 	}
 
-	public void insertEntity() throws JspException {
-		try {
-			if (parentFullName == null)
-				parentFullName = "";
-			PreparedStatement stmt = getConnection().prepareStatement("insert into github.parent(id,parent_id,parent_full_name) values (?,?,?)");
-			stmt.setInt(1,ID);
-			stmt.setInt(2,parentId);
-			stmt.setString(3,parentFullName);
-			stmt.executeUpdate();
-			stmt.close();
-		} catch (SQLException e) {
-			log.error("Error: IOException while writing to the user", e);
-			throw new JspTagException("Error: IOException while writing to the user");
-		} finally {
-			freeConnection();
+	public void insertEntity() throws JspException, SQLException {
+		if (parentFullName == null){
+			parentFullName = "";
 		}
+		PreparedStatement stmt = getConnection().prepareStatement("insert into github.parent(id,parent_id,parent_full_name) values (?,?,?)");
+		stmt.setInt(1,ID);
+		stmt.setInt(2,parentId);
+		stmt.setString(3,parentFullName);
+		stmt.executeUpdate();
+		stmt.close();
+		freeConnection();
 	}
 
 	public int getID () {
@@ -160,6 +231,18 @@ public class Parent extends GitHubTagLibTagSupport {
 		return parentFullName;
 	}
 
+	public String getVar () {
+		return var;
+	}
+
+	public void setVar (String var) {
+		this.var = var;
+	}
+
+	public String getActualVar () {
+		return var;
+	}
+
 	public static Integer IDValue() throws JspException {
 		try {
 			return currentInstance.getID();
@@ -191,6 +274,7 @@ public class Parent extends GitHubTagLibTagSupport {
 		newRecord = false;
 		commitNeeded = false;
 		parentEntities = new Vector<GitHubTagLibTagSupport>();
+		this.var = null;
 
 	}
 

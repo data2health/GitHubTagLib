@@ -5,11 +5,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.Tag;
+
 import edu.uiowa.slis.GitHubTagLib.user.User;
 import edu.uiowa.slis.GitHubTagLib.organization.Organization;
 
@@ -23,12 +25,16 @@ public class Member extends GitHubTagLibTagSupport {
 	boolean commitNeeded = false;
 	boolean newRecord = false;
 
-	private static final Log log = LogFactory.getLog(Member.class);
+	private static final Logger log = LogManager.getLogger(Member.class);
 
 	Vector<GitHubTagLibTagSupport> parentEntities = new Vector<GitHubTagLibTagSupport>();
 
 	int userId = 0;
 	int organizationId = 0;
+
+	private String var = null;
+
+	private Member cachedMember = null;
 
 	public int doStartTag() throws JspException {
 		currentInstance = this;
@@ -112,18 +118,75 @@ public class Member extends GitHubTagLibTagSupport {
 			}
 		} catch (SQLException e) {
 			log.error("JDBC error retrieving userId " + userId, e);
-			throw new JspTagException("Error: JDBC error retrieving userId " + userId);
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "JDBC error retrieving userId " + userId);
+				return parent.doEndTag();
+			}else{
+				throw new JspException("JDBC error retrieving userId " + userId,e);
+			}
+
 		} finally {
 			freeConnection();
 		}
+
+		if(pageContext != null){
+			Member currentMember = (Member) pageContext.getAttribute("tag_member");
+			if(currentMember != null){
+				cachedMember = currentMember;
+			}
+			currentMember = this;
+			pageContext.setAttribute((var == null ? "tag_member" : var), currentMember);
+		}
+
 		return EVAL_PAGE;
 	}
 
 	public int doEndTag() throws JspException {
 		currentInstance = null;
+
+		if(pageContext != null){
+			if(this.cachedMember != null){
+				pageContext.setAttribute((var == null ? "tag_member" : var), this.cachedMember);
+			}else{
+				pageContext.removeAttribute((var == null ? "tag_member" : var));
+				this.cachedMember = null;
+			}
+		}
+
 		try {
+			Boolean error = null; // (Boolean) pageContext.getAttribute("tagError");
+			if(pageContext != null){
+				error = (Boolean) pageContext.getAttribute("tagError");
+			}
+
+			if(error != null && error){
+
+				freeConnection();
+				clearServiceState();
+
+				Exception e = (Exception) pageContext.getAttribute("tagErrorException");
+				String message = (String) pageContext.getAttribute("tagErrorMessage");
+
+				Tag parent = getParent();
+				if(parent != null){
+					return parent.doEndTag();
+				}else if(e != null && message != null){
+					throw new JspException(message,e);
+				}else if(parent == null){
+					pageContext.removeAttribute("tagError");
+					pageContext.removeAttribute("tagErrorException");
+					pageContext.removeAttribute("tagErrorMessage");
+				}
+			}
 			if (commitNeeded) {
-				PreparedStatement stmt = getConnection().prepareStatement("update github.member set where user_id = ? and organization_id = ?");
+				PreparedStatement stmt = getConnection().prepareStatement("update github.member set where user_id = ?  and organization_id = ? ");
 				stmt.setInt(1,userId);
 				stmt.setInt(2,organizationId);
 				stmt.executeUpdate();
@@ -131,7 +194,20 @@ public class Member extends GitHubTagLibTagSupport {
 			}
 		} catch (SQLException e) {
 			log.error("Error: IOException while writing to the user", e);
-			throw new JspTagException("Error: IOException while writing to the user");
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: IOException while writing to the user");
+				return parent.doEndTag();
+			}else{
+				throw new JspTagException("Error: IOException while writing to the user");
+			}
+
 		} finally {
 			clearServiceState();
 			freeConnection();
@@ -139,29 +215,23 @@ public class Member extends GitHubTagLibTagSupport {
 		return super.doEndTag();
 	}
 
-	public void insertEntity() throws JspException {
-		try {
-			if (userId == 0) {
-				userId = Sequence.generateID();
-				log.debug("generating new Member " + userId);
-			}
-
-			if (organizationId == 0) {
-				organizationId = Sequence.generateID();
-				log.debug("generating new Member " + organizationId);
-			}
-
-			PreparedStatement stmt = getConnection().prepareStatement("insert into github.member(user_id,organization_id) values (?,?)");
-			stmt.setInt(1,userId);
-			stmt.setInt(2,organizationId);
-			stmt.executeUpdate();
-			stmt.close();
-		} catch (SQLException e) {
-			log.error("Error: IOException while writing to the user", e);
-			throw new JspTagException("Error: IOException while writing to the user");
-		} finally {
-			freeConnection();
+	public void insertEntity() throws JspException, SQLException {
+		if (userId == 0) {
+			userId = Sequence.generateID();
+			log.debug("generating new Member " + userId);
 		}
+
+		if (organizationId == 0) {
+			organizationId = Sequence.generateID();
+			log.debug("generating new Member " + organizationId);
+		}
+
+		PreparedStatement stmt = getConnection().prepareStatement("insert into github.member(user_id,organization_id) values (?,?)");
+		stmt.setInt(1,userId);
+		stmt.setInt(2,organizationId);
+		stmt.executeUpdate();
+		stmt.close();
+		freeConnection();
 	}
 
 	public int getUserId () {
@@ -188,6 +258,18 @@ public class Member extends GitHubTagLibTagSupport {
 		return organizationId;
 	}
 
+	public String getVar () {
+		return var;
+	}
+
+	public void setVar (String var) {
+		this.var = var;
+	}
+
+	public String getActualVar () {
+		return var;
+	}
+
 	public static Integer userIdValue() throws JspException {
 		try {
 			return currentInstance.getUserId();
@@ -210,6 +292,7 @@ public class Member extends GitHubTagLibTagSupport {
 		newRecord = false;
 		commitNeeded = false;
 		parentEntities = new Vector<GitHubTagLibTagSupport>();
+		this.var = null;
 
 	}
 

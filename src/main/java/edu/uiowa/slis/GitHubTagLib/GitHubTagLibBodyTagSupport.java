@@ -8,8 +8,8 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 import javax.sql.DataSource;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 
 @SuppressWarnings("serial")
@@ -22,7 +22,7 @@ public class GitHubTagLibBodyTagSupport extends BodyTagSupport {
         super();
     }
 
-    private static final Log log = LogFactory.getLog(GitHubTagLibBodyTagSupport.class);
+    private static final Logger log = LogManager.getLogger(GitHubTagLibBodyTagSupport.class);
 
     @Override
     public int doEndTag() throws JspException {

@@ -5,11 +5,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.Tag;
+
 import edu.uiowa.slis.GitHubTagLib.organization.Organization;
 import edu.uiowa.slis.GitHubTagLib.repository.Repository;
 
@@ -23,12 +25,16 @@ public class OrgRepo extends GitHubTagLibTagSupport {
 	boolean commitNeeded = false;
 	boolean newRecord = false;
 
-	private static final Log log = LogFactory.getLog(OrgRepo.class);
+	private static final Logger log = LogManager.getLogger(OrgRepo.class);
 
 	Vector<GitHubTagLibTagSupport> parentEntities = new Vector<GitHubTagLibTagSupport>();
 
 	int organizationId = 0;
 	int repositoryId = 0;
+
+	private String var = null;
+
+	private OrgRepo cachedOrgRepo = null;
 
 	public int doStartTag() throws JspException {
 		currentInstance = this;
@@ -112,18 +118,75 @@ public class OrgRepo extends GitHubTagLibTagSupport {
 			}
 		} catch (SQLException e) {
 			log.error("JDBC error retrieving organizationId " + organizationId, e);
-			throw new JspTagException("Error: JDBC error retrieving organizationId " + organizationId);
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "JDBC error retrieving organizationId " + organizationId);
+				return parent.doEndTag();
+			}else{
+				throw new JspException("JDBC error retrieving organizationId " + organizationId,e);
+			}
+
 		} finally {
 			freeConnection();
 		}
+
+		if(pageContext != null){
+			OrgRepo currentOrgRepo = (OrgRepo) pageContext.getAttribute("tag_orgRepo");
+			if(currentOrgRepo != null){
+				cachedOrgRepo = currentOrgRepo;
+			}
+			currentOrgRepo = this;
+			pageContext.setAttribute((var == null ? "tag_orgRepo" : var), currentOrgRepo);
+		}
+
 		return EVAL_PAGE;
 	}
 
 	public int doEndTag() throws JspException {
 		currentInstance = null;
+
+		if(pageContext != null){
+			if(this.cachedOrgRepo != null){
+				pageContext.setAttribute((var == null ? "tag_orgRepo" : var), this.cachedOrgRepo);
+			}else{
+				pageContext.removeAttribute((var == null ? "tag_orgRepo" : var));
+				this.cachedOrgRepo = null;
+			}
+		}
+
 		try {
+			Boolean error = null; // (Boolean) pageContext.getAttribute("tagError");
+			if(pageContext != null){
+				error = (Boolean) pageContext.getAttribute("tagError");
+			}
+
+			if(error != null && error){
+
+				freeConnection();
+				clearServiceState();
+
+				Exception e = (Exception) pageContext.getAttribute("tagErrorException");
+				String message = (String) pageContext.getAttribute("tagErrorMessage");
+
+				Tag parent = getParent();
+				if(parent != null){
+					return parent.doEndTag();
+				}else if(e != null && message != null){
+					throw new JspException(message,e);
+				}else if(parent == null){
+					pageContext.removeAttribute("tagError");
+					pageContext.removeAttribute("tagErrorException");
+					pageContext.removeAttribute("tagErrorMessage");
+				}
+			}
 			if (commitNeeded) {
-				PreparedStatement stmt = getConnection().prepareStatement("update github.org_repo set where organization_id = ? and repository_id = ?");
+				PreparedStatement stmt = getConnection().prepareStatement("update github.org_repo set where organization_id = ?  and repository_id = ? ");
 				stmt.setInt(1,organizationId);
 				stmt.setInt(2,repositoryId);
 				stmt.executeUpdate();
@@ -131,7 +194,20 @@ public class OrgRepo extends GitHubTagLibTagSupport {
 			}
 		} catch (SQLException e) {
 			log.error("Error: IOException while writing to the user", e);
-			throw new JspTagException("Error: IOException while writing to the user");
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: IOException while writing to the user");
+				return parent.doEndTag();
+			}else{
+				throw new JspTagException("Error: IOException while writing to the user");
+			}
+
 		} finally {
 			clearServiceState();
 			freeConnection();
@@ -139,29 +215,23 @@ public class OrgRepo extends GitHubTagLibTagSupport {
 		return super.doEndTag();
 	}
 
-	public void insertEntity() throws JspException {
-		try {
-			if (organizationId == 0) {
-				organizationId = Sequence.generateID();
-				log.debug("generating new OrgRepo " + organizationId);
-			}
-
-			if (repositoryId == 0) {
-				repositoryId = Sequence.generateID();
-				log.debug("generating new OrgRepo " + repositoryId);
-			}
-
-			PreparedStatement stmt = getConnection().prepareStatement("insert into github.org_repo(organization_id,repository_id) values (?,?)");
-			stmt.setInt(1,organizationId);
-			stmt.setInt(2,repositoryId);
-			stmt.executeUpdate();
-			stmt.close();
-		} catch (SQLException e) {
-			log.error("Error: IOException while writing to the user", e);
-			throw new JspTagException("Error: IOException while writing to the user");
-		} finally {
-			freeConnection();
+	public void insertEntity() throws JspException, SQLException {
+		if (organizationId == 0) {
+			organizationId = Sequence.generateID();
+			log.debug("generating new OrgRepo " + organizationId);
 		}
+
+		if (repositoryId == 0) {
+			repositoryId = Sequence.generateID();
+			log.debug("generating new OrgRepo " + repositoryId);
+		}
+
+		PreparedStatement stmt = getConnection().prepareStatement("insert into github.org_repo(organization_id,repository_id) values (?,?)");
+		stmt.setInt(1,organizationId);
+		stmt.setInt(2,repositoryId);
+		stmt.executeUpdate();
+		stmt.close();
+		freeConnection();
 	}
 
 	public int getOrganizationId () {
@@ -188,6 +258,18 @@ public class OrgRepo extends GitHubTagLibTagSupport {
 		return repositoryId;
 	}
 
+	public String getVar () {
+		return var;
+	}
+
+	public void setVar (String var) {
+		this.var = var;
+	}
+
+	public String getActualVar () {
+		return var;
+	}
+
 	public static Integer organizationIdValue() throws JspException {
 		try {
 			return currentInstance.getOrganizationId();
@@ -210,6 +292,7 @@ public class OrgRepo extends GitHubTagLibTagSupport {
 		newRecord = false;
 		commitNeeded = false;
 		parentEntities = new Vector<GitHubTagLibTagSupport>();
+		this.var = null;
 
 	}
 

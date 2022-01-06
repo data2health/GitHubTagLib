@@ -2,15 +2,17 @@ package edu.uiowa.slis.GitHubTagLib.user;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import javax.servlet.jsp.tagext.Tag;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import edu.uiowa.slis.GitHubTagLib.GitHubTagLibTagSupport;
 
 @SuppressWarnings("serial")
 public class UserLogin extends GitHubTagLibTagSupport {
-	private static final Log log = LogFactory.getLog(UserLogin.class);
 
+	private static final Logger log = LogManager.getLogger(UserLogin.class);
 
 	public int doStartTag() throws JspException {
 		try {
@@ -20,28 +22,57 @@ public class UserLogin extends GitHubTagLibTagSupport {
 			}
 		} catch (Exception e) {
 			log.error("Can't find enclosing User for login tag ", e);
-			throw new JspTagException("Error: Can't find enclosing User for login tag ");
+			freeConnection();
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: Can't find enclosing User for login tag ");
+				return parent.doEndTag();
+			}else{
+				throw new JspTagException("Error: Can't find enclosing User for login tag ");
+			}
+
 		}
 		return SKIP_BODY;
 	}
 
-	public String getLogin() throws JspTagException {
+	public String getLogin() throws JspException {
 		try {
 			User theUser = (User)findAncestorWithClass(this, User.class);
 			return theUser.getLogin();
 		} catch (Exception e) {
-			log.error(" Can't find enclosing User for login tag ", e);
-			throw new JspTagException("Error: Can't find enclosing User for login tag ");
+			log.error("Can't find enclosing User for login tag ", e);
+			freeConnection();
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: Can't find enclosing User for login tag ");
+				parent.doEndTag();
+				return null;
+			}else{
+				throw new JspTagException("Error: Can't find enclosing User for login tag ");
+			}
 		}
 	}
 
-	public void setLogin(String login) throws JspTagException {
+	public void setLogin(String login) throws JspException {
 		try {
 			User theUser = (User)findAncestorWithClass(this, User.class);
 			theUser.setLogin(login);
 		} catch (Exception e) {
 			log.error("Can't find enclosing User for login tag ", e);
-			throw new JspTagException("Error: Can't find enclosing User for login tag ");
+			freeConnection();
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: Can't find enclosing User for login tag ");
+				parent.doEndTag();
+			}else{
+				throw new JspTagException("Error: Can't find enclosing User for login tag ");
+			}
 		}
 	}
 

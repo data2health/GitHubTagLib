@@ -5,11 +5,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.Tag;
 
 import edu.uiowa.slis.GitHubTagLib.GitHubTagLibTagSupport;
 import edu.uiowa.slis.GitHubTagLib.GitHubTagLibBodyTagSupport;
@@ -24,7 +25,7 @@ public class SearchUserIterator extends GitHubTagLibBodyTagSupport {
     boolean relevant = false;
 	Vector<GitHubTagLibTagSupport> parentEntities = new Vector<GitHubTagLibTagSupport>();
 
-	private static final Log log = LogFactory.getLog(SearchUserIterator.class);
+	private static final Logger log = LogManager.getLogger(SearchUserIterator.class);
 
 
     PreparedStatement stat = null;
@@ -70,7 +71,7 @@ public class SearchUserIterator extends GitHubTagLibBodyTagSupport {
 		SearchUserIterator theIterator = new SearchUserIterator();
 		try {
 			PreparedStatement stat = theIterator.getConnection().prepareStatement("SELECT count(*) from github.search_user where 1=1"
-						+ " and id = ?"
+						+ " and uid = ?"
 						);
 
 			stat.setInt(1,Integer.parseInt(ID));
@@ -168,7 +169,7 @@ public class SearchUserIterator extends GitHubTagLibBodyTagSupport {
                                                         + generateJoinCriteria()
                                                         + (sid == 0 ? "" : " and sid = ?")
                                                         + (uid == 0 ? "" : " and uid = ?")
-                                                        +  generateLimitCriteria());
+                                                        + generateLimitCriteria());
             if (sid != 0) stat.setInt(webapp_keySeq++, sid);
             if (uid != 0) stat.setInt(webapp_keySeq++, uid);
             rs = stat.executeQuery();
@@ -184,22 +185,33 @@ public class SearchUserIterator extends GitHubTagLibBodyTagSupport {
                                                         + generateJoinCriteria()
                                                         + (sid == 0 ? "" : " and sid = ?")
                                                         + (uid == 0 ? "" : " and uid = ?")
-                                                        + " order by " + generateSortCriteria() + generateLimitCriteria());
+                                                        + " order by " + generateSortCriteria()  +  generateLimitCriteria());
             if (sid != 0) stat.setInt(webapp_keySeq++, sid);
             if (uid != 0) stat.setInt(webapp_keySeq++, uid);
             rs = stat.executeQuery();
 
-            if (rs.next()) {
+            if ( rs != null && rs.next() ) {
                 sid = rs.getInt(1);
                 uid = rs.getInt(2);
                 pageContext.setAttribute(var, ++rsCount);
                 return EVAL_BODY_INCLUDE;
             }
         } catch (SQLException e) {
-            log.error("JDBC error generating SearchUser iterator: " + stat.toString(), e);
-            clearServiceState();
-            freeConnection();
-            throw new JspTagException("Error: JDBC error generating SearchUser iterator: " + stat.toString());
+            log.error("JDBC error generating SearchUser iterator: " + stat, e);
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: JDBC error generating SearchUser iterator: " + stat);
+				return parent.doEndTag();
+			}else{
+				throw new JspException("Error: JDBC error generating SearchUser iterator: " + stat,e);
+			}
+
         }
 
         return SKIP_BODY;
@@ -218,9 +230,9 @@ public class SearchUserIterator extends GitHubTagLibBodyTagSupport {
     private String generateJoinCriteria() {
        StringBuffer theBuffer = new StringBuffer();
        if (useSearchTerm)
-          theBuffer.append(" and search_term.ID = search_user.sid");
+          theBuffer.append(" and github.search_term.id = github.search_user.sid");
        if (useUser)
-          theBuffer.append(" and github.user.ID = search_user.uid");
+          theBuffer.append(" and github.user.id = github.search_user.uid");
 
       return theBuffer.toString();
     }
@@ -241,9 +253,9 @@ public class SearchUserIterator extends GitHubTagLibBodyTagSupport {
         }
     }
 
-    public int doAfterBody() throws JspTagException {
+    public int doAfterBody() throws JspException {
         try {
-            if (rs.next()) {
+            if ( rs != null && rs.next() ) {
                 sid = rs.getInt(1);
                 uid = rs.getInt(2);
                 pageContext.setAttribute(var, ++rsCount);
@@ -251,20 +263,76 @@ public class SearchUserIterator extends GitHubTagLibBodyTagSupport {
             }
         } catch (SQLException e) {
             log.error("JDBC error iterating across SearchUser", e);
-            clearServiceState();
-            freeConnection();
-            throw new JspTagException("Error: JDBC error iterating across SearchUser");
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "JDBC error iterating across SearchUser" + stat.toString());
+				return parent.doEndTag();
+			}else{
+				throw new JspException("JDBC error iterating across SearchUser",e);
+			}
+
         }
         return SKIP_BODY;
     }
 
     public int doEndTag() throws JspTagException, JspException {
         try {
-            rs.close();
-            stat.close();
-        } catch (SQLException e) {
+			if( pageContext != null ){
+				Boolean error = (Boolean) pageContext.getAttribute("tagError");
+				if( error != null && error ){
+
+					freeConnection();
+					clearServiceState();
+
+					Exception e = null; // (Exception) pageContext.getAttribute("tagErrorException");
+					String message = null; // (String) pageContext.getAttribute("tagErrorMessage");
+
+					if(pageContext != null){
+						e = (Exception) pageContext.getAttribute("tagErrorException");
+						message = (String) pageContext.getAttribute("tagErrorMessage");
+
+					}
+					Tag parent = getParent();
+					if(parent != null){
+						return parent.doEndTag();
+					}else if(e != null && message != null){
+						throw new JspException(message,e);
+					}else if(parent == null && pageContext != null){
+						pageContext.removeAttribute("tagError");
+						pageContext.removeAttribute("tagErrorException");
+						pageContext.removeAttribute("tagErrorMessage");
+					}
+				}
+			}
+
+            if( rs != null ){
+                rs.close();
+            }
+
+            if( stat != null ){
+                stat.close();
+            }
+
+        } catch ( SQLException e ) {
             log.error("JDBC error ending SearchUser iterator",e);
-            throw new JspTagException("Error: JDBC error ending SearchUser iterator");
+			freeConnection();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "JDBC error retrieving sid " + sid);
+				return parent.doEndTag();
+			}else{
+				throw new JspException("Error: JDBC error ending SearchUser iterator",e);
+			}
+
         } finally {
             clearServiceState();
             freeConnection();

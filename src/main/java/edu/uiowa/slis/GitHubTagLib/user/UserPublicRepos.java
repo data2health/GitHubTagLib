@@ -2,15 +2,17 @@ package edu.uiowa.slis.GitHubTagLib.user;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import javax.servlet.jsp.tagext.Tag;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import edu.uiowa.slis.GitHubTagLib.GitHubTagLibTagSupport;
 
 @SuppressWarnings("serial")
 public class UserPublicRepos extends GitHubTagLibTagSupport {
-	private static final Log log = LogFactory.getLog(UserPublicRepos.class);
 
+	private static final Logger log = LogManager.getLogger(UserPublicRepos.class);
 
 	public int doStartTag() throws JspException {
 		try {
@@ -20,28 +22,57 @@ public class UserPublicRepos extends GitHubTagLibTagSupport {
 			}
 		} catch (Exception e) {
 			log.error("Can't find enclosing User for publicRepos tag ", e);
-			throw new JspTagException("Error: Can't find enclosing User for publicRepos tag ");
+			freeConnection();
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: Can't find enclosing User for publicRepos tag ");
+				return parent.doEndTag();
+			}else{
+				throw new JspTagException("Error: Can't find enclosing User for publicRepos tag ");
+			}
+
 		}
 		return SKIP_BODY;
 	}
 
-	public int getPublicRepos() throws JspTagException {
+	public int getPublicRepos() throws JspException {
 		try {
 			User theUser = (User)findAncestorWithClass(this, User.class);
 			return theUser.getPublicRepos();
 		} catch (Exception e) {
-			log.error(" Can't find enclosing User for publicRepos tag ", e);
-			throw new JspTagException("Error: Can't find enclosing User for publicRepos tag ");
+			log.error("Can't find enclosing User for publicRepos tag ", e);
+			freeConnection();
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: Can't find enclosing User for publicRepos tag ");
+				parent.doEndTag();
+				return 0;
+			}else{
+				throw new JspTagException("Error: Can't find enclosing User for publicRepos tag ");
+			}
 		}
 	}
 
-	public void setPublicRepos(int publicRepos) throws JspTagException {
+	public void setPublicRepos(int publicRepos) throws JspException {
 		try {
 			User theUser = (User)findAncestorWithClass(this, User.class);
 			theUser.setPublicRepos(publicRepos);
 		} catch (Exception e) {
 			log.error("Can't find enclosing User for publicRepos tag ", e);
-			throw new JspTagException("Error: Can't find enclosing User for publicRepos tag ");
+			freeConnection();
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: Can't find enclosing User for publicRepos tag ");
+				parent.doEndTag();
+			}else{
+				throw new JspTagException("Error: Can't find enclosing User for publicRepos tag ");
+			}
 		}
 	}
 

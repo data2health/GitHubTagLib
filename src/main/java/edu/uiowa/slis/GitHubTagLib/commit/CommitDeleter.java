@@ -5,12 +5,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import java.util.Date;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import java.sql.Timestamp;
 
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.Tag;
 
 import edu.uiowa.slis.GitHubTagLib.GitHubTagLibTagSupport;
 import edu.uiowa.slis.GitHubTagLib.GitHubTagLibBodyTagSupport;
@@ -19,7 +19,7 @@ import edu.uiowa.slis.GitHubTagLib.repository.Repository;
 @SuppressWarnings("serial")
 public class CommitDeleter extends GitHubTagLibBodyTagSupport {
     int ID = 0;
-    Date committed = null;
+    Timestamp committed = null;
     String name = null;
     String email = null;
     int userId = 0;
@@ -27,7 +27,7 @@ public class CommitDeleter extends GitHubTagLibBodyTagSupport {
     String message = null;
 	Vector<GitHubTagLibTagSupport> parentEntities = new Vector<GitHubTagLibTagSupport>();
 
-	private static final Log log = LogFactory.getLog(CommitDeleter.class);
+	private static final Logger log = LogManager.getLogger(CommitDeleter.class);
 
 
     ResultSet rs = null;
@@ -50,16 +50,30 @@ public class CommitDeleter extends GitHubTagLibBodyTagSupport {
             int webapp_keySeq = 1;
             stat = getConnection().prepareStatement("DELETE from github.commit where 1=1"
                                                         + (ID == 0 ? "" : " and id = ? ")
-                                                        + (committed == null ? "" : " and committed = ? "));
+                                                        + (committed == null ? "" : " and committed = ? ")
+                                                        + (ID == 0 ? "" : " and id = ? "));
             if (ID != 0) stat.setInt(webapp_keySeq++, ID);
-            if (committed != null) stat.setTimestamp(webapp_keySeq++, committed == null ? null : new java.sql.Timestamp(committed.getTime()));
+            if (committed != null) stat.setTimestamp(webapp_keySeq++, committed);
+			if (ID != 0) stat.setInt(webapp_keySeq++, ID);
             stat.execute();
 
 			webapp_keySeq = 1;
         } catch (SQLException e) {
             log.error("JDBC error generating Commit deleter", e);
-            clearServiceState();
-            throw new JspTagException("Error: JDBC error generating Commit deleter");
+
+			clearServiceState();
+			freeConnection();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: JDBC error generating Commit deleter");
+				return parent.doEndTag();
+			}else{
+				throw new JspException("Error: JDBC error generating Commit deleter",e);
+			}
+
         } finally {
             freeConnection();
         }
@@ -68,7 +82,27 @@ public class CommitDeleter extends GitHubTagLibBodyTagSupport {
     }
 
 	public int doEndTag() throws JspException {
+
 		clearServiceState();
+		Boolean error = (Boolean) pageContext.getAttribute("tagError");
+		if(error != null && error){
+
+			freeConnection();
+
+			Exception e = (Exception) pageContext.getAttribute("tagErrorException");
+			String message = (String) pageContext.getAttribute("tagErrorMessage");
+
+			Tag parent = getParent();
+			if(parent != null){
+				return parent.doEndTag();
+			}else if(e != null && message != null){
+				throw new JspException(message,e);
+			}else if(parent == null){
+				pageContext.removeAttribute("tagError");
+				pageContext.removeAttribute("tagErrorException");
+				pageContext.removeAttribute("tagErrorMessage");
+			}
+		}
 		return super.doEndTag();
 	}
 
@@ -104,19 +138,19 @@ public class CommitDeleter extends GitHubTagLibBodyTagSupport {
 		return ID;
 	}
 
-	public Date getCommitted () {
+	public Timestamp getCommitted () {
 		return committed;
 	}
 
-	public void setCommitted (Date committed) {
+	public void setCommitted (Timestamp committed) {
 		this.committed = committed;
 	}
 
-	public Date getActualCommitted () {
+	public Timestamp getActualCommitted () {
 		return committed;
 	}
 
 	public void setCommittedToNow ( ) {
-		this.committed = new java.util.Date();
+		this.committed = new java.sql.Timestamp(new java.util.Date().getTime());
 	}
 }

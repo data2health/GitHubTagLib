@@ -5,12 +5,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import java.util.Date;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import java.sql.Timestamp;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.Tag;
+
 import edu.uiowa.slis.GitHubTagLib.user.User;
 import edu.uiowa.slis.GitHubTagLib.repository.Repository;
 
@@ -24,14 +26,18 @@ public class Committer extends GitHubTagLibTagSupport {
 	boolean commitNeeded = false;
 	boolean newRecord = false;
 
-	private static final Log log = LogFactory.getLog(Committer.class);
+	private static final Logger log = LogManager.getLogger(Committer.class);
 
 	Vector<GitHubTagLibTagSupport> parentEntities = new Vector<GitHubTagLibTagSupport>();
 
 	int uid = 0;
 	int rid = 0;
-	Date mostRecent = null;
+	Timestamp mostRecent = null;
 	int count = 0;
+
+	private String var = null;
+
+	private Committer cachedCommitter = null;
 
 	public int doStartTag() throws JspException {
 		currentInstance = this;
@@ -127,20 +133,77 @@ public class Committer extends GitHubTagLibTagSupport {
 			}
 		} catch (SQLException e) {
 			log.error("JDBC error retrieving uid " + uid, e);
-			throw new JspTagException("Error: JDBC error retrieving uid " + uid);
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "JDBC error retrieving uid " + uid);
+				return parent.doEndTag();
+			}else{
+				throw new JspException("JDBC error retrieving uid " + uid,e);
+			}
+
 		} finally {
 			freeConnection();
 		}
+
+		if(pageContext != null){
+			Committer currentCommitter = (Committer) pageContext.getAttribute("tag_committer");
+			if(currentCommitter != null){
+				cachedCommitter = currentCommitter;
+			}
+			currentCommitter = this;
+			pageContext.setAttribute((var == null ? "tag_committer" : var), currentCommitter);
+		}
+
 		return EVAL_PAGE;
 	}
 
 	public int doEndTag() throws JspException {
 		currentInstance = null;
+
+		if(pageContext != null){
+			if(this.cachedCommitter != null){
+				pageContext.setAttribute((var == null ? "tag_committer" : var), this.cachedCommitter);
+			}else{
+				pageContext.removeAttribute((var == null ? "tag_committer" : var));
+				this.cachedCommitter = null;
+			}
+		}
+
 		try {
+			Boolean error = null; // (Boolean) pageContext.getAttribute("tagError");
+			if(pageContext != null){
+				error = (Boolean) pageContext.getAttribute("tagError");
+			}
+
+			if(error != null && error){
+
+				freeConnection();
+				clearServiceState();
+
+				Exception e = (Exception) pageContext.getAttribute("tagErrorException");
+				String message = (String) pageContext.getAttribute("tagErrorMessage");
+
+				Tag parent = getParent();
+				if(parent != null){
+					return parent.doEndTag();
+				}else if(e != null && message != null){
+					throw new JspException(message,e);
+				}else if(parent == null){
+					pageContext.removeAttribute("tagError");
+					pageContext.removeAttribute("tagErrorException");
+					pageContext.removeAttribute("tagErrorMessage");
+				}
+			}
 			if (commitNeeded) {
-				PreparedStatement stmt = getConnection().prepareStatement("update github.committer set most_recent = ?, count = ? where uid = ? and rid = ?");
-				stmt.setTimestamp(1,mostRecent == null ? null : new java.sql.Timestamp(mostRecent.getTime()));
-				stmt.setInt(2,count);
+				PreparedStatement stmt = getConnection().prepareStatement("update github.committer set most_recent = ?, count = ? where uid = ?  and rid = ? ");
+				stmt.setTimestamp( 1, mostRecent );
+				stmt.setInt( 2, count );
 				stmt.setInt(3,uid);
 				stmt.setInt(4,rid);
 				stmt.executeUpdate();
@@ -148,7 +211,20 @@ public class Committer extends GitHubTagLibTagSupport {
 			}
 		} catch (SQLException e) {
 			log.error("Error: IOException while writing to the user", e);
-			throw new JspTagException("Error: IOException while writing to the user");
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: IOException while writing to the user");
+				return parent.doEndTag();
+			}else{
+				throw new JspTagException("Error: IOException while writing to the user");
+			}
+
 		} finally {
 			clearServiceState();
 			freeConnection();
@@ -156,31 +232,25 @@ public class Committer extends GitHubTagLibTagSupport {
 		return super.doEndTag();
 	}
 
-	public void insertEntity() throws JspException {
-		try {
-			if (uid == 0) {
-				uid = Sequence.generateID();
-				log.debug("generating new Committer " + uid);
-			}
-
-			if (rid == 0) {
-				rid = Sequence.generateID();
-				log.debug("generating new Committer " + rid);
-			}
-
-			PreparedStatement stmt = getConnection().prepareStatement("insert into github.committer(uid,rid,most_recent,count) values (?,?,?,?)");
-			stmt.setInt(1,uid);
-			stmt.setInt(2,rid);
-			stmt.setTimestamp(3,mostRecent == null ? null : new java.sql.Timestamp(mostRecent.getTime()));
-			stmt.setInt(4,count);
-			stmt.executeUpdate();
-			stmt.close();
-		} catch (SQLException e) {
-			log.error("Error: IOException while writing to the user", e);
-			throw new JspTagException("Error: IOException while writing to the user");
-		} finally {
-			freeConnection();
+	public void insertEntity() throws JspException, SQLException {
+		if (uid == 0) {
+			uid = Sequence.generateID();
+			log.debug("generating new Committer " + uid);
 		}
+
+		if (rid == 0) {
+			rid = Sequence.generateID();
+			log.debug("generating new Committer " + rid);
+		}
+
+		PreparedStatement stmt = getConnection().prepareStatement("insert into github.committer(uid,rid,most_recent,count) values (?,?,?,?)");
+		stmt.setInt(1,uid);
+		stmt.setInt(2,rid);
+		stmt.setTimestamp(3,mostRecent);
+		stmt.setInt(4,count);
+		stmt.executeUpdate();
+		stmt.close();
+		freeConnection();
 	}
 
 	public int getUid () {
@@ -207,21 +277,21 @@ public class Committer extends GitHubTagLibTagSupport {
 		return rid;
 	}
 
-	public Date getMostRecent () {
+	public Timestamp getMostRecent () {
 		return mostRecent;
 	}
 
-	public void setMostRecent (Date mostRecent) {
+	public void setMostRecent (Timestamp mostRecent) {
 		this.mostRecent = mostRecent;
 		commitNeeded = true;
 	}
 
-	public Date getActualMostRecent () {
+	public Timestamp getActualMostRecent () {
 		return mostRecent;
 	}
 
 	public void setMostRecentToNow ( ) {
-		this.mostRecent = new java.util.Date();
+		this.mostRecent = new java.sql.Timestamp(new java.util.Date().getTime());
 		commitNeeded = true;
 	}
 
@@ -236,6 +306,18 @@ public class Committer extends GitHubTagLibTagSupport {
 
 	public int getActualCount () {
 		return count;
+	}
+
+	public String getVar () {
+		return var;
+	}
+
+	public void setVar (String var) {
+		this.var = var;
+	}
+
+	public String getActualVar () {
+		return var;
 	}
 
 	public static Integer uidValue() throws JspException {
@@ -254,7 +336,7 @@ public class Committer extends GitHubTagLibTagSupport {
 		}
 	}
 
-	public static Date mostRecentValue() throws JspException {
+	public static Timestamp mostRecentValue() throws JspException {
 		try {
 			return currentInstance.getMostRecent();
 		} catch (Exception e) {
@@ -278,6 +360,7 @@ public class Committer extends GitHubTagLibTagSupport {
 		newRecord = false;
 		commitNeeded = false;
 		parentEntities = new Vector<GitHubTagLibTagSupport>();
+		this.var = null;
 
 	}
 

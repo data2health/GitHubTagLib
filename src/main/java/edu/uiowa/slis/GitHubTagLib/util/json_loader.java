@@ -1,7 +1,7 @@
 package edu.uiowa.slis.GitHubTagLib.util;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -20,7 +20,7 @@ import java.util.Properties;
 
 public class json_loader {
     static boolean load = true;
-    static Logger logger = Logger.getLogger(json_loader.class);
+    static Logger logger = LogManager.getLogger(json_loader.class);
 
     public static final String networkHostName = "localhost";
     static Connection conn = null;
@@ -37,7 +37,6 @@ public class json_loader {
     // this is in this project only as a temporary convenience
 
     public static void main(String args[]) throws Exception {
-	PropertyConfigurator.configure(args[0]);
 	prop_file = PropertyLoader.loadProperties("github");
 
 	databaseName = args[1];

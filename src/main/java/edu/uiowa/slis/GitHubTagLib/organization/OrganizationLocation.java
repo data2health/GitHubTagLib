@@ -2,15 +2,17 @@ package edu.uiowa.slis.GitHubTagLib.organization;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import javax.servlet.jsp.tagext.Tag;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import edu.uiowa.slis.GitHubTagLib.GitHubTagLibTagSupport;
 
 @SuppressWarnings("serial")
 public class OrganizationLocation extends GitHubTagLibTagSupport {
-	private static final Log log = LogFactory.getLog(OrganizationLocation.class);
 
+	private static final Logger log = LogManager.getLogger(OrganizationLocation.class);
 
 	public int doStartTag() throws JspException {
 		try {
@@ -20,28 +22,57 @@ public class OrganizationLocation extends GitHubTagLibTagSupport {
 			}
 		} catch (Exception e) {
 			log.error("Can't find enclosing Organization for location tag ", e);
-			throw new JspTagException("Error: Can't find enclosing Organization for location tag ");
+			freeConnection();
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: Can't find enclosing Organization for location tag ");
+				return parent.doEndTag();
+			}else{
+				throw new JspTagException("Error: Can't find enclosing Organization for location tag ");
+			}
+
 		}
 		return SKIP_BODY;
 	}
 
-	public String getLocation() throws JspTagException {
+	public String getLocation() throws JspException {
 		try {
 			Organization theOrganization = (Organization)findAncestorWithClass(this, Organization.class);
 			return theOrganization.getLocation();
 		} catch (Exception e) {
-			log.error(" Can't find enclosing Organization for location tag ", e);
-			throw new JspTagException("Error: Can't find enclosing Organization for location tag ");
+			log.error("Can't find enclosing Organization for location tag ", e);
+			freeConnection();
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: Can't find enclosing Organization for location tag ");
+				parent.doEndTag();
+				return null;
+			}else{
+				throw new JspTagException("Error: Can't find enclosing Organization for location tag ");
+			}
 		}
 	}
 
-	public void setLocation(String location) throws JspTagException {
+	public void setLocation(String location) throws JspException {
 		try {
 			Organization theOrganization = (Organization)findAncestorWithClass(this, Organization.class);
 			theOrganization.setLocation(location);
 		} catch (Exception e) {
 			log.error("Can't find enclosing Organization for location tag ", e);
-			throw new JspTagException("Error: Can't find enclosing Organization for location tag ");
+			freeConnection();
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: Can't find enclosing Organization for location tag ");
+				parent.doEndTag();
+			}else{
+				throw new JspTagException("Error: Can't find enclosing Organization for location tag ");
+			}
 		}
 	}
 
