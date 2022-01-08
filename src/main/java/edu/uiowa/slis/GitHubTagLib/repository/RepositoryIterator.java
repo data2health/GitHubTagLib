@@ -129,7 +129,8 @@ public class RepositoryIterator extends GitHubTagLibBodyTagSupport {
 
             if ( rs != null && rs.next() ) {
                 ID = rs.getInt(1);
-                pageContext.setAttribute(var, ++rsCount);
+                if (var != null)
+                    pageContext.setAttribute(var, this);
                 return EVAL_BODY_INCLUDE;
             }
         } catch (SQLException e) {
@@ -183,7 +184,6 @@ public class RepositoryIterator extends GitHubTagLibBodyTagSupport {
         try {
             if ( rs != null && rs.next() ) {
                 ID = rs.getInt(1);
-                pageContext.setAttribute(var, ++rsCount);
                 return EVAL_BODY_AGAIN;
             }
         } catch (SQLException e) {
@@ -208,6 +208,8 @@ public class RepositoryIterator extends GitHubTagLibBodyTagSupport {
 
     public int doEndTag() throws JspTagException, JspException {
         try {
+			if( var != null )
+				pageContext.removeAttribute(var);
 			if( pageContext != null ){
 				Boolean error = (Boolean) pageContext.getAttribute("tagError");
 				if( error != null && error ){
@@ -298,6 +300,14 @@ public class RepositoryIterator extends GitHubTagLibBodyTagSupport {
 
     public void setVar(String var) {
         this.var = var;
+    }
+
+    public Boolean isFirst() throws SQLException {
+        return rs.isFirst();
+    }
+
+    public Boolean isLast() throws SQLException {
+        return rs.isLast();
     }
 
 
